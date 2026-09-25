@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Car, Upload, Shield, CheckCircle2, Camera, FileText, MapPin, ArrowRight, Zap, Info } from 'lucide-react';
 import { useAuth } from '../context/AppContext';
@@ -18,7 +18,7 @@ export function SellPage() {
       {/* Steps */}
       <div className="flex items-center justify-center gap-2 mb-8">
         {['Vehicle Details', 'Photos & Docs', 'Pricing', 'Review'].map((s, i) => (
-          <React.Fragment key={i}>
+          <Fragment key={i}>
             <div className={`flex items-center gap-2 ${step > i ? 'text-blue-600' : step === i + 1 ? 'text-gray-900' : 'text-gray-400'}`}>
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step > i ? 'bg-blue-600 text-white' : step === i + 1 ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-400'}`}>
                 {step > i ? <CheckCircle2 className="w-4 h-4" /> : i + 1}
@@ -26,7 +26,7 @@ export function SellPage() {
               <span className="text-sm font-medium hidden sm:block">{s}</span>
             </div>
             {i < 3 && <div className={`w-8 h-0.5 ${step > i + 1 ? 'bg-blue-600' : 'bg-gray-200'}`} />}
-          </React.Fragment>
+          </Fragment>
         ))}
       </div>
 

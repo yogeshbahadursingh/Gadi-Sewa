@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Heart, Share2, MapPin, Calendar, Gauge, Fuel, Settings, CheckCircle2, Shield, Zap, MessageSquare, Phone, Star, AlertCircle, ChevronRight, ArrowLeft, Eye, TrendingUp } from 'lucide-react';
 import { getListingById, getVehicleById, getUserById, getPassportByVehicleId, getInspectionByListingId, formatPrice, formatMileage, users } from '../store/data';

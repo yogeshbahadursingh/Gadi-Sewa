@@ -1,4 +1,3 @@
-import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, CheckCircle2, AlertTriangle, XCircle, Minus, HelpCircle, MapPin, Calendar, User, Camera, Gauge, Shield, Printer } from 'lucide-react';
 import { inspections, vehicles, users, formatMileage } from '../store/data';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AppContext';
 import { Search, Menu, X, Bell, Heart, User, ChevronDown, Shield, Car, Gauge, Wrench, Building2, Settings, BarChart3, Users, FileCheck, MessageSquare, AlertTriangle } from 'lucide-react';
@@ -230,7 +230,7 @@ export function Sidebar() {
   );
 }
 
-export function DashboardLayout({ children }: { children: React.ReactNode }) {
+export function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex">
       <Sidebar />
@@ -265,7 +265,7 @@ export function StatCard({ title, value, change, icon: Icon, color = 'blue' }: {
   );
 }
 
-export function Badge({ children, variant = 'default' }: { children: React.ReactNode; variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'purple' }) {
+export function Badge({ children, variant = 'default' }: { children: ReactNode; variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'purple' }) {
   const variants = {
     default: 'bg-gray-100 text-gray-700',
     success: 'bg-green-100 text-green-700',
@@ -281,7 +281,7 @@ export function Badge({ children, variant = 'default' }: { children: React.React
   );
 }
 
-export function EmptyState({ title, description, action }: { title: string; description: string; action?: React.ReactNode }) {
+export function EmptyState({ title, description, action }: { title: string; description: string; action?: ReactNode }) {
   return (
     <div className="text-center py-12">
       <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">

@@ -1,4 +1,4 @@
-import React from 'react';
+import { type ReactNode } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { AuthProvider, AppProvider, useAppState } from './context/AppContext';
 import { Header, Footer, RoleSwitcher } from './components/Layout';
@@ -14,7 +14,7 @@ import ComparePage from './pages/ComparePage';
 import AdminRiskPage from './pages/AdminRiskPage';
 import InspectionReportPage from './pages/InspectionReportPage';
 
-function AppLayout({ children }: { children: React.ReactNode }) {
+function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />

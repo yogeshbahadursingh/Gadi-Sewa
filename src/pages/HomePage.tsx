@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, Shield, Gauge, Battery, Car, TrendingUp, CheckCircle2, ArrowRight, Star, MapPin, Clock, Zap } from 'lucide-react';
 import { listings, vehicles, formatPrice, formatMileage, getVehicleById } from '../store/data';
@@ -13,7 +13,7 @@ export default function HomePage() {
     return v?.isEV;
   });
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     navigate(`/search?q=${searchQuery}${vehicleType ? `&type=${vehicleType}` : ''}`);
   };

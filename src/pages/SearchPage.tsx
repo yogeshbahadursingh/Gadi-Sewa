@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Search, SlidersHorizontal, MapPin, Heart, CheckCircle2, Zap, X, ChevronDown, Grid3X3, List } from 'lucide-react';
 import { listings, vehicles, formatPrice, formatMileage, getVehicleById, districts, makes } from '../store/data';

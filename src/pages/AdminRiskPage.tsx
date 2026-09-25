@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AlertTriangle, Shield, CheckCircle2, XCircle, Eye, Clock, Users, Car, FileWarning, TrendingUp, Search, Filter } from 'lucide-react';
 import { DashboardLayout, StatCard, Badge } from '../components/Layout';
