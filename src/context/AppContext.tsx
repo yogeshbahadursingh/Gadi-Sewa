@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
 import { User } from '../types';
 import { users } from '../store/data';
+import { storageService } from '../services/storage';
 
 interface AuthContextType {
   currentUser: User | null;
@@ -50,7 +51,7 @@ export function useAuth() {
   return useContext(AuthContext);
 }
 
-// App State Context
+// App State Context with persistence
 interface AppState {
   favorites: string[];
   recentlyViewed: string[];
@@ -61,39 +62,72 @@ interface AppContextType {
   state: AppState;
   toggleFavorite: (listingId: string) => void;
   addRecentlyViewed: (listingId: string) => void;
+  clearRecentlyViewed: () => void;
 }
 
 const AppContext = createContext<AppContextType>({
   state: { favorites: [], recentlyViewed: [], searchAlerts: [] },
   toggleFavorite: () => {},
   addRecentlyViewed: () => {},
+  clearRecentlyViewed: () => {},
 });
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AppState>({
-    favorites: ['l1', 'l3'],
-    recentlyViewed: ['l1', 'l2', 'l3'],
-    searchAlerts: [],
+  // Initialize state from localStorage
+  const [state, setState] = useState<AppState>(() => {
+    const favorites = storageService.getFavorites();
+    const recentlyViewed = storageService.getRecentlyViewed();
+    
+    return {
+      favorites: favorites.length > 0 ? favorites : ['l1', 'l3'], // Default favorites if none
+      recentlyViewed: recentlyViewed.length > 0 ? recentlyViewed : ['l1', 'l2', 'l3'], // Default if none
+      searchAlerts: [],
+    };
   });
 
+  // Persist favorites to localStorage whenever they change
+  useEffect(() => {
+    storageService.setFavorites(state.favorites);
+  }, [state.favorites]);
+
+  // Persist recently viewed to localStorage whenever they change
+  useEffect(() => {
+    storageService.setRecentlyViewed(state.recentlyViewed);
+  }, [state.recentlyViewed]);
+
   const toggleFavorite = useCallback((listingId: string) => {
-    setState(prev => ({
-      ...prev,
-      favorites: prev.favorites.includes(listingId)
+    setState(prev => {
+      const isFavorite = prev.favorites.includes(listingId);
+      const newFavorites = isFavorite
         ? prev.favorites.filter(id => id !== listingId)
-        : [...prev.favorites, listingId],
-    }));
+        : [...prev.favorites, listingId];
+      
+      return {
+        ...prev,
+        favorites: newFavorites,
+      };
+    });
   }, []);
 
   const addRecentlyViewed = useCallback((listingId: string) => {
     setState(prev => ({
       ...prev,
-      recentlyViewed: [listingId, ...prev.recentlyViewed.filter(id => id !== listingId)].slice(0, 10),
+      recentlyViewed: [
+        listingId,
+        ...prev.recentlyViewed.filter(id => id !== listingId)
+      ].slice(0, 10),
+    }));
+  }, []);
+
+  const clearRecentlyViewed = useCallback(() => {
+    setState(prev => ({
+      ...prev,
+      recentlyViewed: [],
     }));
   }, []);
 
   return (
-    <AppContext.Provider value={{ state, toggleFavorite, addRecentlyViewed }}>
+    <AppContext.Provider value={{ state, toggleFavorite, addRecentlyViewed, clearRecentlyViewed }}>
       {children}
     </AppContext.Provider>
   );
