@@ -45,6 +45,7 @@ import OffersPage from './pages/OffersPage';
 import AdminPaymentsPage from './pages/AdminPaymentsPage';
 import AdminAuditLogsPage from './pages/AdminAuditLogsPage';
 import DealerInventoryPage from './pages/DealerInventoryPage';
+import ButtonTestPage from './pages/ButtonTestPage';
 import { AuthModal } from './components/AuthModal';
 import { ToastProvider, useToast } from './components/Toast';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -130,6 +131,7 @@ export default function App() {
             <Route path="/admin/payments" element={<AppLayout><AdminPaymentsPage /></AppLayout>} />
             <Route path="/admin/audit-logs" element={<AppLayout><AdminAuditLogsPage /></AppLayout>} />
             <Route path="/dealer/inventory" element={<AppLayout><DealerInventoryPage /></AppLayout>} />
+            <Route path="/button-test" element={<AppLayout><ButtonTestPage /></AppLayout>} />
             <Route path="*" element={<AppLayout><NotFoundPage /></AppLayout>} />
               </Routes>
             </BrowserRouter>
