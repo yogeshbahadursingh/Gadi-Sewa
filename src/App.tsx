@@ -17,6 +17,11 @@ import InspectorFormPage from './pages/InspectorFormPage';
 import VerifyPassportPage from './pages/VerifyPassportPage';
 import NotificationsPage from './pages/NotificationsPage';
 import OwnershipTransferPage from './pages/OwnershipTransferPage';
+import ValuationPage from './pages/ValuationPage';
+import SavedSearchesPage from './pages/SavedSearchesPage';
+import PartnerDirectoryPage from './pages/PartnerDirectoryPage';
+import ReportListingPage from './pages/ReportListingPage';
+import SupportPage from './pages/SupportPage';
 import { AuthModal } from './components/AuthModal';
 
 export default function App() {
@@ -70,6 +75,11 @@ export default function App() {
             <Route path="/verify/:passportId?" element={<AppLayout><VerifyPassportPage /></AppLayout>} />
             <Route path="/notifications" element={<AppLayout><NotificationsPage /></AppLayout>} />
             <Route path="/transfer" element={<AppLayout><OwnershipTransferPage /></AppLayout>} />
+            <Route path="/valuation" element={<AppLayout><ValuationPage /></AppLayout>} />
+            <Route path="/saved-searches" element={<AppLayout><SavedSearchesPage /></AppLayout>} />
+            <Route path="/partners" element={<AppLayout><PartnerDirectoryPage /></AppLayout>} />
+            <Route path="/report/:id" element={<AppLayout><ReportListingPage /></AppLayout>} />
+            <Route path="/support" element={<AppLayout><SupportPage /></AppLayout>} />
             <Route path="*" element={<AppLayout><NotFoundPage /></AppLayout>} />
           </Routes>
         </BrowserRouter>

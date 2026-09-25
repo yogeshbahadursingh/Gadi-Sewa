@@ -250,6 +250,9 @@ export default function SearchPage() {
       {/* Results count */}
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-gray-500">{filteredListings.length} vehicles found</p>
+        <Link to="/saved-searches" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+          Save this search
+        </Link>
       </div>
 
       {/* Results */}

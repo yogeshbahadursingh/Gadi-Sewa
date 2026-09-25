@@ -248,6 +248,21 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Valuation CTA */}
+      <section className="bg-gradient-to-br from-indigo-600 to-purple-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="text-white">
+              <h2 className="text-2xl md:text-3xl font-bold">What's your vehicle worth?</h2>
+              <p className="text-indigo-100 mt-2 max-w-lg">Get an instant market-based valuation using real Nepal market data. Free and accurate.</p>
+            </div>
+            <Link to="/valuation" className="bg-white text-indigo-600 px-8 py-3 rounded-xl font-medium hover:bg-indigo-50 transition-colors whitespace-nowrap flex items-center gap-2">
+              <TrendingUp className="w-5 h-5" /> Get Free Valuation
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="bg-blue-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 text-center">

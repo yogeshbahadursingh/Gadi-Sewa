@@ -28,9 +28,9 @@ export function Header({ onLoginClick }: { onLoginClick?: () => void } = {}) {
             <Link to="/search" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">Buy</Link>
             <Link to="/sell" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">Sell</Link>
             <Link to="/inspect" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">Inspect</Link>
+            <Link to="/valuation" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">Value</Link>
+            <Link to="/partners" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">Service</Link>
             <Link to="/compare" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">Compare</Link>
-            <Link to="/finance" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">Finance</Link>
-            <Link to="/insurance" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">Insurance</Link>
           </nav>
 
           {/* Right side */}
@@ -128,7 +128,9 @@ export function Footer() {
             <ul className="space-y-2 text-sm">
               <li><Link to="/inspect" className="hover:text-white transition-colors">Vehicle Inspection</Link></li>
               <li><Link to="/verify" className="hover:text-white transition-colors">Verify Passport</Link></li>
+              <li><Link to="/valuation" className="hover:text-white transition-colors">Vehicle Valuation</Link></li>
               <li><Link to="/transfer" className="hover:text-white transition-colors">Ownership Transfer</Link></li>
+              <li><Link to="/partners" className="hover:text-white transition-colors">Service Partners</Link></li>
               <li><Link to="/finance" className="hover:text-white transition-colors">Vehicle Finance</Link></li>
               <li><Link to="/insurance" className="hover:text-white transition-colors">Insurance</Link></li>
             </ul>
@@ -145,7 +147,8 @@ export function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-4">Support</h4>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
+              <li><Link to="/support" className="hover:text-white transition-colors">Help Center</Link></li>
+              <li><Link to="/saved-searches" className="hover:text-white transition-colors">Saved Searches</Link></li>
               <li><a href="#" className="hover:text-white transition-colors">Safety Tips</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>

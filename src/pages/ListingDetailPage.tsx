@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Heart, Share2, MapPin, Calendar, Gauge, Fuel, Settings, CheckCircle2, Shield, Zap, MessageSquare, Phone, Star, AlertCircle, ChevronRight, ArrowLeft, Eye, TrendingUp } from 'lucide-react';
+import { Heart, Share2, MapPin, Calendar, Gauge, Fuel, Settings, CheckCircle2, Shield, Zap, MessageSquare, Phone, Star, AlertCircle, AlertTriangle, ChevronRight, ArrowLeft, Eye, TrendingUp } from 'lucide-react';
 import { getListingById, getVehicleById, getUserById, getPassportByVehicleId, getInspectionByListingId, formatPrice, formatMileage, users } from '../store/data';
 import { useAppState, useAuth } from '../context/AppContext';
 import { Badge } from '../components/Layout';
@@ -283,6 +283,11 @@ export default function ListingDetailPage() {
               <p className="flex items-center gap-1.5"><Eye className="w-3.5 h-3.5" /> {listing.views} views</p>
               <p className="flex items-center gap-1.5"><Heart className="w-3.5 h-3.5" /> {listing.favourites} favourites</p>
               <p className="flex items-center gap-1.5"><TrendingUp className="w-3.5 h-3.5" /> {listing.enquiries} enquiries</p>
+            </div>
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <Link to={`/report/${listing.id}`} className="text-xs text-gray-400 hover:text-red-600 transition-colors flex items-center gap-1">
+                <AlertTriangle className="w-3 h-3" /> Report this listing
+              </Link>
             </div>
           </div>
 
