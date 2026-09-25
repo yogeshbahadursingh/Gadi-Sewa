@@ -78,18 +78,18 @@ export default function App() {
             <Route path="/search" element={<AppLayout><SearchPage /></AppLayout>} />
             <Route path="/listing/:id" element={<AppLayout><ListingDetailPage /></AppLayout>} />
             <Route path="/passport/:passportId" element={<AppLayout><PassportPage /></AppLayout>} />
-            <Route path="/dashboard" element={<AppLayout><DashboardPage /></AppLayout>} />
-            <Route path="/admin" element={<AppLayout><DashboardPage /></AppLayout>} />
+            <Route path="/dashboard" element={<AppLayout><DashboardPage key="dashboard" /></AppLayout>} />
+            <Route path="/admin" element={<AppLayout><DashboardPage key="admin" /></AppLayout>} />
             <Route path="/admin/risk" element={<AppLayout><AdminRiskPage /></AppLayout>} />
-            <Route path="/admin/*" element={<AppLayout><DashboardPage /></AppLayout>} />
-            <Route path="/seller" element={<AppLayout><DashboardPage /></AppLayout>} />
-            <Route path="/seller/*" element={<AppLayout><DashboardPage /></AppLayout>} />
-            <Route path="/buyer" element={<AppLayout><DashboardPage /></AppLayout>} />
-            <Route path="/buyer/*" element={<AppLayout><DashboardPage /></AppLayout>} />
-            <Route path="/inspector" element={<AppLayout><DashboardPage /></AppLayout>} />
-            <Route path="/inspector/*" element={<AppLayout><DashboardPage /></AppLayout>} />
-            <Route path="/dealer" element={<AppLayout><DashboardPage /></AppLayout>} />
-            <Route path="/dealer/*" element={<AppLayout><DashboardPage /></AppLayout>} />
+            <Route path="/admin/*" element={<AppLayout><DashboardPage key="admin-wildcard" /></AppLayout>} />
+            <Route path="/seller" element={<AppLayout><DashboardPage key="seller" /></AppLayout>} />
+            <Route path="/seller/*" element={<AppLayout><DashboardPage key="seller-wildcard" /></AppLayout>} />
+            <Route path="/buyer" element={<AppLayout><DashboardPage key="buyer" /></AppLayout>} />
+            <Route path="/buyer/*" element={<AppLayout><DashboardPage key="buyer-wildcard" /></AppLayout>} />
+            <Route path="/inspector" element={<AppLayout><DashboardPage key="inspector" /></AppLayout>} />
+            <Route path="/inspector/*" element={<AppLayout><DashboardPage key="inspector-wildcard" /></AppLayout>} />
+            <Route path="/dealer" element={<AppLayout><DashboardPage key="dealer" /></AppLayout>} />
+            <Route path="/dealer/*" element={<AppLayout><DashboardPage key="dealer-wildcard" /></AppLayout>} />
             <Route path="/sell" element={<AppLayout><SellPage /></AppLayout>} />
             <Route path="/inspect" element={<AppLayout><InspectPage /></AppLayout>} />
             <Route path="/finance" element={<AppLayout><FinancePage /></AppLayout>} />
