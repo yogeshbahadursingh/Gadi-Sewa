@@ -1,16 +1,24 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Search, SlidersHorizontal, MapPin, Heart, CheckCircle2, Zap, X, ChevronDown, Grid3X3, List } from 'lucide-react';
 import { listings, vehicles, formatPrice, formatMileage, getVehicleById, districts, makes } from '../store/data';
 import { SearchFilters } from '../types';
 import { useAppState } from '../context/AppContext';
 import { Badge } from '../components/Layout';
+import { ListingCardSkeleton } from '../components/Skeleton';
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { state, toggleFavorite } = useAppState();
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate loading state
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   const [filters, setFilters] = useState<SearchFilters>({
     query: searchParams.get('q') || '',
@@ -249,14 +257,24 @@ export default function SearchPage() {
 
       {/* Results count */}
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-gray-500">{filteredListings.length} vehicles found</p>
-        <Link to="/saved-searches" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
-          Save this search
-        </Link>
+        <p className="text-sm text-gray-500">
+          {isLoading ? 'Loading...' : `${filteredListings.length} vehicles found`}
+        </p>
+        {!isLoading && (
+          <Link to="/saved-searches" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+            Save this search
+          </Link>
+        )}
       </div>
 
-      {/* Results */}
-      {filteredListings.length === 0 ? (
+      {/* Loading Skeletons */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <ListingCardSkeleton key={i} />
+          ))}
+        </div>
+      ) : filteredListings.length === 0 ? (
         <div className="text-center py-16">
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Search className="w-8 h-8 text-gray-400" />

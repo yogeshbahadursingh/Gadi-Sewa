@@ -188,7 +188,7 @@ export function Sidebar() {
     { to: '/admin/inspections', icon: Gauge, label: 'Inspections' },
     { to: '/admin/payments', icon: DollarSign, label: 'Payments' },
     { to: '/admin/risk', icon: AlertTriangle, label: 'Risk & Fraud' },
-    { to: '/admin/audit', icon: Settings, label: 'Audit Logs' },
+    { to: '/admin/audit-logs', icon: Settings, label: 'Audit Logs' },
   ];
 
   const sellerLinks = [
@@ -219,6 +219,7 @@ export function Sidebar() {
     { to: '/dealer/leads', icon: Users, label: 'Leads' },
     { to: '/dealer/staff', icon: Users, label: 'Staff' },
     { to: '/dealer/analytics', icon: BarChart3, label: 'Analytics' },
+    { to: '/dealer/settings', icon: Settings, label: 'Settings' },
   ];
 
   let links = buyerLinks;

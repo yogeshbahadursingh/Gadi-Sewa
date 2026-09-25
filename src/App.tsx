@@ -43,8 +43,10 @@ import SafetyTipsPage from './pages/SafetyTipsPage';
 import ReservationsPage from './pages/ReservationsPage';
 import OffersPage from './pages/OffersPage';
 import AdminPaymentsPage from './pages/AdminPaymentsPage';
+import AdminAuditLogsPage from './pages/AdminAuditLogsPage';
+import DealerInventoryPage from './pages/DealerInventoryPage';
 import { AuthModal } from './components/AuthModal';
-import { ToastProvider } from './components/Toast';
+import { ToastProvider, useToast } from './components/Toast';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 export default function App() {
@@ -126,6 +128,8 @@ export default function App() {
             <Route path="/reservations" element={<AppLayout><ReservationsPage /></AppLayout>} />
             <Route path="/offers" element={<AppLayout><OffersPage /></AppLayout>} />
             <Route path="/admin/payments" element={<AppLayout><AdminPaymentsPage /></AppLayout>} />
+            <Route path="/admin/audit-logs" element={<AppLayout><AdminAuditLogsPage /></AppLayout>} />
+            <Route path="/dealer/inventory" element={<AppLayout><DealerInventoryPage /></AppLayout>} />
             <Route path="*" element={<AppLayout><NotFoundPage /></AppLayout>} />
               </Routes>
             </BrowserRouter>
@@ -138,7 +142,27 @@ export default function App() {
 
 function FavoritesPage() {
   const { state, toggleFavorite } = useAppState();
+  const { showToast } = useToast();
   const favListings = listings.filter(l => state.favorites.includes(l.id));
+
+  const handleToggleFavorite = (listingId: string, vehicleName: string) => {
+    const isCurrentlyFavorite = state.favorites.includes(listingId);
+    toggleFavorite(listingId);
+    
+    if (isCurrentlyFavorite) {
+      showToast({
+        type: 'info',
+        title: 'Removed from favorites',
+        message: `${vehicleName} has been removed from your saved vehicles`,
+      });
+    } else {
+      showToast({
+        type: 'success',
+        title: 'Added to favorites',
+        message: `${vehicleName} has been saved to your favorites`,
+      });
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
@@ -161,7 +185,10 @@ function FavoritesPage() {
                   <Link to={`/listing/${listing.id}`}>
                     <img src={listing.images[0]} alt={listing.title} className="w-full h-full object-cover" />
                   </Link>
-                  <button onClick={() => toggleFavorite(listing.id)} className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                  <button 
+                    onClick={() => handleToggleFavorite(listing.id, `${vehicle.make} ${vehicle.model}`)}
+                    className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center"
+                  >
                     <Heart className="w-4 h-4 fill-red-500 text-red-500" />
                   </button>
                 </div>
