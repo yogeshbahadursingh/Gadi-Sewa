@@ -1,5 +1,6 @@
 import { type ReactNode, useState } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider, AppProvider, useAppState } from './context/AppContext';
 import { Header, Footer, RoleSwitcher } from './components/Layout';
 import { listings, getVehicleById, formatPrice, formatMileage } from './store/data';
@@ -68,13 +69,14 @@ export default function App() {
   );
 
   return (
-    <ErrorBoundary>
-      <ToastProvider>
-        <AuthProvider>
-          <AppProvider>
-            <BrowserRouter>
-              <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
-              <Routes>
+    <HelmetProvider>
+      <ErrorBoundary>
+        <ToastProvider>
+          <AuthProvider>
+            <AppProvider>
+              <BrowserRouter>
+                <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+                <Routes>
             <Route path="/" element={<AppLayout><HomePage /></AppLayout>} />
             <Route path="/search" element={<AppLayout><SearchPage /></AppLayout>} />
             <Route path="/listing/:id" element={<AppLayout><ListingDetailPage /></AppLayout>} />
@@ -133,12 +135,13 @@ export default function App() {
             <Route path="/dealer/inventory" element={<AppLayout><DealerInventoryPage /></AppLayout>} />
             <Route path="/button-test" element={<AppLayout><ButtonTestPage /></AppLayout>} />
             <Route path="*" element={<AppLayout><NotFoundPage /></AppLayout>} />
-              </Routes>
-            </BrowserRouter>
-          </AppProvider>
-        </AuthProvider>
-      </ToastProvider>
-    </ErrorBoundary>
+                </Routes>
+              </BrowserRouter>
+            </AppProvider>
+          </AuthProvider>
+        </ToastProvider>
+      </ErrorBoundary>
+    </HelmetProvider>
   );
 }
 

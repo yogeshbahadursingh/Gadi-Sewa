@@ -1,9 +1,17 @@
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Shield, Users, Target, Award, Globe } from 'lucide-react';
+import SEO, { generateOrganizationSchema } from '../components/SEO';
 
 export default function AboutPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      <SEO
+        title="About GadiBazar - Nepal's Trusted Vehicle Marketplace"
+        description="Learn about GadiBazar, Nepal's most trusted vehicle ecosystem. We provide Vehicle Passports, professional inspections, and complete transparency for buying and selling vehicles in Nepal."
+        keywords="about GadiBazar, GadiBazar Nepal, vehicle marketplace Nepal, car inspection service, vehicle passport Nepal"
+        canonical="https://gadibazar.com/about"
+        structuredData={generateOrganizationSchema()}
+      />
       <Link to="/" className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 mb-6">
         <ArrowLeft className="w-4 h-4" /> Back to home
       </Link>

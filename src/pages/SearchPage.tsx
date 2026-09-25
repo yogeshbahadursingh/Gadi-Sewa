@@ -6,6 +6,7 @@ import { SearchFilters } from '../types';
 import { useAppState } from '../context/AppContext';
 import { Badge } from '../components/Layout';
 import { ListingCardSkeleton } from '../components/Skeleton';
+import SEO from '../components/SEO';
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -151,6 +152,14 @@ export default function SearchPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+      <SEO
+        title="Search Vehicles in Nepal"
+        description="Search thousands of verified cars, motorcycles, and electric vehicles in Nepal. Filter by make, model, price, location, and more. Find your perfect vehicle on GadiBazar."
+        keywords="search cars Nepal, find vehicles Nepal, car search, vehicle finder, used cars search"
+        canonical="https://gadibazar.com/search"
+        noindex={true}
+        nofollow={true}
+      />
       {/* Search header */}
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         <div className="flex-1 flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-4">

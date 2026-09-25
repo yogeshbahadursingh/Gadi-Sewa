@@ -4,27 +4,40 @@ import { BarChart3, Car, Users, FileCheck, Gauge, Shield, AlertTriangle, CreditC
 import { useAuth } from '../context/AppContext';
 import { DashboardLayout, StatCard, Badge } from '../components/Layout';
 import { listings, vehicles, users, inspections, offers, payments, notifications, vehiclePassports, formatPrice, getListingsBySeller, getOffersByUser, getNotificationsByUser, dealers } from '../store/data';
+import SEO from '../components/SEO';
 
 export default function DashboardPage() {
   const { currentUser } = useAuth();
   if (!currentUser) return null;
 
-  switch (currentUser.role) {
-    case 'SUPER_ADMIN':
-    case 'ADMIN':
-      return <AdminDashboard />;
-    case 'PRIVATE_SELLER':
-      return <SellerDashboard />;
-    case 'BUYER':
-      return <BuyerDashboard />;
-    case 'INSPECTOR':
-      return <InspectorDashboard />;
-    case 'DEALER_OWNER':
-    case 'DEALER_MANAGER':
-      return <DealerDashboard />;
-    default:
-      return <BuyerDashboard />;
-  }
+  return (
+    <>
+      <SEO
+        title="Dashboard"
+        description="User dashboard"
+        noindex={true}
+        nofollow={true}
+      />
+      {(() => {
+        switch (currentUser.role) {
+          case 'SUPER_ADMIN':
+          case 'ADMIN':
+            return <AdminDashboard />;
+          case 'PRIVATE_SELLER':
+            return <SellerDashboard />;
+          case 'BUYER':
+            return <BuyerDashboard />;
+          case 'INSPECTOR':
+            return <InspectorDashboard />;
+          case 'DEALER_OWNER':
+          case 'DEALER_MANAGER':
+            return <DealerDashboard />;
+          default:
+            return <BuyerDashboard />;
+        }
+      })()}
+    </>
+  );
 }
 
 function AdminDashboard() {

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Car, Upload, Shield, CheckCircle2, Camera, FileText, MapPin, ArrowRight, Zap, Info } from 'lucide-react';
 import { useAuth } from '../context/AppContext';
 import { Badge } from '../components/Layout';
+import SEO from '../components/SEO';
 
 export function SellPage() {
   const { currentUser } = useAuth();
@@ -10,6 +11,12 @@ export function SellPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      <SEO
+        title="Sell Your Car or Bike in Nepal"
+        description="List your vehicle on Nepal's trusted marketplace. Reach thousands of verified buyers. Get professional inspection, Vehicle Passport, and sell faster with GadiBazar."
+        keywords="sell car Nepal, sell bike Nepal, list vehicle Nepal, sell my car, sell my bike, vehicle selling Nepal"
+        canonical="https://gadibazar.com/sell"
+      />
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Sell Your Vehicle</h1>
         <p className="text-gray-500 mt-2">List your vehicle and reach thousands of verified buyers</p>
@@ -235,6 +242,12 @@ export function InspectPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+      <SEO
+        title="Professional Vehicle Inspection Service in Nepal"
+        description="Book certified vehicle inspections in Nepal. 100+ point inspection with OBD diagnostics, paint depth measurement, and EV battery health check. Get Vehicle Passport with premium package."
+        keywords="vehicle inspection Nepal, car inspection Nepal, used car inspection, pre-purchase inspection, vehicle check Nepal, EV battery health check"
+        canonical="https://gadibazar.com/inspect"
+      />
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Book a Vehicle Inspection</h1>
         <p className="text-gray-500 mt-2">Professional multi-point inspection by certified inspectors</p>

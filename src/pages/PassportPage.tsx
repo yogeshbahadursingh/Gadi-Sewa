@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Shield, CheckCircle2, AlertTriangle, FileText, Gauge, Battery, QrCode, ArrowLeft, TrendingUp, User, History } from 'lucide-react';
 import { vehiclePassports, getVehicleById, inspections, formatPrice, formatMileage } from '../store/data';
 import { Badge } from '../components/Layout';
+import SEO, { generateBreadcrumbSchema } from '../components/SEO';
 
 export default function PassportPage() {
   const { passportId } = useParams<{ passportId: string }>();
@@ -20,6 +21,18 @@ export default function PassportPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+      <SEO
+        title={`Vehicle Passport ${passport.passportId} - ${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+        description={`Complete vehicle history for ${vehicle.year} ${vehicle.make} ${vehicle.model}. Verified ownership records, odometer history, inspection reports, and document verification. Passport ID: ${passport.passportId}.`}
+        keywords={`vehicle passport ${passport.passportId}, ${vehicle.make} ${vehicle.model} history, vehicle verification Nepal, ownership history, odometer records, vehicle inspection`}
+        canonical={`https://gadibazar.com/passport/${passport.passportId}`}
+        ogType="article"
+        structuredData={generateBreadcrumbSchema([
+          { name: 'Home', url: '/' },
+          { name: 'Vehicle Passport', url: '/verify' },
+          { name: passport.passportId, url: `/passport/${passport.passportId}` },
+        ])}
+      />
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <Link to="/" className="p-2 hover:bg-gray-100 rounded-lg"><ArrowLeft className="w-5 h-5 text-gray-600" /></Link>

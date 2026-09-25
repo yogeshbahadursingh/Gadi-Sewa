@@ -4,6 +4,7 @@ import { Heart, Share2, MapPin, Calendar, Gauge, Fuel, Settings, CheckCircle2, S
 import { getListingById, getVehicleById, getUserById, getPassportByVehicleId, getInspectionByListingId, formatPrice, formatMileage, users } from '../store/data';
 import { useAppState, useAuth } from '../context/AppContext';
 import { Badge } from '../components/Layout';
+import SEO, { generateVehicleSchema, generateBreadcrumbSchema } from '../components/SEO';
 
 export default function ListingDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -39,6 +40,23 @@ export default function ListingDetailPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+      <SEO
+        title={`${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.variant} for Sale in ${listing.location}`}
+        description={`${vehicle.year} ${vehicle.make} ${vehicle.model} with ${formatMileage(vehicle.mileage)}, ${vehicle.fuelType}, ${vehicle.transmission}. Price: ${formatPrice(listing.price)}. ${listing.isInspected ? 'Professionally inspected.' : ''} ${listing.hasPassport ? 'Verified Vehicle Passport available.' : ''} View details and contact seller on GadiBazar.`}
+        keywords={`${vehicle.make} ${vehicle.model}, ${vehicle.year} ${vehicle.make}, used ${vehicle.make} ${vehicle.model} Nepal, ${vehicle.model} price Nepal, ${vehicle.fuelType} ${vehicle.model}, ${listing.location} cars`}
+        canonical={`https://gadibazar.com/listing/${listing.id}`}
+        ogImage={listing.images[0]}
+        ogType="product"
+        structuredData={[
+          generateVehicleSchema(vehicle, listing),
+          generateBreadcrumbSchema([
+            { name: 'Home', url: '/' },
+            { name: 'Cars', url: '/search' },
+            { name: vehicle.make, url: `/search?make=${vehicle.make}` },
+            { name: `${vehicle.year} ${vehicle.make} ${vehicle.model}`, url: `/listing/${listing.id}` },
+          ]),
+        ]}
+      />
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-4">
         <Link to="/" className="hover:text-blue-600">Home</Link>

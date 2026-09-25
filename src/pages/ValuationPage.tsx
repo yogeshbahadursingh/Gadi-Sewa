@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { TrendingUp, Car, Gauge, Calendar, MapPin, CheckCircle2, Info, ArrowRight, Battery, Zap, AlertTriangle } from 'lucide-react';
 import { vehicles, listings, formatPrice, getVehicleById } from '../store/data';
 import { Badge } from '../components/Layout';
+import SEO from '../components/SEO';
 
 interface ValuationInput {
   make: string;
@@ -84,6 +85,12 @@ export default function ValuationPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+      <SEO
+        title="Free Vehicle Valuation - Check Your Car's Value in Nepal"
+        description="Get instant market-based vehicle valuation in Nepal. Calculate your car, bike, or EV's current market value based on condition, mileage, and market trends. Free and accurate."
+        keywords="car valuation Nepal, vehicle price check, used car value, car price calculator Nepal, vehicle valuation tool, second hand car price"
+        canonical="https://gadibazar.com/valuation"
+      />
       <div className="text-center mb-8">
         <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
           <TrendingUp className="w-8 h-8 text-white" />

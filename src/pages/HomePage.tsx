@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, Shield, Gauge, Battery, Car, TrendingUp, CheckCircle2, ArrowRight, Star, MapPin, Clock, Zap } from 'lucide-react';
 import { listings, vehicles, formatPrice, formatMileage, getVehicleById } from '../store/data';
+import SEO, { generateOrganizationSchema } from '../components/SEO';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -20,6 +21,14 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Buy & Sell Used Cars, Bikes and EVs in Nepal"
+        description="Nepal's trusted vehicle marketplace. Browse thousands of verified cars, motorcycles, and electric vehicles. Professional inspections, Vehicle Passports, and complete ownership history."
+        keywords="used cars Nepal, second hand cars, vehicles for sale Nepal, used bikes Nepal, electric vehicles Nepal, car inspection, vehicle passport, buy car Nepal, sell car Nepal, Kathmandu cars"
+        canonical="https://gadibazar.com/"
+        ogType="website"
+        structuredData={generateOrganizationSchema()}
+      />
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-10">
