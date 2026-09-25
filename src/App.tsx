@@ -22,6 +22,14 @@ import SavedSearchesPage from './pages/SavedSearchesPage';
 import PartnerDirectoryPage from './pages/PartnerDirectoryPage';
 import ReportListingPage from './pages/ReportListingPage';
 import SupportPage from './pages/SupportPage';
+import TestDrivePage from './pages/TestDrivePage';
+import DealerApplicationPage from './pages/DealerApplicationPage';
+import VehicleHistoryPage from './pages/VehicleHistoryPage';
+import RepairQuotesPage from './pages/RepairQuotesPage';
+import AdminListingsPage from './pages/AdminListingsPage';
+import AboutPage from './pages/AboutPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
 import { AuthModal } from './components/AuthModal';
 
 export default function App() {
@@ -80,6 +88,14 @@ export default function App() {
             <Route path="/partners" element={<AppLayout><PartnerDirectoryPage /></AppLayout>} />
             <Route path="/report/:id" element={<AppLayout><ReportListingPage /></AppLayout>} />
             <Route path="/support" element={<AppLayout><SupportPage /></AppLayout>} />
+            <Route path="/test-drive/:id" element={<AppLayout><TestDrivePage /></AppLayout>} />
+            <Route path="/dealer-application" element={<AppLayout><DealerApplicationPage /></AppLayout>} />
+            <Route path="/history/:passportId" element={<AppLayout><VehicleHistoryPage /></AppLayout>} />
+            <Route path="/repair-quotes/:inspectionId" element={<AppLayout><RepairQuotesPage /></AppLayout>} />
+            <Route path="/admin/listings" element={<AppLayout><AdminListingsPage /></AppLayout>} />
+            <Route path="/about" element={<AppLayout><AboutPage /></AppLayout>} />
+            <Route path="/terms" element={<AppLayout><TermsPage /></AppLayout>} />
+            <Route path="/privacy" element={<AppLayout><PrivacyPage /></AppLayout>} />
             <Route path="*" element={<AppLayout><NotFoundPage /></AppLayout>} />
           </Routes>
         </BrowserRouter>

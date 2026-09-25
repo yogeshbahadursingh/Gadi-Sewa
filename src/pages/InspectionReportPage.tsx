@@ -189,6 +189,23 @@ export default function InspectionReportPage() {
         <p className="text-sm text-blue-700">{inspection.recommendation}</p>
       </div>
 
+      {/* Get Repair Quotes */}
+      {advisoryItems > 0 || failItems > 0 ? (
+        <div className="bg-orange-50 border border-orange-200 rounded-xl p-5 mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-orange-900 mb-1">Need Repairs?</h3>
+              <p className="text-sm text-orange-700">
+                {advisoryItems + failItems} item(s) need attention. Get quotes from verified partners.
+              </p>
+            </div>
+            <Link to={`/repair-quotes/${inspection.id}`} className="bg-orange-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-orange-700 transition-colors whitespace-nowrap">
+              Get Repair Quotes
+            </Link>
+          </div>
+        </div>
+      ) : null}
+
       {/* Notes */}
       {inspection.notes && (
         <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 mb-6">

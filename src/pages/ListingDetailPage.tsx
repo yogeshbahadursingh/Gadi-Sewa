@@ -275,6 +275,9 @@ export default function ListingDetailPage() {
               <button onClick={() => setShowOfferModal(true)} className="w-full border border-gray-200 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
                 Make an Offer
               </button>
+              <Link to={`/test-drive/${listing.id}`} className="w-full border border-gray-200 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 text-sm">
+                Book Test Drive
+              </Link>
               <Link to="/transfer" className="w-full border border-gray-200 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 text-sm">
                 Ownership Transfer
               </Link>

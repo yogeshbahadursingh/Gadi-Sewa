@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { Shield, CheckCircle2, AlertTriangle, FileText, Gauge, Battery, QrCode, ArrowLeft, TrendingUp, User } from 'lucide-react';
+import { Shield, CheckCircle2, AlertTriangle, FileText, Gauge, Battery, QrCode, ArrowLeft, TrendingUp, User, History } from 'lucide-react';
 import { vehiclePassports, getVehicleById, inspections, formatPrice, formatMileage } from '../store/data';
 import { Badge } from '../components/Layout';
 
@@ -241,10 +241,13 @@ export default function PassportPage() {
         </div>
       </div>
 
-      {/* Verify Link */}
-      <div className="mt-6 text-center">
+      {/* Action Links */}
+      <div className="mt-6 flex flex-wrap justify-center gap-4">
         <Link to="/verify" className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium">
-          <QrCode className="w-4 h-4" /> Verify this passport via QR code
+          <QrCode className="w-4 h-4" /> Verify via QR
+        </Link>
+        <Link to={`/history/${passport.passportId}`} className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium">
+          <History className="w-4 h-4" /> View Full Timeline
         </Link>
       </div>
 
