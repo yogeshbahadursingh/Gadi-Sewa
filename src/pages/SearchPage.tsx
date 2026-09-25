@@ -7,6 +7,7 @@ import { useAppState } from '../context/AppContext';
 import { Badge } from '../components/Layout';
 import { ListingCardSkeleton } from '../components/Skeleton';
 import SEO from '../components/SEO';
+import Pagination from '../components/Pagination';
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -14,6 +15,8 @@ export default function SearchPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
 
   // Simulate loading state
   useEffect(() => {
@@ -138,6 +141,19 @@ export default function SearchPage() {
     }
 
     return results;
+  }, [filters]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredListings.length / itemsPerPage);
+  const paginatedListings = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredListings.slice(startIndex, endIndex);
+  }, [filteredListings, currentPage]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
   }, [filters]);
 
   const updateFilter = (key: string, value: any) => {
@@ -294,7 +310,7 @@ export default function SearchPage() {
         </div>
       ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredListings.map(listing => {
+          {paginatedListings.map(listing => {
             const vehicle = getVehicleById(listing.vehicleId);
             if (!vehicle) return null;
             const isFav = state.favorites.includes(listing.id);
@@ -334,7 +350,7 @@ export default function SearchPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredListings.map(listing => {
+          {paginatedListings.map(listing => {
             const vehicle = getVehicleById(listing.vehicleId);
             if (!vehicle) return null;
             const isFav = state.favorites.includes(listing.id);
@@ -371,6 +387,15 @@ export default function SearchPage() {
             );
           })}
         </div>
+      )}
+      
+      {/* Pagination */}
+      {!isLoading && filteredListings.length > itemsPerPage && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       )}
     </div>
   );

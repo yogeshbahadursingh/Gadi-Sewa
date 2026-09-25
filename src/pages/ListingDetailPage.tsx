@@ -5,6 +5,7 @@ import { getListingById, getVehicleById, getUserById, getPassportByVehicleId, ge
 import { useAppState, useAuth } from '../context/AppContext';
 import { Badge } from '../components/Layout';
 import SEO, { generateVehicleSchema, generateBreadcrumbSchema } from '../components/SEO';
+import Breadcrumb from '../components/Breadcrumb';
 
 export default function ListingDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -58,13 +59,12 @@ export default function ListingDetailPage() {
         ]}
       />
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-        <Link to="/" className="hover:text-blue-600">Home</Link>
-        <ChevronRight className="w-3 h-3" />
-        <Link to="/search" className="hover:text-blue-600">Search</Link>
-        <ChevronRight className="w-3 h-3" />
-        <span className="text-gray-900">{vehicle.make} {vehicle.model}</span>
-      </nav>
+      <Breadcrumb
+        items={[
+          { label: 'Search', href: '/search' },
+          { label: `${vehicle.make} ${vehicle.model}` },
+        ]}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main content */}

@@ -231,6 +231,15 @@ export function SellPage() {
   );
 }
 
+// Default export for lazy loading
+export default {
+  SellPage,
+  InspectPage,
+  FinancePage,
+  InsurancePage,
+  MessagesPage,
+};
+
 export function InspectPage() {
   const [selectedPackage, setSelectedPackage] = useState('');
 

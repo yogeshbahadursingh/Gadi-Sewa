@@ -1,55 +1,60 @@
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useState, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider, AppProvider, useAppState } from './context/AppContext';
 import { Header, Footer, RoleSwitcher } from './components/Layout';
 import { listings, getVehicleById, formatPrice, formatMileage } from './store/data';
 import { Heart } from 'lucide-react';
-import HomePage from './pages/HomePage';
-import SearchPage from './pages/SearchPage';
-import ListingDetailPage from './pages/ListingDetailPage';
-import PassportPage from './pages/PassportPage';
-import DashboardPage from './pages/DashboardPage';
-import { SellPage, InspectPage, FinancePage, InsurancePage, MessagesPage } from './pages/ServicePages';
-import ComparePage from './pages/ComparePage';
-import AdminRiskPage from './pages/AdminRiskPage';
-import InspectionReportPage from './pages/InspectionReportPage';
-import InspectorFormPage from './pages/InspectorFormPage';
-import VerifyPassportPage from './pages/VerifyPassportPage';
-import NotificationsPage from './pages/NotificationsPage';
-import OwnershipTransferPage from './pages/OwnershipTransferPage';
-import ValuationPage from './pages/ValuationPage';
-import SavedSearchesPage from './pages/SavedSearchesPage';
-import PartnerDirectoryPage from './pages/PartnerDirectoryPage';
-import ReportListingPage from './pages/ReportListingPage';
-import SupportPage from './pages/SupportPage';
-import TestDrivePage from './pages/TestDrivePage';
-import DealerApplicationPage from './pages/DealerApplicationPage';
-import VehicleHistoryPage from './pages/VehicleHistoryPage';
-import RepairQuotesPage from './pages/RepairQuotesPage';
-import AdminListingsPage from './pages/AdminListingsPage';
-import AboutPage from './pages/AboutPage';
-import TermsPage from './pages/TermsPage';
-import PrivacyPage from './pages/PrivacyPage';
-import AdminUsersPage from './pages/AdminUsersPage';
-import RecentlyViewedPage from './pages/RecentlyViewedPage';
-import SellerAnalyticsPage from './pages/SellerAnalyticsPage';
-import AdminInspectionsPage from './pages/AdminInspectionsPage';
-import FinanceApplicationPage from './pages/FinanceApplicationPage';
-import BlogPage from './pages/BlogPage';
-import PaymentPage from './pages/PaymentPage';
-import ProfilePage from './pages/ProfilePage';
-import InsuranceApplicationPage from './pages/InsuranceApplicationPage';
-import SafetyTipsPage from './pages/SafetyTipsPage';
-import ReservationsPage from './pages/ReservationsPage';
-import OffersPage from './pages/OffersPage';
-import AdminPaymentsPage from './pages/AdminPaymentsPage';
-import AdminAuditLogsPage from './pages/AdminAuditLogsPage';
-import DealerInventoryPage from './pages/DealerInventoryPage';
-import ButtonTestPage from './pages/ButtonTestPage';
+import { PageSkeleton } from './components/Skeleton';
 import { AuthModal } from './components/AuthModal';
 import { ToastProvider, useToast } from './components/Toast';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { SellPage, InspectPage, FinancePage, InsurancePage, MessagesPage } from './pages/ServicePages';
+
+// Lazy load all page components for code splitting
+const HomePage = lazy(() => import('./pages/HomePage'));
+const SearchPage = lazy(() => import('./pages/SearchPage'));
+const ListingDetailPage = lazy(() => import('./pages/ListingDetailPage'));
+const PassportPage = lazy(() => import('./pages/PassportPage'));
+const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const ComparePage = lazy(() => import('./pages/ComparePage'));
+const AdminRiskPage = lazy(() => import('./pages/AdminRiskPage'));
+const InspectionReportPage = lazy(() => import('./pages/InspectionReportPage'));
+const InspectorFormPage = lazy(() => import('./pages/InspectorFormPage'));
+const VerifyPassportPage = lazy(() => import('./pages/VerifyPassportPage'));
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
+const OwnershipTransferPage = lazy(() => import('./pages/OwnershipTransferPage'));
+const ValuationPage = lazy(() => import('./pages/ValuationPage'));
+const SavedSearchesPage = lazy(() => import('./pages/SavedSearchesPage'));
+const PartnerDirectoryPage = lazy(() => import('./pages/PartnerDirectoryPage'));
+const ReportListingPage = lazy(() => import('./pages/ReportListingPage'));
+const SupportPage = lazy(() => import('./pages/SupportPage'));
+const TestDrivePage = lazy(() => import('./pages/TestDrivePage'));
+const DealerApplicationPage = lazy(() => import('./pages/DealerApplicationPage'));
+const VehicleHistoryPage = lazy(() => import('./pages/VehicleHistoryPage'));
+const RepairQuotesPage = lazy(() => import('./pages/RepairQuotesPage'));
+const AdminListingsPage = lazy(() => import('./pages/AdminListingsPage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
+const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage'));
+const RecentlyViewedPage = lazy(() => import('./pages/RecentlyViewedPage'));
+const SellerAnalyticsPage = lazy(() => import('./pages/SellerAnalyticsPage'));
+const AdminInspectionsPage = lazy(() => import('./pages/AdminInspectionsPage'));
+const FinanceApplicationPage = lazy(() => import('./pages/FinanceApplicationPage'));
+const BlogPage = lazy(() => import('./pages/BlogPage'));
+const PaymentPage = lazy(() => import('./pages/PaymentPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const InsuranceApplicationPage = lazy(() => import('./pages/InsuranceApplicationPage'));
+const SafetyTipsPage = lazy(() => import('./pages/SafetyTipsPage'));
+const ReservationsPage = lazy(() => import('./pages/ReservationsPage'));
+const OffersPage = lazy(() => import('./pages/OffersPage'));
+const AdminPaymentsPage = lazy(() => import('./pages/AdminPaymentsPage'));
+const AdminAuditLogsPage = lazy(() => import('./pages/AdminAuditLogsPage'));
+const DealerInventoryPage = lazy(() => import('./pages/DealerInventoryPage'));
+const ButtonTestPage = lazy(() => import('./pages/ButtonTestPage'));
+const LocationPage = lazy(() => import('./pages/LocationPage'));
+const MakePage = lazy(() => import('./pages/MakePage'));
 
 export default function App() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -76,6 +81,7 @@ export default function App() {
             <AppProvider>
               <BrowserRouter>
                 <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+                <Suspense fallback={<PageSkeleton />}>
                 <Routes>
             <Route path="/" element={<AppLayout><HomePage /></AppLayout>} />
             <Route path="/search" element={<AppLayout><SearchPage /></AppLayout>} />
@@ -134,8 +140,11 @@ export default function App() {
             <Route path="/admin/audit-logs" element={<AppLayout><AdminAuditLogsPage /></AppLayout>} />
             <Route path="/dealer/inventory" element={<AppLayout><DealerInventoryPage /></AppLayout>} />
             <Route path="/button-test" element={<AppLayout><ButtonTestPage /></AppLayout>} />
+            <Route path="/cars/:location" element={<AppLayout><LocationPage /></AppLayout>} />
+            <Route path="/cars/make/:make" element={<AppLayout><MakePage /></AppLayout>} />
             <Route path="*" element={<AppLayout><NotFoundPage /></AppLayout>} />
                 </Routes>
+                </Suspense>
               </BrowserRouter>
             </AppProvider>
           </AuthProvider>
