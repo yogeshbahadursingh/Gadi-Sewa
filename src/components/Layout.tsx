@@ -1,7 +1,7 @@
 import { useState, type ReactNode, type Dispatch, type SetStateAction } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AppContext';
-import { Search, Menu, X, Bell, Heart, User, ChevronDown, Shield, Car, Gauge, Wrench, Building2, Settings, BarChart3, Users, FileCheck, MessageSquare, AlertTriangle } from 'lucide-react';
+import { Search, Menu, X, Bell, Heart, User, ChevronDown, Shield, Car, Gauge, Wrench, Building2, Settings, BarChart3, Users, FileCheck, MessageSquare, AlertTriangle, DollarSign } from 'lucide-react';
 import { notifications } from '../store/data';
 
 export function Header({ onLoginClick }: { onLoginClick?: () => void } = {}) {
@@ -186,7 +186,7 @@ export function Sidebar() {
     { to: '/admin/vehicles', icon: Car, label: 'Vehicles' },
     { to: '/admin/listings', icon: FileCheck, label: 'Listings' },
     { to: '/admin/inspections', icon: Gauge, label: 'Inspections' },
-    { to: '/admin/payments', icon: Shield, label: 'Payments' },
+    { to: '/admin/payments', icon: DollarSign, label: 'Payments' },
     { to: '/admin/risk', icon: AlertTriangle, label: 'Risk & Fraud' },
     { to: '/admin/audit', icon: Settings, label: 'Audit Logs' },
   ];
@@ -201,9 +201,10 @@ export function Sidebar() {
 
   const buyerLinks = [
     { to: '/buyer', icon: BarChart3, label: 'Dashboard' },
-    { to: '/buyer/favorites', icon: Heart, label: 'Favorites' },
-    { to: '/buyer/offers', icon: MessageSquare, label: 'My Offers' },
-    { to: '/buyer/reservations', icon: FileCheck, label: 'Reservations' },
+    { to: '/favorites', icon: Heart, label: 'Favorites' },
+    { to: '/offers', icon: MessageSquare, label: 'My Offers' },
+    { to: '/reservations', icon: FileCheck, label: 'Reservations' },
+    { to: '/recently-viewed', icon: BarChart3, label: 'Recently Viewed' },
   ];
 
   const inspectorLinks = [

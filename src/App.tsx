@@ -40,7 +40,12 @@ import PaymentPage from './pages/PaymentPage';
 import ProfilePage from './pages/ProfilePage';
 import InsuranceApplicationPage from './pages/InsuranceApplicationPage';
 import SafetyTipsPage from './pages/SafetyTipsPage';
+import ReservationsPage from './pages/ReservationsPage';
+import OffersPage from './pages/OffersPage';
+import AdminPaymentsPage from './pages/AdminPaymentsPage';
 import { AuthModal } from './components/AuthModal';
+import { ToastProvider } from './components/Toast';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 export default function App() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -60,11 +65,13 @@ export default function App() {
   );
 
   return (
-    <AuthProvider>
-      <AppProvider>
-        <BrowserRouter>
-          <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
-          <Routes>
+    <ErrorBoundary>
+      <ToastProvider>
+        <AuthProvider>
+          <AppProvider>
+            <BrowserRouter>
+              <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+              <Routes>
             <Route path="/" element={<AppLayout><HomePage /></AppLayout>} />
             <Route path="/search" element={<AppLayout><SearchPage /></AppLayout>} />
             <Route path="/listing/:id" element={<AppLayout><ListingDetailPage /></AppLayout>} />
@@ -116,11 +123,16 @@ export default function App() {
             <Route path="/profile" element={<AppLayout><ProfilePage /></AppLayout>} />
             <Route path="/insurance/apply" element={<AppLayout><InsuranceApplicationPage /></AppLayout>} />
             <Route path="/safety" element={<AppLayout><SafetyTipsPage /></AppLayout>} />
+            <Route path="/reservations" element={<AppLayout><ReservationsPage /></AppLayout>} />
+            <Route path="/offers" element={<AppLayout><OffersPage /></AppLayout>} />
+            <Route path="/admin/payments" element={<AppLayout><AdminPaymentsPage /></AppLayout>} />
             <Route path="*" element={<AppLayout><NotFoundPage /></AppLayout>} />
-          </Routes>
-        </BrowserRouter>
-      </AppProvider>
-    </AuthProvider>
+              </Routes>
+            </BrowserRouter>
+          </AppProvider>
+        </AuthProvider>
+      </ToastProvider>
+    </ErrorBoundary>
   );
 }
 
