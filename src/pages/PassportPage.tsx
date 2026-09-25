@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { Shield, CheckCircle2, AlertTriangle, XCircle, Clock, MapPin, FileText, Gauge, Battery, QrCode, ArrowLeft, History, TrendingUp, Car, User } from 'lucide-react';
+import { Shield, CheckCircle2, AlertTriangle, FileText, Gauge, Battery, QrCode, ArrowLeft, TrendingUp, User } from 'lucide-react';
 import { vehiclePassports, getVehicleById, inspections, formatPrice, formatMileage } from '../store/data';
 import { Badge } from '../components/Layout';
 
@@ -241,8 +241,15 @@ export default function PassportPage() {
         </div>
       </div>
 
+      {/* Verify Link */}
+      <div className="mt-6 text-center">
+        <Link to="/verify" className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium">
+          <QrCode className="w-4 h-4" /> Verify this passport via QR code
+        </Link>
+      </div>
+
       {/* Disclaimer */}
-      <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
+      <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
         <p className="text-xs text-gray-500 leading-relaxed">
           <strong>Disclaimer:</strong> This Vehicle Passport represents information available at the time of issuance and last inspection. 
           It is based on physical inspection, document verification, and available records. It does not constitute a guarantee of vehicle condition. 

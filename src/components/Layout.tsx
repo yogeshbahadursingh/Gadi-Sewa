@@ -1,10 +1,10 @@
-import { useState, type ReactNode } from 'react';
+import { useState, type ReactNode, type Dispatch, type SetStateAction } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AppContext';
 import { Search, Menu, X, Bell, Heart, User, ChevronDown, Shield, Car, Gauge, Wrench, Building2, Settings, BarChart3, Users, FileCheck, MessageSquare, AlertTriangle } from 'lucide-react';
 import { notifications } from '../store/data';
 
-export function Header() {
+export function Header({ onLoginClick }: { onLoginClick?: () => void } = {}) {
   const { currentUser, isAuthenticated } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -37,10 +37,10 @@ export function Header() {
           <div className="flex items-center gap-3">
             {isAuthenticated && (
               <>
-                <button className="relative p-2 text-gray-600 hover:text-blue-600 transition-colors" onClick={() => setShowNotifications(!showNotifications)}>
+                <Link to="/notifications" className="relative p-2 text-gray-600 hover:text-blue-600 transition-colors">
                   <Bell className="w-5 h-5" />
                   {unreadCount > 0 && <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center">{unreadCount}</span>}
-                </button>
+                </Link>
                 <Link to="/favorites" className="p-2 text-gray-600 hover:text-blue-600 transition-colors">
                   <Heart className="w-5 h-5" />
                 </Link>
@@ -48,7 +48,7 @@ export function Header() {
             )}
             
             {/* User menu */}
-            {isAuthenticated && currentUser && (
+            {isAuthenticated && currentUser ? (
               <div className="hidden md:flex items-center gap-2 pl-3 border-l border-gray-200">
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                   <span className="text-sm font-medium text-blue-700">{currentUser.fullName.charAt(0)}</span>
@@ -58,6 +58,10 @@ export function Header() {
                   <p className="text-xs text-gray-500">{currentUser.role.replace(/_/g, ' ')}</p>
                 </div>
               </div>
+            ) : (
+              <button onClick={onLoginClick} className="hidden md:block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                Sign In
+              </button>
             )}
 
             <button className="md:hidden p-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -123,7 +127,8 @@ export function Footer() {
             <h4 className="text-white font-semibold mb-4">Services</h4>
             <ul className="space-y-2 text-sm">
               <li><Link to="/inspect" className="hover:text-white transition-colors">Vehicle Inspection</Link></li>
-              <li><Link to="/passport" className="hover:text-white transition-colors">Vehicle Passport</Link></li>
+              <li><Link to="/verify" className="hover:text-white transition-colors">Verify Passport</Link></li>
+              <li><Link to="/transfer" className="hover:text-white transition-colors">Ownership Transfer</Link></li>
               <li><Link to="/finance" className="hover:text-white transition-colors">Vehicle Finance</Link></li>
               <li><Link to="/insurance" className="hover:text-white transition-colors">Insurance</Link></li>
             </ul>

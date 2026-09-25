@@ -341,14 +341,19 @@ function InspectorDashboard() {
                   <p className="text-xs text-gray-500 flex items-center gap-1"><MapPin className="w-3 h-3" />{inspection.location}</p>
                   <p className="text-xs text-gray-400">Scheduled: {new Date(inspection.scheduledDate).toLocaleDateString()}</p>
                 </div>
-                <div className="text-right">
+                <div className="text-right flex flex-col items-end gap-1">
                   <Badge variant={
                     inspection.status === 'REVIEWED' ? 'success' :
                     inspection.status === 'COMPLETED' ? 'info' :
                     inspection.status === 'IN_PROGRESS' ? 'warning' : 'default'
                   }>{inspection.status}</Badge>
                   {inspection.overallResult && (
-                    <p className="text-xs text-gray-500 mt-1">Result: {inspection.overallResult}</p>
+                    <p className="text-xs text-gray-500">Result: {inspection.overallResult}</p>
+                  )}
+                  {(inspection.status === 'SCHEDULED' || inspection.status === 'IN_PROGRESS') && (
+                    <Link to={`/inspector/job/${inspection.id}`} className="text-xs text-blue-600 font-medium hover:text-blue-700 mt-1">
+                      Start Inspection →
+                    </Link>
                   )}
                 </div>
               </div>

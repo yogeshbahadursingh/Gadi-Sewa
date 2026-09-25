@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { AuthProvider, AppProvider, useAppState } from './context/AppContext';
 import { Header, Footer, RoleSwitcher } from './components/Layout';
@@ -13,11 +13,18 @@ import { SellPage, InspectPage, FinancePage, InsurancePage, MessagesPage } from 
 import ComparePage from './pages/ComparePage';
 import AdminRiskPage from './pages/AdminRiskPage';
 import InspectionReportPage from './pages/InspectionReportPage';
+import InspectorFormPage from './pages/InspectorFormPage';
+import VerifyPassportPage from './pages/VerifyPassportPage';
+import NotificationsPage from './pages/NotificationsPage';
+import OwnershipTransferPage from './pages/OwnershipTransferPage';
+import { AuthModal } from './components/AuthModal';
 
-function AppLayout({ children }: { children: ReactNode }) {
-  return (
+export default function App() {
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+
+  const AppLayout = ({ children }: { children: ReactNode }) => (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header />
+      <Header onLoginClick={() => setAuthModalOpen(true)} />
       <div className="bg-gray-100 border-b border-gray-200 px-4 py-2">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <p className="text-xs text-gray-500">Demo Mode — Switch roles to explore different dashboards</p>
@@ -28,13 +35,12 @@ function AppLayout({ children }: { children: ReactNode }) {
       <Footer />
     </div>
   );
-}
 
-export default function App() {
   return (
     <AuthProvider>
       <AppProvider>
         <BrowserRouter>
+          <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} />
           <Routes>
             <Route path="/" element={<AppLayout><HomePage /></AppLayout>} />
             <Route path="/search" element={<AppLayout><SearchPage /></AppLayout>} />
@@ -60,6 +66,10 @@ export default function App() {
             <Route path="/favorites" element={<AppLayout><FavoritesPage /></AppLayout>} />
             <Route path="/compare" element={<AppLayout><ComparePage /></AppLayout>} />
             <Route path="/inspection/:id" element={<AppLayout><InspectionReportPage /></AppLayout>} />
+            <Route path="/inspector/job/:id" element={<AppLayout><InspectorFormPage /></AppLayout>} />
+            <Route path="/verify/:passportId?" element={<AppLayout><VerifyPassportPage /></AppLayout>} />
+            <Route path="/notifications" element={<AppLayout><NotificationsPage /></AppLayout>} />
+            <Route path="/transfer" element={<AppLayout><OwnershipTransferPage /></AppLayout>} />
             <Route path="*" element={<AppLayout><NotFoundPage /></AppLayout>} />
           </Routes>
         </BrowserRouter>

@@ -275,6 +275,9 @@ export default function ListingDetailPage() {
               <button onClick={() => setShowOfferModal(true)} className="w-full border border-gray-200 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
                 Make an Offer
               </button>
+              <Link to="/transfer" className="w-full border border-gray-200 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 text-sm">
+                Ownership Transfer
+              </Link>
             </div>
             <div className="mt-4 pt-4 border-t border-gray-100 space-y-2 text-xs text-gray-500">
               <p className="flex items-center gap-1.5"><Eye className="w-3.5 h-3.5" /> {listing.views} views</p>
