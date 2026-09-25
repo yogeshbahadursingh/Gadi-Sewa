@@ -31,6 +31,7 @@ export function Header({ onLoginClick }: { onLoginClick?: () => void } = {}) {
             <Link to="/valuation" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">Value</Link>
             <Link to="/partners" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">Service</Link>
             <Link to="/compare" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">Compare</Link>
+            <Link to="/blog" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">Blog</Link>
           </nav>
 
           {/* Right side */}
@@ -78,13 +79,19 @@ export function Header({ onLoginClick }: { onLoginClick?: () => void } = {}) {
             <Link to="/search" className="block py-2 text-sm font-medium text-gray-700" onClick={() => setMobileMenuOpen(false)}>Buy a Vehicle</Link>
             <Link to="/sell" className="block py-2 text-sm font-medium text-gray-700" onClick={() => setMobileMenuOpen(false)}>Sell a Vehicle</Link>
             <Link to="/inspect" className="block py-2 text-sm font-medium text-gray-700" onClick={() => setMobileMenuOpen(false)}>Book Inspection</Link>
+            <Link to="/valuation" className="block py-2 text-sm font-medium text-gray-700" onClick={() => setMobileMenuOpen(false)}>Vehicle Valuation</Link>
+            <Link to="/partners" className="block py-2 text-sm font-medium text-gray-700" onClick={() => setMobileMenuOpen(false)}>Service Partners</Link>
+            <Link to="/compare" className="block py-2 text-sm font-medium text-gray-700" onClick={() => setMobileMenuOpen(false)}>Compare Vehicles</Link>
+            <Link to="/blog" className="block py-2 text-sm font-medium text-gray-700" onClick={() => setMobileMenuOpen(false)}>Blog & Guides</Link>
+            <hr className="my-2" />
             <Link to="/finance" className="block py-2 text-sm font-medium text-gray-700" onClick={() => setMobileMenuOpen(false)}>Finance</Link>
             <Link to="/insurance" className="block py-2 text-sm font-medium text-gray-700" onClick={() => setMobileMenuOpen(false)}>Insurance</Link>
-            <hr className="my-2" />
             {currentUser && (
               <>
+                <hr className="my-2" />
                 <Link to="/dashboard" className="block py-2 text-sm font-medium text-gray-700" onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
                 <Link to="/messages" className="block py-2 text-sm font-medium text-gray-700" onClick={() => setMobileMenuOpen(false)}>Messages</Link>
+                <Link to="/recently-viewed" className="block py-2 text-sm font-medium text-gray-700" onClick={() => setMobileMenuOpen(false)}>Recently Viewed</Link>
               </>
             )}
           </div>

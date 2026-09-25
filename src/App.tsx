@@ -30,6 +30,12 @@ import AdminListingsPage from './pages/AdminListingsPage';
 import AboutPage from './pages/AboutPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
+import AdminUsersPage from './pages/AdminUsersPage';
+import RecentlyViewedPage from './pages/RecentlyViewedPage';
+import SellerAnalyticsPage from './pages/SellerAnalyticsPage';
+import AdminInspectionsPage from './pages/AdminInspectionsPage';
+import FinanceApplicationPage from './pages/FinanceApplicationPage';
+import BlogPage from './pages/BlogPage';
 import { AuthModal } from './components/AuthModal';
 
 export default function App() {
@@ -96,6 +102,12 @@ export default function App() {
             <Route path="/about" element={<AppLayout><AboutPage /></AppLayout>} />
             <Route path="/terms" element={<AppLayout><TermsPage /></AppLayout>} />
             <Route path="/privacy" element={<AppLayout><PrivacyPage /></AppLayout>} />
+            <Route path="/admin/users" element={<AppLayout><AdminUsersPage /></AppLayout>} />
+            <Route path="/admin/inspections" element={<AppLayout><AdminInspectionsPage /></AppLayout>} />
+            <Route path="/recently-viewed" element={<AppLayout><RecentlyViewedPage /></AppLayout>} />
+            <Route path="/seller/analytics" element={<AppLayout><SellerAnalyticsPage /></AppLayout>} />
+            <Route path="/finance/apply" element={<AppLayout><FinanceApplicationPage /></AppLayout>} />
+            <Route path="/blog" element={<AppLayout><BlogPage /></AppLayout>} />
             <Route path="*" element={<AppLayout><NotFoundPage /></AppLayout>} />
           </Routes>
         </BrowserRouter>
