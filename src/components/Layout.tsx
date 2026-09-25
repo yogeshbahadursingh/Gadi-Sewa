@@ -90,10 +90,13 @@ export function Header({ onLoginClick }: { onLoginClick?: () => void } = {}) {
               <>
                 <hr className="my-2" />
                 <Link to="/dashboard" className="block py-2 text-sm font-medium text-gray-700" onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
+                <Link to="/profile" className="block py-2 text-sm font-medium text-gray-700" onClick={() => setMobileMenuOpen(false)}>My Profile</Link>
                 <Link to="/messages" className="block py-2 text-sm font-medium text-gray-700" onClick={() => setMobileMenuOpen(false)}>Messages</Link>
                 <Link to="/recently-viewed" className="block py-2 text-sm font-medium text-gray-700" onClick={() => setMobileMenuOpen(false)}>Recently Viewed</Link>
               </>
             )}
+            <hr className="my-2" />
+            <Link to="/safety" className="block py-2 text-sm font-medium text-gray-700" onClick={() => setMobileMenuOpen(false)}>Safety Tips</Link>
           </div>
         </div>
       )}

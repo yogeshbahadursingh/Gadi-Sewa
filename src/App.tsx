@@ -36,6 +36,10 @@ import SellerAnalyticsPage from './pages/SellerAnalyticsPage';
 import AdminInspectionsPage from './pages/AdminInspectionsPage';
 import FinanceApplicationPage from './pages/FinanceApplicationPage';
 import BlogPage from './pages/BlogPage';
+import PaymentPage from './pages/PaymentPage';
+import ProfilePage from './pages/ProfilePage';
+import InsuranceApplicationPage from './pages/InsuranceApplicationPage';
+import SafetyTipsPage from './pages/SafetyTipsPage';
 import { AuthModal } from './components/AuthModal';
 
 export default function App() {
@@ -108,6 +112,10 @@ export default function App() {
             <Route path="/seller/analytics" element={<AppLayout><SellerAnalyticsPage /></AppLayout>} />
             <Route path="/finance/apply" element={<AppLayout><FinanceApplicationPage /></AppLayout>} />
             <Route path="/blog" element={<AppLayout><BlogPage /></AppLayout>} />
+            <Route path="/payment" element={<AppLayout><PaymentPage /></AppLayout>} />
+            <Route path="/profile" element={<AppLayout><ProfilePage /></AppLayout>} />
+            <Route path="/insurance/apply" element={<AppLayout><InsuranceApplicationPage /></AppLayout>} />
+            <Route path="/safety" element={<AppLayout><SafetyTipsPage /></AppLayout>} />
             <Route path="*" element={<AppLayout><NotFoundPage /></AppLayout>} />
           </Routes>
         </BrowserRouter>

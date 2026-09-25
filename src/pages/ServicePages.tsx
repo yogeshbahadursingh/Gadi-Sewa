@@ -433,7 +433,7 @@ export function InsurancePage() {
           </div>
         </div>
         <div className="mt-6 flex justify-end">
-          <button className="bg-blue-600 text-white px-8 py-3 rounded-xl font-medium hover:bg-blue-700">Get Quotes</button>
+          <Link to="/insurance/apply" className="bg-blue-600 text-white px-8 py-3 rounded-xl font-medium hover:bg-blue-700">Get Quotes</Link>
         </div>
       </div>
 
