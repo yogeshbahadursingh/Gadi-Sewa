@@ -9,6 +9,7 @@ import { PageSkeleton } from './components/Skeleton';
 import { AuthModal } from './components/AuthModal';
 import { ToastProvider, useToast } from './components/Toast';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import SEO from './components/SEO';
 import { SellPage, InspectPage, FinancePage, InsurancePage, MessagesPage } from './pages/ServicePages';
 
 // Lazy load all page components for code splitting
@@ -55,6 +56,10 @@ const DealerInventoryPage = lazy(() => import('./pages/DealerInventoryPage'));
 const ButtonTestPage = lazy(() => import('./pages/ButtonTestPage'));
 const LocationPage = lazy(() => import('./pages/LocationPage'));
 const MakePage = lazy(() => import('./pages/MakePage'));
+const CategoryPage = lazy(() => import('./pages/CategoryPage'));
+const DealerProfilePage = lazy(() => import('./pages/DealerProfilePage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const FAQPage = lazy(() => import('./pages/FAQPage'));
 
 export default function App() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -140,8 +145,14 @@ export default function App() {
             <Route path="/admin/audit-logs" element={<AppLayout><AdminAuditLogsPage /></AppLayout>} />
             <Route path="/dealer/inventory" element={<AppLayout><DealerInventoryPage /></AppLayout>} />
             <Route path="/button-test" element={<AppLayout><ButtonTestPage /></AppLayout>} />
+            <Route path="/cars" element={<AppLayout><CategoryPage /></AppLayout>} />
+            <Route path="/motorcycles" element={<AppLayout><CategoryPage /></AppLayout>} />
+            <Route path="/electric-vehicles" element={<AppLayout><CategoryPage /></AppLayout>} />
             <Route path="/cars/:location" element={<AppLayout><LocationPage /></AppLayout>} />
             <Route path="/cars/make/:make" element={<AppLayout><MakePage /></AppLayout>} />
+            <Route path="/dealers/:dealerId" element={<AppLayout><DealerProfilePage /></AppLayout>} />
+            <Route path="/contact" element={<AppLayout><ContactPage /></AppLayout>} />
+            <Route path="/faq" element={<AppLayout><FAQPage /></AppLayout>} />
             <Route path="*" element={<AppLayout><NotFoundPage /></AppLayout>} />
                 </Routes>
                 </Suspense>
@@ -228,10 +239,49 @@ function FavoritesPage() {
 
 function NotFoundPage() {
   return (
-    <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-      <h1 className="text-6xl font-bold text-gray-300">404</h1>
-      <p className="text-xl text-gray-600 mt-4">Page not found</p>
-      <a href="/" className="mt-6 inline-block text-blue-600 hover:text-blue-700 font-medium">Go to homepage</a>
+    <div className="max-w-4xl mx-auto px-4 py-16 text-center">
+      <SEO
+        title="Page Not Found - 404"
+        description="The page you're looking for doesn't exist. Browse our vehicle marketplace or explore our services."
+        noindex={true}
+      />
+      
+      <div className="bg-white border border-gray-200 rounded-2xl p-12">
+        <h1 className="text-8xl font-bold text-gray-200 mb-4">404</h1>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Page Not Found</h2>
+        <p className="text-gray-600 mb-8 max-w-md mx-auto">
+          The page you're looking for doesn't exist or has been moved. Let us help you find what you need.
+        </p>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-8">
+          <Link
+            to="/"
+            className="bg-blue-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-700 transition-colors"
+          >
+            Go to Homepage
+          </Link>
+          <Link
+            to="/search"
+            className="border border-gray-200 text-gray-700 px-6 py-3 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+          >
+            Search Vehicles
+          </Link>
+        </div>
+
+        <div className="border-t border-gray-200 pt-8">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Popular Pages</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <Link to="/cars" className="text-sm text-blue-600 hover:text-blue-700">Cars</Link>
+            <Link to="/motorcycles" className="text-sm text-blue-600 hover:text-blue-700">Motorcycles</Link>
+            <Link to="/electric-vehicles" className="text-sm text-blue-600 hover:text-blue-700">Electric Vehicles</Link>
+            <Link to="/inspect" className="text-sm text-blue-600 hover:text-blue-700">Inspection</Link>
+            <Link to="/valuation" className="text-sm text-blue-600 hover:text-blue-700">Valuation</Link>
+            <Link to="/sell" className="text-sm text-blue-600 hover:text-blue-700">Sell Vehicle</Link>
+            <Link to="/faq" className="text-sm text-blue-600 hover:text-blue-700">FAQ</Link>
+            <Link to="/contact" className="text-sm text-blue-600 hover:text-blue-700">Contact</Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
