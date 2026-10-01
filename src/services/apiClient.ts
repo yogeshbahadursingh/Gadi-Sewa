@@ -73,14 +73,14 @@ class ApiClient {
     return this.request<T>(`${endpoint}${queryString}`, { method: 'GET' });
   }
 
-  async post<T>(endpoint: string, data: any): Promise<ApiResponse<T>> {
+  async post<T>(endpoint: string,  any): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
-  async put<T>(endpoint: string, data: any): Promise<ApiResponse<T>> {
+  async put<T>(endpoint: string,  any): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -98,39 +98,39 @@ export const apiClient = new ApiClient();
 export const api = {
   auth: {
     login: (email: string, password: string) => apiClient.post('/auth/login', { email, password }),
-    register: (data: any) => apiClient.post('/auth/register', data),
+    register: ( any) => apiClient.post('/auth/register', data),
     logout: () => apiClient.post('/auth/logout', {}),
     getMe: () => apiClient.get('/auth/me'),
   },
   vehicles: {
     getAll: (params?: any) => apiClient.get('/vehicles', params),
     getById: (id: string) => apiClient.get(`/vehicles/${id}`),
-    create: (data: any) => apiClient.post('/vehicles', data),
-    update: (id: string, data: any) => apiClient.put(`/vehicles/${id}`, data),
+    create: ( any) => apiClient.post('/vehicles', data),
+    update: (id: string,  any) => apiClient.put(`/vehicles/${id}`, data),
     delete: (id: string) => apiClient.delete(`/vehicles/${id}`),
   },
   listings: {
     getAll: (params?: any) => apiClient.get('/listings', params),
     getById: (id: string) => apiClient.get(`/listings/${id}`),
-    create: (data: any) => apiClient.post('/listings', data),
-    update: (id: string, data: any) => apiClient.put(`/listings/${id}`, data),
+    create: ( any) => apiClient.post('/listings', data),
+    update: (id: string,  any) => apiClient.put(`/listings/${id}`, data),
     delete: (id: string) => apiClient.delete(`/listings/${id}`),
   },
   inspections: {
     getAll: (params?: any) => apiClient.get('/inspections', params),
     getById: (id: string) => apiClient.get(`/inspections/${id}`),
-    create: (data: any) => apiClient.post('/inspections', data),
+    create: ( any) => apiClient.post('/inspections', data),
   },
   passports: {
     getByPassportId: (passportId: string) => apiClient.get(`/passports/${passportId}`),
     getByVehicleId: (vehicleId: string) => apiClient.get(`/passports/vehicle/${vehicleId}`),
   },
   offers: {
-    create: (data: any) => apiClient.post('/offers', data),
-    update: (id: string, data: any) => apiClient.put(`/offers/${id}`, data),
+    create: ( any) => apiClient.post('/offers', data),
+    update: (id: string,  any) => apiClient.put(`/offers/${id}`, data),
   },
   payments: {
-    create: (data: any) => apiClient.post('/payments', data),
+    create: ( any) => apiClient.post('/payments', data),
     getByUser: () => apiClient.get('/payments/user/my-payments'),
   },
 };

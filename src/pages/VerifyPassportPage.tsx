@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Shield, CheckCircle2, AlertTriangle, QrCode, Search, FileText, Gauge, User, Calendar, MapPin } from 'lucide-react';
 import { vehiclePassports, getVehicleById, formatMileage } from '../store/data';

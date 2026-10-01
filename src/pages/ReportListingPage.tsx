@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, AlertTriangle, Send, CheckCircle2, Shield, Info } from 'lucide-react';
 import { getListingById, getVehicleById } from '../store/data';

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, CheckCircle2, Upload, Users, MapPin, Phone, Mail, Globe, FileText, Shield, AlertCircle } from 'lucide-react';
 import { Badge } from '../components/Layout';
