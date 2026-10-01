@@ -1,0 +1,887 @@
+// Prisma Schema for GadiBazar Nepal Vehicle Marketplace
+// This schema defines the complete database structure
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============ ENUMS ============
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  SUPPORT
+  FRAUD_REVIEWER
+  VERIFICATION_AGENT
+  INSPECTION_MANAGER
+  INSPECTOR
+  DEALER_OWNER
+  DEALER_MANAGER
+  DEALER_STAFF
+  PRIVATE_SELLER
+  BUYER
+  GARAGE_OWNER
+  GARAGE_STAFF
+  FINANCE_PARTNER
+  INSURANCE_PARTNER
+}
+
+enum VerificationSource {
+  SELLER_DECLARED
+  DOCUMENT_CHECKED
+  PHYSICALLY_VERIFIED
+  PARTNER_VERIFIED
+  GOVERNMENT_VERIFIED
+  SYSTEM_GENERATED
+  UNABLE_TO_VERIFY
+}
+
+enum FuelType {
+  PETROL
+  DIESEL
+  ELECTRIC
+  HYBRID
+  CNG
+  LPG
+}
+
+enum TransmissionType {
+  MANUAL
+  AUTOMATIC
+  CVT
+  DCT
+}
+
+enum BodyStyle {
+  SEDAN
+  SUV
+  HATCHBACK
+  COUPE
+  PICKUP
+  VAN
+  MINIBUS
+  MOTORCYCLE
+  SCOOTER
+  MOPED
+}
+
+enum VehicleCondition {
+  EXCELLENT
+  GOOD
+  FAIR
+  NEEDS_REPAIR
+}
+
+enum VehicleType {
+  CAR
+  MOTORBIKE
+  SCOOTER
+  COMMERCIAL
+}
+
+enum InspectionResult {
+  PASS
+  ADVISORY
+  FAIL
+  NOT_APPLICABLE
+  UNABLE_TO_INSPECT
+}
+
+enum InspectionSeverity {
+  MINOR
+  MODERATE
+  MAJOR
+}
+
+enum InspectionStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  REVIEWED
+  REJECTED
+}
+
+enum OfferStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  COUNTERED
+  WITHDRAWN
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+enum PaymentPurpose {
+  INSPECTION
+  RESERVATION
+  PREMIUM_LISTING
+  DEALER_SUBSCRIPTION
+}
+
+enum PaymentProvider {
+  ESEWA
+  KHALTI
+  BANK_TRANSFER
+}
+
+enum ListingStatus {
+  ACTIVE
+  SOLD
+  WITHDRAWN
+  PENDING_REVIEW
+  REJECTED
+  EXPIRED
+}
+
+enum PassportStatus {
+  ACTIVE
+  SUSPENDED
+  UNDER_REVIEW
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  EXPIRED
+  CANCELLED
+}
+
+enum ConfidenceLevel {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum RiskSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum RiskStatus {
+  OPEN
+  REVIEWED
+  RESOLVED
+  DISMISSED
+}
+
+enum DocumentType {
+  BLUEBOOK
+  INSURANCE
+  CITIZENSHIP
+  TAX_CLEARANCE
+  SERVICE_RECORD
+  OTHER
+}
+
+enum DocumentStatus {
+  VERIFIED
+  PENDING
+  REJECTED
+  EXPIRED
+}
+
+enum NotificationType {
+  OFFER_RECEIVED
+  OFFER_COUNTERED
+  OFFER_ACCEPTED
+  PRICE_CHANGED
+  INSPECTION_SCHEDULED
+  INSPECTION_COMPLETED
+  PASSPORT_UPDATED
+  RESERVATION_CONFIRMED
+  RESERVATION_STATUS
+  NEW_MESSAGE
+  NEW_ENQUIRY
+  LISTING_VIEWS
+  SYSTEM_ALERT
+}
+
+// ============ USER MODELS ============
+
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  phone           String    @unique
+  fullName        String
+  passwordHash    String
+  role            UserRole  @default(BUYER)
+  avatar          String?
+  
+  // Verification status
+  emailVerified   Boolean   @default(false)
+  phoneVerified   Boolean   @default(false)
+  identityVerified Boolean  @default(false)
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  lastLogin       DateTime?
+  
+  // Relations
+  vehicles        Vehicle[]
+  listings        Listing[]
+  offers          Offer[]       @relation("BuyerOffers")
+  receivedOffers  Offer[]       @relation("SellerOffers")
+  reservations    Reservation[]
+  payments        Payment[]
+  inspections     Inspection[]  @relation("InspectorInspections")
+  inspectedVehicles Inspection[] @relation("VehicleInspections")
+  messages        Message[]
+  conversations   ConversationParticipant[]
+  notifications   Notification[]
+  auditLogs       AuditLog[]
+  dealer          Dealer?
+  favorites       Favorite[]
+  recentlyViewed  RecentlyViewed[]
+  savedSearches   SavedSearch[]
+  supportTickets  SupportTicket[]
+  
+  @@index([email])
+  @@index([phone])
+  @@index([role])
+}
+
+// ============ VEHICLE MODELS ============
+
+model Vehicle {
+  id                  String          @id @default(uuid())
+  passportId          String          @unique
+  type                VehicleType
+  make                String
+  model               String
+  variant             String
+  year                Int
+  fuelType            FuelType
+  transmission        TransmissionType
+  bodyStyle           BodyStyle
+  mileage             Int
+  engineCC            Int?
+  color               String
+  vin                 String?         @unique
+  engineNumber        String?         @unique
+  registrationNumber  String?         @unique
+  registrationDate    DateTime?
+  registeredDistrict  String?
+  
+  // EV specific
+  isEV                Boolean         @default(false)
+  isHybrid            Boolean         @default(false)
+  batterySOH          Float?
+  batteryCapacity     Float?
+  
+  // Condition
+  condition           VehicleCondition @default(GOOD)
+  
+  // Ownership
+  ownerId             String
+  owner               User            @relation(fields: [ownerId], references: [id])
+  
+  // Timestamps
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  
+  // Relations
+  listing             Listing?
+  passport            VehiclePassport?
+  inspections         Inspection[]
+  odometerRecords     OdometerRecord[]
+  serviceRecords      ServiceRecord[]
+  
+  @@index([make, model])
+  @@index([type])
+  @@index([year])
+  @@index([ownerId])
+  @@index([registrationNumber])
+}
+
+model VehiclePassport {
+  id                  String          @id @default(uuid())
+  passportId          String          @unique
+  vehicleId           String          @unique
+  vehicle             Vehicle         @relation(fields: [vehicleId], references: [id])
+  status              PassportStatus  @default(ACTIVE)
+  issuedDate          DateTime        @default(now())
+  lastInspectionDate  DateTime?
+  qrCode              String          @unique
+  
+  // Timestamps
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  
+  // Relations
+  ownershipHistory    OwnershipRecord[]
+  documentVerifications DocumentVerification[]
+  riskFlags           RiskFlag[]
+  
+  @@index([passportId])
+  @@index([vehicleId])
+}
+
+model OwnershipRecord {
+  id                  String              @id @default(uuid())
+  passportId          String
+  passport            VehiclePassport     @relation(fields: [passportId], references: [id])
+  
+  ownerId             String
+  ownerName           String
+  startDate           DateTime
+  endDate             DateTime?
+  isCurrent           Boolean             @default(true)
+  verificationSource  VerificationSource
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  
+  @@index([passportId])
+  @@index([ownerId])
+}
+
+model OdometerRecord {
+  id                  String              @id @default(uuid())
+  vehicleId           String
+  vehicle             Vehicle             @relation(fields: [vehicleId], references: [id])
+  
+  mileage             Int
+  date                DateTime
+  source              VerificationSource
+  verifier            String?
+  evidence            String?
+  confidence          ConfidenceLevel     @default(HIGH)
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  
+  @@index([vehicleId])
+  @@index([date])
+}
+
+model ServiceRecord {
+  id                  String              @id @default(uuid())
+  vehicleId           String
+  vehicle             Vehicle             @relation(fields: [vehicleId], references: [id])
+  
+  serviceDate         DateTime
+  serviceType         String
+  description         String
+  mileage             Int
+  cost                Float?
+  serviceProvider     String?
+  invoiceNumber       String?
+  verificationSource  VerificationSource
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  
+  @@index([vehicleId])
+  @@index([serviceDate])
+}
+
+model DocumentVerification {
+  id                  String              @id @default(uuid())
+  passportId          String
+  passport            VehiclePassport     @relation(fields: [passportId], references: [id])
+  
+  documentType        DocumentType
+  status              DocumentStatus      @default(PENDING)
+  verificationSource  VerificationSource
+  verifiedBy          String?
+  verifiedDate        DateTime?
+  expiryDate          DateTime?
+  documentUrl         String?
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  
+  @@index([passportId])
+  @@index([documentType])
+}
+
+model RiskFlag {
+  id                  String              @id @default(uuid())
+  passportId          String
+  passport            VehiclePassport     @relation(fields: [passportId], references: [id])
+  
+  type                String
+  severity            RiskSeverity
+  description         String
+  status              RiskStatus          @default(OPEN)
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  
+  @@index([passportId])
+  @@index([severity])
+  @@index([status])
+}
+
+// ============ LISTING MODELS ============
+
+model Listing {
+  id                  String          @id @default(uuid())
+  vehicleId           String          @unique
+  vehicle             Vehicle         @relation(fields: [vehicleId], references: [id])
+  sellerId            String
+  seller              User            @relation(fields: [sellerId], references: [id])
+  
+  title               String
+  description         String
+  price               Float
+  negotiable          Boolean         @default(true)
+  location            String
+  district            String
+  
+  images              String[]
+  status              ListingStatus   @default(PENDING_REVIEW)
+  
+  // Features
+  isFeatured          Boolean         @default(false)
+  isInspected         Boolean         @default(false)
+  hasPassport         Boolean         @default(false)
+  
+  // Metrics
+  views               Int             @default(0)
+  favourites          Int             @default(0)
+  enquiries           Int             @default(0)
+  
+  // Timestamps
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  expiresAt           DateTime
+  
+  // Relations
+  offers              Offer[]
+  reservations        Reservation[]
+  inspection          Inspection?
+  
+  @@index([sellerId])
+  @@index([vehicleId])
+  @@index([status])
+  @@index([district])
+  @@index([price])
+  @@index([createdAt])
+}
+
+// ============ INSPECTION MODELS ============
+
+model Inspection {
+  id                  String              @id @default(uuid())
+  vehicleId           String
+  vehicle             Vehicle             @relation("VehicleInspections", fields: [vehicleId], references: [id])
+  inspectorId         String
+  inspector           User                @relation("InspectorInspections", fields: [inspectorId], references: [id])
+  listingId           String?             @unique
+  listing             Listing?            @relation(fields: [listingId], references: [id])
+  
+  templateType        String
+  status              InspectionStatus    @default(SCHEDULED)
+  
+  scheduledDate       DateTime
+  completedDate       DateTime?
+  location            String
+  
+  overallResult       InspectionResult?
+  notes               String?
+  recommendation      String?
+  supervisorReviewed  Boolean             @default(false)
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  
+  // Relations
+  sections            InspectionSection[]
+  photos              InspectionPhoto[]
+  
+  @@index([vehicleId])
+  @@index([inspectorId])
+  @@index([status])
+  @@index([scheduledDate])
+}
+
+model InspectionSection {
+  id                  String              @id @default(uuid())
+  inspectionId        String
+  inspection          Inspection          @relation(fields: [inspectionId], references: [id])
+  
+  name                String
+  category            String
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  
+  // Relations
+  items               InspectionItem[]
+  
+  @@index([inspectionId])
+}
+
+model InspectionItem {
+  id                  String              @id @default(uuid())
+  sectionId           String
+  section             InspectionSection   @relation(fields: [sectionId], references: [id])
+  
+  name                String
+  result              InspectionResult
+  severity            InspectionSeverity?
+  comment             String?
+  measurement         String?
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  
+  // Relations
+  photos              InspectionItemPhoto[]
+  
+  @@index([sectionId])
+  @@index([result])
+}
+
+model InspectionPhoto {
+  id                  String              @id @default(uuid())
+  inspectionId        String
+  inspection          Inspection          @relation(fields: [inspectionId], references: [id])
+  
+  url                 String
+  caption             String?
+  category            String?
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  
+  @@index([inspectionId])
+}
+
+model InspectionItemPhoto {
+  id                  String              @id @default(uuid())
+  itemId              String
+  item                InspectionItem      @relation(fields: [itemId], references: [id])
+  
+  url                 String
+  caption             String?
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  
+  @@index([itemId])
+}
+
+// ============ TRANSACTION MODELS ============
+
+model Offer {
+  id                  String          @id @default(uuid())
+  listingId           String
+  listing             Listing         @relation(fields: [listingId], references: [id])
+  
+  buyerId             String
+  buyer               User            @relation("BuyerOffers", fields: [buyerId], references: [id])
+  sellerId            String
+  seller              User            @relation("SellerOffers", fields: [sellerId], references: [id])
+  
+  amount              Float
+  message             String?
+  status              OfferStatus     @default(PENDING)
+  counterAmount       Float?
+  
+  // Timestamps
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  
+  @@index([listingId])
+  @@index([buyerId])
+  @@index([sellerId])
+  @@index([status])
+}
+
+model Reservation {
+  id                  String              @id @default(uuid())
+  listingId           String
+  listing             Listing             @relation(fields: [listingId], references: [id])
+  
+  buyerId             String
+  buyer               User                @relation(fields: [buyerId], references: [id])
+  
+  depositAmount       Float
+  status              ReservationStatus   @default(PENDING)
+  expiresAt           DateTime
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  
+  @@index([listingId])
+  @@index([buyerId])
+  @@index([status])
+}
+
+model Payment {
+  id                  String              @id @default(uuid())
+  userId              String
+  user                User                @relation(fields: [userId], references: [id])
+  
+  amount              Float
+  purpose             PaymentPurpose
+  status              PaymentStatus       @default(PENDING)
+  provider            PaymentProvider
+  
+  reference           String?             @unique
+  transactionId       String?
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  
+  @@index([userId])
+  @@index([status])
+  @@index([reference])
+}
+
+// ============ DEALER MODELS ============
+
+model Dealer {
+  id                  String          @id @default(uuid())
+  userId              String          @unique
+  user                User            @relation(fields: [userId], references: [id])
+  
+  companyName         String
+  logo                String?
+  description         String
+  address             String
+  phone               String
+  email               String
+  website             String?
+  
+  verified            Boolean         @default(false)
+  rating              Float           @default(0)
+  totalListings       Int             @default(0)
+  totalSold           Int             @default(0)
+  
+  // Timestamps
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  
+  // Relations
+  branches            DealerBranch[]
+  
+  @@index([userId])
+  @@index([companyName])
+}
+
+model DealerBranch {
+  id                  String          @id @default(uuid())
+  dealerId            String
+  dealer              Dealer          @relation(fields: [dealerId], references: [id])
+  
+  name                String
+  address             String
+  phone               String
+  managerId           String?
+  
+  // Timestamps
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  
+  @@index([dealerId])
+}
+
+// ============ MESSAGING MODELS ============
+
+model Conversation {
+  id                  String              @id @default(uuid())
+  listingId           String?
+  
+  lastMessage         String?
+  lastMessageAt       DateTime?
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  
+  // Relations
+  participants        ConversationParticipant[]
+  messages            Message[]
+  
+  @@index([listingId])
+}
+
+model ConversationParticipant {
+  id                  String              @id @default(uuid())
+  conversationId      String
+  conversation        Conversation        @relation(fields: [conversationId], references: [id])
+  
+  userId              String
+  user                User                @relation(fields: [userId], references: [id])
+  
+  unreadCount         Int                 @default(0)
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  
+  @@unique([conversationId, userId])
+  @@index([conversationId])
+  @@index([userId])
+}
+
+model Message {
+  id                  String              @id @default(uuid())
+  conversationId      String
+  conversation        Conversation        @relation(fields: [conversationId], references: [id])
+  
+  senderId            String
+  sender              User                @relation(fields: [senderId], references: [id])
+  
+  content             String
+  read                Boolean             @default(false)
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([createdAt])
+}
+
+// ============ NOTIFICATION MODELS ============
+
+model Notification {
+  id                  String              @id @default(uuid())
+  userId              String
+  user                User                @relation(fields: [userId], references: [id])
+  
+  type                NotificationType
+  title               String
+  message             String
+  read                Boolean             @default(false)
+  link                String?
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+}
+
+// ============ USER PREFERENCE MODELS ============
+
+model Favorite {
+  id                  String              @id @default(uuid())
+  userId              String
+  user                User                @relation(fields: [userId], references: [id])
+  
+  listingId           String
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  
+  @@unique([userId, listingId])
+  @@index([userId])
+}
+
+model RecentlyViewed {
+  id                  String              @id @default(uuid())
+  userId              String
+  user                User                @relation(fields: [userId], references: [id])
+  
+  listingId           String
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  
+  @@unique([userId, listingId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model SavedSearch {
+  id                  String              @id @default(uuid())
+  userId              String
+  user                User                @relation(fields: [userId], references: [id])
+  
+  name                String
+  filters             Json
+  alertsEnabled       Boolean             @default(true)
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  
+  @@index([userId])
+}
+
+// ============ SUPPORT MODELS ============
+
+model SupportTicket {
+  id                  String              @id @default(uuid())
+  userId              String
+  user                User                @relation(fields: [userId], references: [id])
+  
+  subject             String
+  category            String
+  priority            String              @default("medium")
+  status              String              @default("open")
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  
+  // Relations
+  messages            SupportTicketMessage[]
+  
+  @@index([userId])
+  @@index([status])
+}
+
+model SupportTicketMessage {
+  id                  String              @id @default(uuid())
+  ticketId            String
+  ticket              SupportTicket       @relation(fields: [ticketId], references: [id])
+  
+  senderType          String              // "user" or "support"
+  content             String
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  
+  @@index([ticketId])
+}
+
+// ============ AUDIT MODELS ============
+
+model AuditLog {
+  id                  String              @id @default(uuid())
+  userId              String?
+  user                User?               @relation(fields: [userId], references: [id])
+  
+  action              String
+  resource            String
+  resourceId          String
+  oldValue            Json?
+  newValue            Json?
+  
+  ipAddress           String?
+  userAgent           String?
+  
+  // Timestamps
+  createdAt           DateTime            @default(now())
+  
+  @@index([userId])
+  @@index([action])
+  @@index([resource])
+  @@index([createdAt])
+}
