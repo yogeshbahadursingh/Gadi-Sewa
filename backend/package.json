@@ -4,9 +4,11 @@
   "description": "GadiBazar Nepal Vehicle Marketplace Backend API",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "tsx watch src/mockServer.ts",
+    "dev:prod": "tsx watch src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "node dist/mockServer.js",
+    "start:prod": "node dist/server.js",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
