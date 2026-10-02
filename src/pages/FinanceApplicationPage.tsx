@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, CheckCircle2, DollarSign, FileText, User, Building2, Car, Calendar, AlertCircle } from 'lucide-react';
 import { Badge } from '../components/Layout';

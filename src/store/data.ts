@@ -1,4 +1,4 @@
-import type { User, Vehicle, Listing, VehiclePassport, Inspection, Offer, Dealer, Conversation, Message, Notification, Payment } from '../types';
+import type { User, Vehicle, Listing, VehiclePassport, Inspection, Offer, Dealer, Conversation, Message, Notification, Payment, Reservation } from '../types';
 
 // ============ USERS ============
 export const users: User[] = [
@@ -1140,6 +1140,19 @@ export const payments: Payment[] = [
     provider: 'ESEWA',
     reference: 'ESW-2025-009012',
     createdAt: '2025-01-03T00:00:00Z',
+  },
+];
+
+// ============ RESERVATIONS ============
+export const reservations: Reservation[] = [
+  {
+    id: 'r1',
+    listingId: 'l4',
+    buyerId: 'u3',
+    depositAmount: 50000,
+    status: 'CONFIRMED',
+    expiresAt: '2026-01-20T00:00:00Z',
+    createdAt: '2026-01-10T00:00:00Z',
   },
 ];
 

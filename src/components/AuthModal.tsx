@@ -36,7 +36,7 @@ export function AuthModal({ isOpen, onClose, initialMode = 'login' }: AuthModalP
     }
     const user = users.find(u => u.email === formData.email);
     if (user) {
-      login(user.email);
+      login(user.email, formData.password || 'demo');
       setSuccess('Login successful!');
       setTimeout(() => {
         onClose();
@@ -74,7 +74,7 @@ export function AuthModal({ isOpen, onClose, initialMode = 'login' }: AuthModalP
   };
 
   const quickLogin = (email: string) => {
-    login(email);
+    login(email, 'demo');
     onClose();
   };
 

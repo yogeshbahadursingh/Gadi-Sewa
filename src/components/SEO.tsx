@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet-async';
+import { useEffect } from 'react';
 
 interface SEOProps {
   title?: string;
@@ -31,47 +31,100 @@ export default function SEO({
 
   const robotsContent = `${noindex ? 'noindex' : 'index'}, ${nofollow ? 'nofollow' : 'follow'}`;
 
-  return (
-    <Helmet>
-      {/* Title */}
-      <title>{title ? `${title} | ${siteName}` : defaultTitle}</title>
+  useEffect(() => {
+    // Update title
+    document.title = title ? `${title} | ${siteName}` : defaultTitle;
 
-      {/* Meta Description */}
-      <meta name="description" content={description || defaultDescription} />
+    // Update or create meta description
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.setAttribute('name', 'description');
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute('content', description || defaultDescription);
 
-      {/* Keywords */}
-      {keywords && <meta name="keywords" content={keywords} />}
+    // Update or create keywords
+    if (keywords) {
+      let metaKeywords = document.querySelector('meta[name="keywords"]');
+      if (!metaKeywords) {
+        metaKeywords = document.createElement('meta');
+        metaKeywords.setAttribute('name', 'keywords');
+        document.head.appendChild(metaKeywords);
+      }
+      metaKeywords.setAttribute('content', keywords);
+    }
 
-      {/* Robots */}
-      <meta name="robots" content={robotsContent} />
+    // Update robots
+    let metaRobots = document.querySelector('meta[name="robots"]');
+    if (!metaRobots) {
+      metaRobots = document.createElement('meta');
+      metaRobots.setAttribute('name', 'robots');
+      document.head.appendChild(metaRobots);
+    }
+    metaRobots.setAttribute('content', robotsContent);
 
-      {/* Canonical URL */}
-      {canonical && <link rel="canonical" href={canonical} />}
-      {!canonical && <link rel="canonical" href={siteUrl} />}
+    // Update canonical
+    let linkCanonical = document.querySelector('link[rel="canonical"]');
+    if (!linkCanonical) {
+      linkCanonical = document.createElement('link');
+      linkCanonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(linkCanonical);
+    }
+    linkCanonical.setAttribute('href', canonical || siteUrl);
 
-      {/* Open Graph */}
-      <meta property="og:type" content={ogType} />
-      <meta property="og:title" content={title ? `${title} | ${siteName}` : defaultTitle} />
-      <meta property="og:description" content={description || defaultDescription} />
-      <meta property="og:image" content={ogImage || defaultImage} />
-      <meta property="og:url" content={canonical || siteUrl} />
-      <meta property="og:site_name" content={siteName} />
-      <meta property="og:locale" content="en_NP" />
+    // Update Open Graph tags
+    const ogTags = {
+      'og:type': ogType,
+      'og:title': title ? `${title} | ${siteName}` : defaultTitle,
+      'og:description': description || defaultDescription,
+      'og:image': ogImage || defaultImage,
+      'og:url': canonical || siteUrl,
+      'og:site_name': siteName,
+      'og:locale': 'en_NP',
+    };
 
-      {/* Twitter Card */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={title ? `${title} | ${siteName}` : defaultTitle} />
-      <meta name="twitter:description" content={description || defaultDescription} />
-      <meta name="twitter:image" content={ogImage || defaultImage} />
+    Object.entries(ogTags).forEach(([property, content]) => {
+      let meta = document.querySelector(`meta[property="${property}"]`);
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('property', property);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', content);
+    });
 
-      {/* Structured Data */}
-      {structuredData && (
-        <script type="application/ld+json">
-          {JSON.stringify(structuredData)}
-        </script>
-      )}
-    </Helmet>
-  );
+    // Update Twitter Card tags
+    const twitterTags = {
+      'twitter:card': 'summary_large_image',
+      'twitter:title': title ? `${title} | ${siteName}` : defaultTitle,
+      'twitter:description': description || defaultDescription,
+      'twitter:image': ogImage || defaultImage,
+    };
+
+    Object.entries(twitterTags).forEach(([name, content]) => {
+      let meta = document.querySelector(`meta[name="${name}"]`);
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('name', name);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', content);
+    });
+
+    // Update structured data
+    if (structuredData) {
+      let script = document.querySelector('script[type="application/ld+json"]');
+      if (!script) {
+        script = document.createElement('script');
+        script.setAttribute('type', 'application/ld+json');
+        document.head.appendChild(script);
+      }
+      script.textContent = JSON.stringify(structuredData);
+    }
+  }, [title, description, keywords, canonical, ogImage, ogType, noindex, nofollow, structuredData, siteName, siteUrl, defaultTitle, defaultDescription, defaultImage, robotsContent]);
+
+  return null;
 }
 
 // Helper function to generate vehicle structured data

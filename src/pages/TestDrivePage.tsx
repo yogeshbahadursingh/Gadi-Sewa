@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Clock, MapPin, CheckCircle2, Car, User, Phone, MessageSquare, AlertCircle } from 'lucide-react';
 import { getListingById, getVehicleById, getUserById, formatPrice } from '../store/data';

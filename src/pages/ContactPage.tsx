@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle2 } from 'lucide-react';
 import SEO, { generateBreadcrumbSchema } from '../components/SEO';
 import Breadcrumb from '../components/Breadcrumb';
