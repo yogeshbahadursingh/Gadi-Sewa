@@ -252,7 +252,10 @@ export default function PartnerDirectoryPage() {
                     <a href={`tel:${partner.phone}`} className="flex-1 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 text-center">
                       Call Now
                     </a>
-                    <button className="flex-1 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    <button 
+                      onClick={() => alert(`Quote request sent to ${partner.name}!\n\nThey will contact you within 24 hours with a quote.`)}
+                      className="flex-1 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
+                    >
                       Get Quote
                     </button>
                   </div>
@@ -269,7 +272,10 @@ export default function PartnerDirectoryPage() {
         <p className="mt-2 text-orange-100 max-w-lg mx-auto">
           Join Nepal's trusted vehicle service network. Get verified, receive leads, and grow your business.
         </p>
-        <button className="mt-6 bg-white text-orange-600 px-8 py-3 rounded-xl font-medium hover:bg-orange-50 transition-colors">
+        <button 
+          onClick={() => window.location.href = '/dealer-application'}
+          className="mt-6 bg-white text-orange-600 px-8 py-3 rounded-xl font-medium hover:bg-orange-50 transition-colors"
+        >
           Apply to Become a Partner
         </button>
       </div>

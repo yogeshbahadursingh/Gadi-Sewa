@@ -243,12 +243,22 @@ export default function ReservationsPage() {
                         View Listing
                       </Link>
                       {reservation.status === 'confirmed' && (
-                        <button className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        <button 
+                          onClick={() => alert(`Contacting seller: ${reservation.seller.name}\nPhone: ${reservation.seller.phone}`)}
+                          className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50"
+                        >
                           Contact Seller
                         </button>
                       )}
                       {reservation.status === 'pending' && (
-                        <button className="px-4 py-2.5 border border-red-200 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50">
+                        <button 
+                          onClick={() => {
+                            if (confirm('Are you sure you want to cancel this reservation?')) {
+                              alert('Reservation cancelled successfully.');
+                            }
+                          }}
+                          className="px-4 py-2.5 border border-red-200 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50"
+                        >
                           Cancel
                         </button>
                       )}

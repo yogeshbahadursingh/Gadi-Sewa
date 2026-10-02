@@ -176,10 +176,18 @@ export default function AdminUsersPage() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <button className="p-1.5 hover:bg-gray-100 rounded-lg" title="Edit">
+                      <button 
+                        onClick={() => alert(`Edit user: ${user.fullName}\n\nEdit form would open here.`)}
+                        className="p-1.5 hover:bg-gray-100 rounded-lg" 
+                        title="Edit"
+                      >
                         <Edit className="w-4 h-4 text-gray-600" />
                       </button>
-                      <button className="p-1.5 hover:bg-gray-100 rounded-lg" title="More">
+                      <button 
+                        onClick={() => alert(`More options for: ${user.fullName}\n\n- View Details\n- Change Role\n- Suspend Account\n- Delete User`)}
+                        className="p-1.5 hover:bg-gray-100 rounded-lg" 
+                        title="More"
+                      >
                         <MoreVertical className="w-4 h-4 text-gray-600" />
                       </button>
                     </div>

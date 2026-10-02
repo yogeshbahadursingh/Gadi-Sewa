@@ -73,7 +73,10 @@ export default function ProfilePage() {
             <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
               <span className="text-3xl font-bold text-white">{currentUser.fullName.charAt(0)}</span>
             </div>
-            <button className="absolute bottom-0 right-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700">
+            <button 
+              onClick={() => alert('Profile picture upload feature coming soon!')}
+              className="absolute bottom-0 right-0 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700"
+            >
               <Camera className="w-4 h-4" />
             </button>
           </div>
@@ -162,7 +165,10 @@ export default function ProfilePage() {
                 {currentUser.emailVerified ? (
                   <Badge variant="success">Verified</Badge>
                 ) : (
-                  <button className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-xs font-medium hover:bg-blue-200">
+                  <button 
+                    onClick={() => alert('Verification email sent! Please check your inbox.')}
+                    className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-xs font-medium hover:bg-blue-200"
+                  >
                     Verify
                   </button>
                 )}
@@ -182,7 +188,10 @@ export default function ProfilePage() {
                 {currentUser.phoneVerified ? (
                   <Badge variant="success">Verified</Badge>
                 ) : (
-                  <button className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-xs font-medium hover:bg-blue-200">
+                  <button 
+                    onClick={() => alert('Verification SMS sent! Please check your phone.')}
+                    className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg text-xs font-medium hover:bg-blue-200"
+                  >
                     Verify
                   </button>
                 )}
@@ -231,7 +240,10 @@ export default function ProfilePage() {
                 <p className="text-xs text-amber-700 mb-3">
                   Verify your identity to build trust with other users and access all features
                 </p>
-                <button className="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-medium hover:bg-amber-700">
+                <button 
+                  onClick={() => alert('Identity verification process started. Please upload your citizenship certificate.')}
+                  className="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-medium hover:bg-amber-700"
+                >
                   Start Verification
                 </button>
               </div>
@@ -293,7 +305,10 @@ export default function ProfilePage() {
                 <p className="text-sm font-medium text-gray-900">Add an extra layer of security</p>
                 <p className="text-xs text-gray-500 mt-1">Receive a code via SMS or authenticator app</p>
               </div>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
+              <button 
+                onClick={() => alert('Two-factor authentication setup initiated. Please scan the QR code with your authenticator app.')}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
+              >
                 Enable
               </button>
             </div>

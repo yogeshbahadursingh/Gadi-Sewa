@@ -319,7 +319,10 @@ export default function InspectorFormPage() {
 
                 {/* Photo button */}
                 {state && (
-                  <button className="mt-2 flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 font-medium">
+                  <button 
+                    onClick={() => alert('Photo upload feature coming soon!\n\nIn production, this would open a file picker or camera interface.')}
+                    className="mt-2 flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 font-medium"
+                  >
                     <Camera className="w-3.5 h-3.5" /> Add Photo
                   </button>
                 )}
@@ -343,7 +346,10 @@ export default function InspectorFormPage() {
               placeholder="Current reading (km)"
               className="flex-1 py-2.5 px-3 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500"
             />
-            <button className="flex items-center gap-1.5 px-3 py-2.5 bg-gray-100 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-200">
+            <button 
+              onClick={() => alert('Photo capture feature coming soon!\n\nIn production, this would open a camera interface to capture the odometer reading.')}
+              className="flex items-center gap-1.5 px-3 py-2.5 bg-gray-100 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-200"
+            >
               <Camera className="w-3.5 h-3.5" /> Photo
             </button>
           </div>

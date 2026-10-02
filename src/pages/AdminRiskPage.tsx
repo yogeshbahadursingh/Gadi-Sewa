@@ -90,10 +90,22 @@ export default function AdminRiskPage() {
                 <div className="flex items-center gap-1 flex-shrink-0">
                   {event.status === 'OPEN' && (
                     <>
-                      <button className="p-1.5 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 text-xs" title="Mark as reviewed">
+                      <button 
+                        onClick={() => alert(`Marked as reviewed: ${event.type}`)}
+                        className="p-1.5 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 text-xs" 
+                        title="Mark as reviewed"
+                      >
                         <Eye className="w-3.5 h-3.5" />
                       </button>
-                      <button className="p-1.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 text-xs" title="Dismiss">
+                      <button 
+                        onClick={() => {
+                          if (confirm('Dismiss this risk event?')) {
+                            alert('Risk event dismissed.');
+                          }
+                        }}
+                        className="p-1.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 text-xs" 
+                        title="Dismiss"
+                      >
                         <XCircle className="w-3.5 h-3.5" />
                       </button>
                     </>
@@ -107,10 +119,38 @@ export default function AdminRiskPage() {
                   <h4 className="text-sm font-medium text-gray-900 mb-2">Investigation Notes</h4>
                   <textarea placeholder="Add investigation notes..." className="w-full py-2 px-3 border border-gray-200 rounded-lg text-sm outline-none resize-none h-20" />
                   <div className="flex gap-2 mt-3">
-                    <button className="px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded-lg hover:bg-green-700">Resolve</button>
-                    <button className="px-3 py-1.5 bg-amber-600 text-white text-xs font-medium rounded-lg hover:bg-amber-700">Escalate</button>
-                    <button className="px-3 py-1.5 bg-gray-200 text-gray-700 text-xs font-medium rounded-lg hover:bg-gray-300">Dismiss</button>
-                    <button className="px-3 py-1.5 bg-red-100 text-red-600 text-xs font-medium rounded-lg hover:bg-red-200">Suspend Listing</button>
+                    <button 
+                      onClick={() => alert('Risk event resolved successfully.')}
+                      className="px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded-lg hover:bg-green-700"
+                    >
+                      Resolve
+                    </button>
+                    <button 
+                      onClick={() => alert('Risk event escalated to senior admin.')}
+                      className="px-3 py-1.5 bg-amber-600 text-white text-xs font-medium rounded-lg hover:bg-amber-700"
+                    >
+                      Escalate
+                    </button>
+                    <button 
+                      onClick={() => {
+                        if (confirm('Dismiss this risk event?')) {
+                          alert('Risk event dismissed.');
+                        }
+                      }}
+                      className="px-3 py-1.5 bg-gray-200 text-gray-700 text-xs font-medium rounded-lg hover:bg-gray-300"
+                    >
+                      Dismiss
+                    </button>
+                    <button 
+                      onClick={() => {
+                        if (confirm('Suspend this listing? The listing will be hidden from public view.')) {
+                          alert('Listing suspended.');
+                        }
+                      }}
+                      className="px-3 py-1.5 bg-red-100 text-red-600 text-xs font-medium rounded-lg hover:bg-red-200"
+                    >
+                      Suspend Listing
+                    </button>
                   </div>
                 </div>
               )}

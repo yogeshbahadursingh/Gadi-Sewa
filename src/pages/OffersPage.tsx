@@ -293,16 +293,31 @@ export default function OffersPage() {
                         View Listing
                       </Link>
                       {offer.status === 'pending' && (
-                        <button className="px-4 py-2.5 border border-red-200 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50">
+                        <button 
+                          onClick={() => {
+                            if (confirm('Are you sure you want to withdraw this offer?')) {
+                              alert('Offer withdrawn successfully.');
+                            }
+                          }}
+                          className="px-4 py-2.5 border border-red-200 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50"
+                        >
                           Withdraw
                         </button>
                       )}
                       {offer.status === 'countered' && (
                         <>
-                          <button className="flex-1 py-2.5 bg-green-600 text-white rounded-xl text-sm font-medium hover:bg-green-700">
+                          <button 
+                            onClick={() => {
+                              alert('Counter offer accepted! Proceeding to payment...');
+                            }}
+                            className="flex-1 py-2.5 bg-green-600 text-white rounded-xl text-sm font-medium hover:bg-green-700"
+                          >
                             Accept Counter
                           </button>
-                          <button className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50">
+                          <button 
+                            onClick={() => alert('Counter offer feature coming soon!')}
+                            className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50"
+                          >
                             Counter Again
                           </button>
                         </>

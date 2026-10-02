@@ -220,7 +220,13 @@ export function SellPage() {
             </div>
             <div className="flex justify-between">
               <button onClick={() => setStep(3)} className="border border-gray-200 text-gray-700 px-6 py-3 rounded-xl font-medium hover:bg-gray-50">Back</button>
-              <button className="bg-green-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-green-700 flex items-center gap-2">
+              <button 
+                onClick={() => {
+                  alert('Listing submitted successfully! Our team will review it within 24 hours.');
+                  setStep(1);
+                }}
+                className="bg-green-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-green-700 flex items-center gap-2"
+              >
                 <CheckCircle2 className="w-4 h-4" /> Submit Listing
               </button>
             </div>
@@ -331,7 +337,10 @@ export function InspectPage() {
           </div>
         </div>
         <div className="mt-6 flex justify-end">
-          <button className="bg-blue-600 text-white px-8 py-3 rounded-xl font-medium hover:bg-blue-700 flex items-center gap-2">
+          <button 
+            onClick={() => alert('Inspection booked successfully! An inspector will contact you within 24 hours to confirm the appointment.')}
+            className="bg-blue-600 text-white px-8 py-3 rounded-xl font-medium hover:bg-blue-700 flex items-center gap-2"
+          >
             Book Inspection <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -403,7 +412,12 @@ export function FinancePage() {
             <p className="text-4xl font-bold text-blue-700 mt-2">Rs. 31,620</p>
             <p className="text-sm text-blue-500 mt-2">Total payable: Rs. 53,75,400</p>
             <p className="text-sm text-blue-500">Total interest: Rs. 13,75,400</p>
-            <button className="mt-4 bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700">Apply for Finance</button>
+            <button 
+              onClick={() => window.location.href = '/finance/apply'}
+              className="mt-4 bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700"
+            >
+              Apply for Finance
+            </button>
           </div>
         </div>
       </div>
@@ -564,7 +578,12 @@ export function MessagesPage() {
                 <div className="p-4 border-t border-gray-100">
                   <div className="flex items-center gap-2">
                     <input type="text" placeholder="Type a message..." className="flex-1 py-3 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-blue-500" />
-                    <button className="bg-blue-600 text-white px-4 py-3 rounded-xl font-medium hover:bg-blue-700">Send</button>
+                    <button 
+                      onClick={() => alert('Message sent!')}
+                      className="bg-blue-600 text-white px-4 py-3 rounded-xl font-medium hover:bg-blue-700"
+                    >
+                      Send
+                    </button>
                   </div>
                 </div>
               </>

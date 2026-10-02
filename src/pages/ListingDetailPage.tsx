@@ -78,10 +78,27 @@ export default function ListingDetailPage() {
               )}
             </div>
             <div className="absolute bottom-4 right-4 flex gap-2">
-              <button className="w-9 h-9 bg-white/90 rounded-full flex items-center justify-center hover:bg-white">
-                <Heart className={`w-4 h-4 ${isFav ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} onClick={() => toggleFavorite(listing.id)} />
+              <button 
+                onClick={() => toggleFavorite(listing.id)}
+                className="w-9 h-9 bg-white/90 rounded-full flex items-center justify-center hover:bg-white"
+              >
+                <Heart className={`w-4 h-4 ${isFav ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
               </button>
-              <button className="w-9 h-9 bg-white/90 rounded-full flex items-center justify-center hover:bg-white">
+              <button 
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({
+                      title: listing.title,
+                      text: `Check out this ${vehicle.year} ${vehicle.make} ${vehicle.model} on GadiBazar`,
+                      url: window.location.href,
+                    });
+                  } else {
+                    navigator.clipboard.writeText(window.location.href);
+                    alert('Link copied to clipboard!');
+                  }
+                }}
+                className="w-9 h-9 bg-white/90 rounded-full flex items-center justify-center hover:bg-white"
+              >
                 <Share2 className="w-4 h-4 text-gray-600" />
               </button>
             </div>

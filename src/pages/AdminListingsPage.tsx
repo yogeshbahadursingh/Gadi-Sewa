@@ -158,15 +158,35 @@ export default function AdminListingsPage() {
                         </Link>
                         {listing.status === 'PENDING_REVIEW' && (
                           <>
-                            <button className="p-1.5 hover:bg-green-100 rounded-lg" title="Approve">
+                            <button 
+                              onClick={() => {
+                                if (confirm(`Approve listing: ${listing.title}?`)) {
+                                  alert('Listing approved successfully!');
+                                }
+                              }}
+                              className="p-1.5 hover:bg-green-100 rounded-lg" 
+                              title="Approve"
+                            >
                               <CheckCircle2 className="w-4 h-4 text-green-600" />
                             </button>
-                            <button className="p-1.5 hover:bg-red-100 rounded-lg" title="Reject">
+                            <button 
+                              onClick={() => {
+                                if (confirm(`Reject listing: ${listing.title}?`)) {
+                                  alert('Listing rejected.');
+                                }
+                              }}
+                              className="p-1.5 hover:bg-red-100 rounded-lg" 
+                              title="Reject"
+                            >
                               <XCircle className="w-4 h-4 text-red-600" />
                             </button>
                           </>
                         )}
-                        <button className="p-1.5 hover:bg-gray-100 rounded-lg" title="More">
+                        <button 
+                          onClick={() => alert(`More options for: ${listing.title}\n\n- Edit\n- Delete\n- View Details\n- Contact Seller`)}
+                          className="p-1.5 hover:bg-gray-100 rounded-lg" 
+                          title="More"
+                        >
                           <MoreVertical className="w-4 h-4 text-gray-600" />
                         </button>
                       </div>
