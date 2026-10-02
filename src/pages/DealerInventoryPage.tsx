@@ -358,12 +358,22 @@ export default function DealerInventoryPage() {
                     <Eye className="w-4 h-4" />
                     View
                   </Link>
-                  <button className="flex-1 flex items-center justify-center gap-1 px-3 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                  <button 
+                    onClick={() => alert(`Edit listing: ${item.vehicle.make} ${item.vehicle.model}\n\nEdit form would open here.`)}
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
                     <Edit className="w-4 h-4" />
                     Edit
                   </button>
                   {item.status !== 'sold' && (
-                    <button className="px-3 py-2 border border-red-200 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">
+                    <button 
+                      onClick={() => {
+                        if (confirm(`Delete listing: ${item.vehicle.make} ${item.vehicle.model}?\n\nThis action cannot be undone.`)) {
+                          alert('Listing deleted successfully.');
+                        }
+                      }}
+                      className="px-3 py-2 border border-red-200 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                    >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   )}

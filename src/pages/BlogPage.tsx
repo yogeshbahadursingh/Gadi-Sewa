@@ -214,7 +214,19 @@ export default function BlogPage() {
             placeholder="Enter your email"
             className="flex-1 px-4 py-3 rounded-xl text-gray-900 outline-none"
           />
-          <button className="px-6 py-3 bg-white text-blue-600 rounded-xl font-medium hover:bg-blue-50 transition-colors">
+          <button 
+            onClick={() => {
+              const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
+              const email = emailInput?.value;
+              if (email && email.includes('@')) {
+                alert('Thank you for subscribing!\n\nYou will receive our latest vehicle tips and market insights.');
+                if (emailInput) emailInput.value = '';
+              } else {
+                alert('Please enter a valid email address.');
+              }
+            }}
+            className="px-6 py-3 bg-white text-blue-600 rounded-xl font-medium hover:bg-blue-50 transition-colors"
+          >
             Subscribe
           </button>
         </div>

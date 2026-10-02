@@ -207,7 +207,10 @@ export default function OwnershipTransferPage() {
 
       {/* Submit */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <button className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 flex items-center justify-center gap-2">
+        <button 
+          onClick={() => alert('Transfer request submitted successfully!\n\nOur team will review your documents and contact you within 24 hours.')}
+          className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 flex items-center justify-center gap-2"
+        >
           Submit Transfer Request <ArrowRight className="w-4 h-4" />
         </button>
         <Link to="/" className="px-6 py-3 border border-gray-200 rounded-xl font-medium text-gray-700 hover:bg-gray-50 text-center">

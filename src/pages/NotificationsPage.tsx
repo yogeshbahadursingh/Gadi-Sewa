@@ -7,13 +7,21 @@ import { notifications as allNotifications } from '../store/data';
 export default function NotificationsPage() {
   const { currentUser } = useAuth();
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
+  const [readNotifications, setReadNotifications] = useState<Set<string>>(new Set());
 
   const userNotifications = currentUser
     ? allNotifications.filter(n => n.userId === currentUser.id)
     : [];
 
-  const filtered = filter === 'unread' ? userNotifications.filter(n => !n.read) : userNotifications;
-  const unreadCount = userNotifications.filter(n => !n.read).length;
+  const filtered = filter === 'unread' 
+    ? userNotifications.filter(n => !n.read && !readNotifications.has(n.id))
+    : userNotifications;
+  const unreadCount = userNotifications.filter(n => !n.read && !readNotifications.has(n.id)).length;
+
+  const markAllAsRead = () => {
+    const allIds = new Set(userNotifications.map(n => n.id));
+    setReadNotifications(allIds);
+  };
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -55,7 +63,10 @@ export default function NotificationsPage() {
           <p className="text-sm text-gray-500">{unreadCount} unread</p>
         </div>
         {unreadCount > 0 && (
-          <button className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1">
+          <button 
+            onClick={markAllAsRead}
+            className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1"
+          >
             <Check className="w-4 h-4" /> Mark all as read
           </button>
         )}

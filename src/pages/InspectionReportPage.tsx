@@ -54,7 +54,10 @@ export default function InspectionReportPage() {
             <p className="text-sm text-gray-500">{vehicle.year} {vehicle.make} {vehicle.model} {vehicle.variant}</p>
           </div>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 no-print">
+        <button 
+          onClick={() => window.print()}
+          className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 no-print"
+        >
           <Printer className="w-4 h-4" /> Print
         </button>
       </div>

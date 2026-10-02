@@ -110,12 +110,16 @@ export default function SupportPage() {
       {/* Quick Help */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {[
-          { icon: MessageSquare, label: 'FAQ', desc: 'Common questions' },
-          { icon: AlertCircle, label: 'Report Issue', desc: 'Report a problem' },
-          { icon: CheckCircle2, label: 'Verification', desc: 'Account verification' },
-          { icon: Clock, label: 'Status', desc: 'Check ticket status' },
+          { icon: MessageSquare, label: 'FAQ', desc: 'Common questions', action: () => window.location.href = '/faq' },
+          { icon: AlertCircle, label: 'Report Issue', desc: 'Report a problem', action: () => setShowCreateModal(true) },
+          { icon: CheckCircle2, label: 'Verification', desc: 'Account verification', action: () => window.location.href = '/profile' },
+          { icon: Clock, label: 'Status', desc: 'Check ticket status', action: () => alert('Your tickets are listed below.') },
         ].map((item, i) => (
-          <button key={i} className="p-3 bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:shadow-sm transition-all text-left">
+          <button 
+            key={i} 
+            onClick={item.action}
+            className="p-3 bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:shadow-sm transition-all text-left"
+          >
             <item.icon className="w-5 h-5 text-blue-600 mb-2" />
             <p className="text-sm font-medium text-gray-900">{item.label}</p>
             <p className="text-xs text-gray-500">{item.desc}</p>

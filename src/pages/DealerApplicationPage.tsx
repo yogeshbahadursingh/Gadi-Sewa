@@ -373,7 +373,13 @@ export default function DealerApplicationPage() {
                     <Upload className="w-5 h-5 text-gray-400" />
                     <span className="text-sm text-gray-700 flex-1">{doc.name}</span>
                     {doc.required && <Badge variant="danger">Required</Badge>}
-                    <button type="button" className="text-xs text-blue-600 font-medium hover:text-blue-700">Upload</button>
+                    <button 
+                      type="button" 
+                      onClick={() => alert(`Upload ${doc.name}\n\nFile picker would open here.\nAccepted formats: PDF, JPG, PNG\nMax size: 5MB`)}
+                      className="text-xs text-blue-600 font-medium hover:text-blue-700"
+                    >
+                      Upload
+                    </button>
                   </div>
                 ))}
               </div>

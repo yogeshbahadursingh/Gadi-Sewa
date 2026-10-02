@@ -210,9 +210,19 @@ export default function AdminListingsPage() {
       <div className="mt-4 flex items-center justify-between text-sm text-gray-500">
         <p>Showing {filteredListings.length} of {listings.length} listings</p>
         <div className="flex items-center gap-2">
-          <button className="px-3 py-1.5 border border-gray-200 rounded-lg hover:bg-gray-50">Previous</button>
+          <button 
+            onClick={() => alert('Previous page functionality would be implemented with actual pagination.')}
+            className="px-3 py-1.5 border border-gray-200 rounded-lg hover:bg-gray-50"
+          >
+            Previous
+          </button>
           <button className="px-3 py-1.5 bg-blue-600 text-white rounded-lg">1</button>
-          <button className="px-3 py-1.5 border border-gray-200 rounded-lg hover:bg-gray-50">Next</button>
+          <button 
+            onClick={() => alert('Next page functionality would be implemented with actual pagination.')}
+            className="px-3 py-1.5 border border-gray-200 rounded-lg hover:bg-gray-50"
+          >
+            Next
+          </button>
         </div>
       </div>
     </DashboardLayout>
