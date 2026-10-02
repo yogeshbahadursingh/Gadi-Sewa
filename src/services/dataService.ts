@@ -6,12 +6,43 @@ const DATA_SOURCE = ((import.meta as any).env?.VITE_DATA_SOURCE || 'mock') as 'm
 const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000/api/v1';
 const simulateDelay = (ms = 300) => new Promise(resolve => setTimeout(resolve, ms));
 
+// Helper function to get auth headers
+const getAuthHeaders = (): HeadersInit => {
+  const token = localStorage.getItem('auth_token');
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+};
+
+// Helper function to handle API errors
+const handleApiError = async (response: Response) => {
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+    throw new Error(error.error || `HTTP ${response.status}: ${response.statusText}`);
+  }
+  return response.json();
+};
+
 // ============ VEHICLE SERVICE ============
 export const vehicleService = {
   async getAll(filters?: SearchFilters) {
     if (DATA_SOURCE === 'api') {
-      const response = await fetch(`${API_BASE_URL}/vehicles`);
-      return response.json();
+      const params = new URLSearchParams();
+      if (filters) {
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== '') {
+            params.append(key, String(value));
+          }
+        });
+      }
+      const response = await fetch(`${API_BASE_URL}/vehicles?${params}`, {
+        headers: getAuthHeaders(),
+      });
+      return handleApiError(response);
     }
     await simulateDelay();
     let result = [...vehicles];
@@ -23,8 +54,10 @@ export const vehicleService = {
 
   async getById(id: string) {
     if (DATA_SOURCE === 'api') {
-      const response = await fetch(`${API_BASE_URL}/vehicles/${id}`);
-      return response.json();
+      const response = await fetch(`${API_BASE_URL}/vehicles/${id}`, {
+        headers: getAuthHeaders(),
+      });
+      return handleApiError(response);
     }
     await simulateDelay();
     return { success: true, result: getVehicleById(id) || null };
@@ -36,9 +69,17 @@ export const listingService = {
   async getAll(filters?: SearchFilters, page = 1, limit = 20) {
     if (DATA_SOURCE === 'api') {
       const params = new URLSearchParams({ page: String(page), limit: String(limit) });
-      if (filters) Object.entries(filters).forEach(([k, v]) => v && params.append(k, String(v)));
-      const response = await fetch(`${API_BASE_URL}/listings?${params}`);
-      return response.json();
+      if (filters) {
+        Object.entries(filters).forEach(([k, v]) => {
+          if (v !== undefined && v !== null && v !== '') {
+            params.append(k, String(v));
+          }
+        });
+      }
+      const response = await fetch(`${API_BASE_URL}/listings?${params}`, {
+        headers: getAuthHeaders(),
+      });
+      return handleApiError(response);
     }
     await simulateDelay();
     let result = listings.filter(l => l.status === 'ACTIVE');
@@ -64,8 +105,10 @@ export const listingService = {
 
   async getById(id: string) {
     if (DATA_SOURCE === 'api') {
-      const response = await fetch(`${API_BASE_URL}/listings/${id}`);
-      return response.json();
+      const response = await fetch(`${API_BASE_URL}/listings/${id}`, {
+        headers: getAuthHeaders(),
+      });
+      return handleApiError(response);
     }
     await simulateDelay();
     return { success: true, result: getListingById(id) || null };
@@ -73,8 +116,10 @@ export const listingService = {
 
   async getBySeller(sellerId: string) {
     if (DATA_SOURCE === 'api') {
-      const response = await fetch(`${API_BASE_URL}/listings/seller/${sellerId}`);
-      return response.json();
+      const response = await fetch(`${API_BASE_URL}/listings/seller/${sellerId}`, {
+        headers: getAuthHeaders(),
+      });
+      return handleApiError(response);
     }
     await simulateDelay();
     return { success: true, result: listings.filter(l => l.sellerId === sellerId) };
@@ -85,8 +130,10 @@ export const listingService = {
 export const passportService = {
   async getByPassportId(passportId: string) {
     if (DATA_SOURCE === 'api') {
-      const response = await fetch(`${API_BASE_URL}/passports/${passportId}`);
-      return response.json();
+      const response = await fetch(`${API_BASE_URL}/passports/${passportId}`, {
+        headers: getAuthHeaders(),
+      });
+      return handleApiError(response);
     }
     await simulateDelay();
     return { success: true, result: vehiclePassports.find(p => p.passportId === passportId) || null };
@@ -94,8 +141,10 @@ export const passportService = {
 
   async getByVehicleId(vehicleId: string) {
     if (DATA_SOURCE === 'api') {
-      const response = await fetch(`${API_BASE_URL}/passports/vehicle/${vehicleId}`);
-      return response.json();
+      const response = await fetch(`${API_BASE_URL}/passports/vehicle/${vehicleId}`, {
+        headers: getAuthHeaders(),
+      });
+      return handleApiError(response);
     }
     await simulateDelay();
     return { success: true, result: vehiclePassports.find(p => p.vehicleId === vehicleId) || null };
@@ -214,17 +263,8 @@ export const dealerService = {
   },
 };
 
-// ============ USER SERVICE ============
-export const userService = {
-  async getById(id: string) {
-    if (DATA_SOURCE === 'api') {
-      const response = await fetch(`${API_BASE_URL}/users/${id}`);
-      return response.json();
-    }
-    await simulateDelay();
-    return { success: true, result: getUserById(id) || null };
-  },
-
+// ============ AUTH SERVICE ============
+export const authService = {
   async login(email: string, password: string) {
     if (DATA_SOURCE === 'api') {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -232,14 +272,85 @@ export const userService = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-      return response.json();
+      const data = await handleApiError(response);
+      // Store token in localStorage
+      if (data.success && data.data?.token) {
+        localStorage.setItem('auth_token', data.data.token);
+      }
+      return data;
     }
     await simulateDelay();
     const user = users.find(u => u.email === email);
     if (user) {
-      return { success: true, result: { user, token: `mock-token-${user.id}` }, message: 'Login successful' };
+      const token = `mock-token-${user.id}`;
+      localStorage.setItem('auth_token', token);
+      return { success: true, data: { user, token }, message: 'Login successful' };
     }
-    return { success: false, result: null, error: 'Invalid credentials' };
+    return { success: false, data: null, error: 'Invalid credentials' };
+  },
+
+  async register(userData: { email: string; phone: string; fullName: string; password: string; role?: string }) {
+    if (DATA_SOURCE === 'api') {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+      const data = await handleApiError(response);
+      // Store token in localStorage
+      if (data.success && data.data?.token) {
+        localStorage.setItem('auth_token', data.data.token);
+      }
+      return data;
+    }
+    await simulateDelay();
+    // Mock registration
+    const newUser = {
+      id: `u${users.length + 1}`,
+      ...userData,
+      role: userData.role || 'BUYER',
+      emailVerified: false,
+      phoneVerified: false,
+      identityVerified: false,
+      createdAt: new Date().toISOString(),
+    };
+    const token = `mock-token-${newUser.id}`;
+    localStorage.setItem('auth_token', token);
+    return { success: true, data: { user: newUser, token }, message: 'Registration successful' };
+  },
+
+  async getMe() {
+    if (DATA_SOURCE === 'api') {
+      const response = await fetch(`${API_BASE_URL}/auth/me`, {
+        headers: getAuthHeaders(),
+      });
+      return handleApiError(response);
+    }
+    await simulateDelay();
+    // Mock: return first user
+    return { success: true, data: users[0] };
+  },
+
+  logout() {
+    localStorage.removeItem('auth_token');
+  },
+
+  isAuthenticated() {
+    return !!localStorage.getItem('auth_token');
+  },
+};
+
+// ============ USER SERVICE ============
+export const userService = {
+  async getById(id: string) {
+    if (DATA_SOURCE === 'api') {
+      const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+        headers: getAuthHeaders(),
+      });
+      return handleApiError(response);
+    }
+    await simulateDelay();
+    return { success: true, result: getUserById(id) || null };
   },
 };
 

@@ -10,7 +10,7 @@ interface AuthModalProps {
 }
 
 export function AuthModal({ isOpen, onClose, initialMode = 'login' }: AuthModalProps) {
-  const { login } = useAuth();
+  const { login, register } = useAuth();
   const [mode, setMode] = useState<'login' | 'register'>(initialMode);
   const [showPassword, setShowPassword] = useState(false);
   const [accountType, setAccountType] = useState<'buyer' | 'seller' | 'dealer'>('buyer');
@@ -24,58 +24,107 @@ export function AuthModal({ isOpen, onClose, initialMode = 'login' }: AuthModalP
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleLogin = (e: FormEvent) => {
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
-    if (!formData.email) {
-      setError('Please enter your email');
+    setIsSubmitting(true);
+    
+    if (!formData.email || !formData.password) {
+      setError('Email and password are required');
+      setIsSubmitting(false);
       return;
     }
-    const user = users.find(u => u.email === formData.email);
-    if (user) {
-      login(user.email, formData.password || 'demo');
-      setSuccess('Login successful!');
-      setTimeout(() => {
-        onClose();
-        setSuccess('');
-      }, 800);
-    } else {
-      setError('No account found with this email. Try a demo account.');
+
+    try {
+      const success = await login(formData.email, formData.password);
+      if (success) {
+        setSuccess('Login successful!');
+        setTimeout(() => {
+          onClose();
+          setSuccess('');
+          setFormData({ fullName: '', email: '', phone: '', password: '', confirmPassword: '', agreeTerms: false });
+        }, 800);
+      } else {
+        setError('Invalid email or password. Try: admin@gadibazar.com / password123');
+      }
+    } catch (err) {
+      setError('Login failed. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleRegister = (e: FormEvent) => {
+  const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsSubmitting(true);
+    
     if (!formData.fullName || !formData.email || !formData.phone || !formData.password) {
       setError('All fields are required');
+      setIsSubmitting(false);
       return;
     }
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
+      setIsSubmitting(false);
       return;
     }
     if (formData.password.length < 8) {
       setError('Password must be at least 8 characters');
+      setIsSubmitting(false);
       return;
     }
     if (!formData.agreeTerms) {
       setError('Please agree to the terms and conditions');
+      setIsSubmitting(false);
       return;
     }
-    setSuccess('Account created! Please verify your email.');
-    setTimeout(() => {
-      onClose();
-      setSuccess('');
-    }, 1500);
+
+    try {
+      const roleMap = { buyer: 'BUYER', seller: 'PRIVATE_SELLER', dealer: 'DEALER_OWNER' };
+      const success = await register({
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+        role: roleMap[accountType],
+      });
+      
+      if (success) {
+        setSuccess('Account created successfully!');
+        setTimeout(() => {
+          onClose();
+          setSuccess('');
+          setFormData({ fullName: '', email: '', phone: '', password: '', confirmPassword: '', agreeTerms: false });
+        }, 1500);
+      } else {
+        setError('Registration failed. Email or phone may already be in use.');
+      }
+    } catch (err) {
+      setError('Registration failed. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const quickLogin = (email: string) => {
-    login(email, 'demo');
-    onClose();
+  const quickLogin = async (email: string) => {
+    setIsSubmitting(true);
+    try {
+      const success = await login(email, 'password123');
+      if (success) {
+        onClose();
+      } else {
+        setError('Quick login failed. Please try manual login.');
+      }
+    } catch (err) {
+      setError('Quick login failed. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -166,8 +215,12 @@ export function AuthModal({ isOpen, onClose, initialMode = 'login' }: AuthModalP
                 </label>
                 <a href="#" className="text-blue-600 hover:text-blue-700 font-medium">Forgot password?</a>
               </div>
-              <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition-colors">
-                Sign In
+              <button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Signing In...' : 'Sign In'}
               </button>
             </form>
           ) : (
@@ -283,30 +336,54 @@ export function AuthModal({ isOpen, onClose, initialMode = 'login' }: AuthModalP
                 </span>
               </label>
 
-              <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition-colors">
-                Create Account
+              <button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Creating Account...' : 'Create Account'}
               </button>
             </form>
           )}
 
           {/* Demo quick login */}
           <div className="mt-6 pt-6 border-t border-gray-100">
-            <p className="text-xs text-gray-500 text-center mb-3">Quick demo access (no password needed)</p>
+            <p className="text-xs text-gray-500 text-center mb-3">Quick demo access (password: password123)</p>
             <div className="grid grid-cols-2 gap-2">
-              <button onClick={() => quickLogin('admin@gadibazar.com')} className="py-2 px-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs font-medium text-gray-700 transition-colors">
-                Admin
+              <button 
+                onClick={() => quickLogin('admin@gadibazar.com')} 
+                disabled={isSubmitting}
+                className="py-2 px-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs font-medium text-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Loading...' : 'Admin'}
               </button>
-              <button onClick={() => quickLogin('ramesh@gmail.com')} className="py-2 px-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs font-medium text-gray-700 transition-colors">
-                Seller
+              <button 
+                onClick={() => quickLogin('ramesh@gmail.com')} 
+                disabled={isSubmitting}
+                className="py-2 px-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs font-medium text-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Loading...' : 'Seller'}
               </button>
-              <button onClick={() => quickLogin('sita@gmail.com')} className="py-2 px-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs font-medium text-gray-700 transition-colors">
-                Buyer
+              <button 
+                onClick={() => quickLogin('sita@gmail.com')} 
+                disabled={isSubmitting}
+                className="py-2 px-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs font-medium text-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Loading...' : 'Buyer'}
               </button>
-              <button onClick={() => quickLogin('inspector@gadibazar.com')} className="py-2 px-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs font-medium text-gray-700 transition-colors">
-                Inspector
+              <button 
+                onClick={() => quickLogin('inspector@gadibazar.com')} 
+                disabled={isSubmitting}
+                className="py-2 px-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs font-medium text-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Loading...' : 'Inspector'}
               </button>
-              <button onClick={() => quickLogin('biraj@sujalmotors.com')} className="py-2 px-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs font-medium text-gray-700 transition-colors col-span-2">
-                Dealer
+              <button 
+                onClick={() => quickLogin('biraj@sujalmotors.com')} 
+                disabled={isSubmitting}
+                className="py-2 px-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs font-medium text-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed col-span-2"
+              >
+                {isSubmitting ? 'Loading...' : 'Dealer'}
               </button>
             </div>
           </div>

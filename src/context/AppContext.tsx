@@ -1,37 +1,81 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
 import type { User } from '../types';
 import { users } from '../store/data';
+import { authService } from '../services/dataService';
 
 interface AuthContextType {
   currentUser: User | null;
   login: (email: string, password: string) => Promise<boolean>;
+  register: (userData: { email: string; phone: string; fullName: string; password: string; role?: string }) => Promise<boolean>;
   logout: () => void;
   switchRole: (role: string) => void;
   isAuthenticated: boolean;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
   currentUser: null,
   login: async () => false,
+  register: async () => false,
   logout: () => {},
   switchRole: () => {},
   isAuthenticated: false,
+  isLoading: true,
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [currentUser, setCurrentUser] = useState<User | null>(users[0]); // Default: admin for demo
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Check if user is already logged in on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (authService.isAuthenticated()) {
+        try {
+          const response = await authService.getMe();
+          if (response.success && response.data) {
+            setCurrentUser(response.data);
+          }
+        } catch (error) {
+          console.error('Failed to get user:', error);
+          authService.logout();
+        }
+      }
+      setIsLoading(false);
+    };
+    checkAuth();
+  }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    // Mock authentication - in production, this would call the backend API
-    const user = users.find((u) => u.email === email);
-    if (user) {
-      setCurrentUser(user);
-      return true;
+    try {
+      const response = await authService.login(email, password);
+      if (response.success && response.data?.user) {
+        setCurrentUser(response.data.user);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Login failed:', error);
+      return false;
     }
-    return false;
+  }, []);
+
+  const register = useCallback(async (userData: { email: string; phone: string; fullName: string; password: string; role?: string }) => {
+    try {
+      const response = await authService.register(userData);
+      if (response.success && response.data?.user) {
+        setCurrentUser(response.data.user);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Registration failed:', error);
+      return false;
+    }
   }, []);
 
   const logout = useCallback(() => {
+    authService.logout();
     setCurrentUser(null);
   }, []);
 
@@ -45,9 +89,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         currentUser,
         login,
+        register,
         logout,
         switchRole,
         isAuthenticated: !!currentUser,
+        isLoading,
       }}
     >
       {children}

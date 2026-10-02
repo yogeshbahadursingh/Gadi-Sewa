@@ -1,9 +1,10 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { AuthProvider, AppProvider } from './context/AppContext';
+import { AuthProvider, AppProvider, useAuth } from './context/AppContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { PageSkeleton } from './components/Skeleton';
+import { Loader2 } from 'lucide-react';
 
 // Lazy load all pages for code splitting
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -52,16 +53,35 @@ const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const SafetyTipsPage = lazy(() => import('./pages/SafetyTipsPage'));
 import { SellPage, InspectPage, FinancePage, InsurancePage, MessagesPage } from './pages/ServicePages';
 
+// Loading component while checking authentication
+function AuthLoader({ children }: { children: React.ReactNode }) {
+  const { isLoading } = useAuth();
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  return <>{children}</>;
+}
+
 function App() {
   return (
     <AuthProvider>
       <AppProvider>
         <BrowserRouter>
-          <div className="min-h-screen flex flex-col">
-            <Header />
-            <main className="flex-grow">
-              <Suspense fallback={<PageSkeleton />}>
-                <Routes>
+          <AuthLoader>
+            <div className="min-h-screen flex flex-col">
+              <Header />
+              <main className="flex-grow">
+                <Suspense fallback={<PageSkeleton />}>
+                  <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<HomePage />} />
                 <Route path="/search" element={<SearchPage />} />
@@ -149,6 +169,7 @@ function App() {
             </main>
             <Footer />
           </div>
+          </AuthLoader>
         </BrowserRouter>
       </AppProvider>
     </AuthProvider>
