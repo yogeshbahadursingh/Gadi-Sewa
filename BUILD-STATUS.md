@@ -115,8 +115,24 @@ HTML Size:         3.19 kB (gzipped: 1.37 kB)
 
 ### Data & Types
 - ✅ types/index.ts - TypeScript definitions
-- ✅ store/data.ts - Mock data store (1252 lines)
+- ✅ store/data.ts - Mock data store (1254 lines)
+- ✅ store/extendedData.ts - Extended vehicle database (108 additional vehicles)
 - ✅ context/AppContext.tsx - Auth & app state
+
+### Vehicle Database
+- ✅ **120+ vehicles** total (12 original + 108 extended)
+- ✅ Toyota (20 vehicles): Corolla, Land Cruiser, RAV4, Hilux, Camry, Fortuner, Yaris, Innova, Vitz, Prius, C-HR, Rush, Avanza, Alphard, Corolla Cross, Hiace, Crown
+- ✅ Hyundai (15 vehicles): Tucson, Santa Fe, Elantra, i20, Venue, Creta, Verna, Grand i10, Kona Electric, Ioniq 5, Staria, Accent, Alcazar, Aura, Exter
+- ✅ Honda (15 vehicles): Civic, CR-V, BR-V, Accord, Jazz, HR-V, City, WR-V, e, Fit, Odyssey, Pilot, Passport, Ridgeline, Insight
+- ✅ Maruti Suzuki (15 vehicles): Swift, Baleno, Dzire, Ertiga, Vitara Brezza, Alto, WagonR, Celerio, S-Presso, XL6, Ignis, Ciaz, Eeco, Fronx, Grand Vitara
+- ✅ Tata (10 vehicles): Nexon, Harrier, Safari, Altroz, Tiago, Tigor, Punch, Nexon EV, Tiago EV, Curvv EV
+- ✅ Kia (8 vehicles): Seltos, Sonet, Carnival, EV6, Sportage, Carens, EV9
+- ✅ MG (5 vehicles): ZS EV, Hector, Astor, Comet EV, Gloster
+- ✅ BYD (5 vehicles): Atto 3, Dolphin, Seal, Han, Tang
+- ✅ Motorcycles (10): Royal Enfield, Yamaha, Honda, Bajaj, KTM, Suzuki, TVS, Hero
+- ✅ Scooters (5): Honda Activa, Suzuki Access, TVS Jupiter, Bajaj Chetak, Ola S1
+- ✅ Mix of fuel types: Petrol, Diesel, Electric, Hybrid
+- ✅ All vehicles have corresponding listings and passports
 
 ### SEO & Performance
 - ✅ robots.txt - Crawler instructions

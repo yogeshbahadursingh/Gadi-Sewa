@@ -1,4 +1,5 @@
 import type { User, Vehicle, Listing, VehiclePassport, Inspection, Offer, Dealer, Conversation, Message, Notification, Payment, Reservation } from '../types';
+import { extendedVehicles, extendedListings, extendedPassports } from './extendedData';
 
 // ============ USERS ============
 export const users: User[] = [
@@ -407,6 +408,7 @@ export const vehicles: Vehicle[] = [
     isHybrid: false,
     createdAt: '2025-07-01T00:00:00Z',
   },
+  ...extendedVehicles,
 ];
 
 // ============ LISTINGS ============
@@ -679,6 +681,7 @@ export const listings: Listing[] = [
     updatedAt: '2026-01-06T00:00:00Z',
     expiresAt: '2026-03-25T00:00:00Z',
   },
+  ...extendedListings,
 ];
 
 // ============ VEHICLE PASSPORTS ============
@@ -808,6 +811,7 @@ export const vehiclePassports: VehiclePassport[] = [
     riskFlags: [],
     qrCode: 'VP-00020156-QR',
   },
+  ...extendedPassports,
 ];
 
 // ============ INSPECTIONS ============

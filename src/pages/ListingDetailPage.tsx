@@ -12,6 +12,9 @@ export default function ListingDetailPage() {
   const [showOfferModal, setShowOfferModal] = useState(false);
   const [offerAmount, setOfferAmount] = useState('');
   const [offerMessage, setOfferMessage] = useState('');
+  const [showPhone, setShowPhone] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [messageText, setMessageText] = useState('');
 
   const listing = getListingById(id || '');
   const vehicle = listing ? getVehicleById(listing.vehicleId) : null;
@@ -307,11 +310,29 @@ export default function ListingDetailPage() {
               </div>
             )}
             <div className="space-y-3">
-              <button className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+              <button 
+                onClick={() => {
+                  if (!currentUser) {
+                    alert('Please login to send messages');
+                    return;
+                  }
+                  setShowMessageModal(true);
+                }}
+                className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+              >
                 <MessageSquare className="w-4 h-4" /> Send Message
               </button>
-              <button className="w-full border border-blue-600 text-blue-600 py-3 rounded-xl font-medium hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
-                <Phone className="w-4 h-4" /> Show Phone
+              <button 
+                onClick={() => {
+                  if (!currentUser) {
+                    alert('Please login to view phone number');
+                    return;
+                  }
+                  setShowPhone(!showPhone);
+                }}
+                className="w-full border border-blue-600 text-blue-600 py-3 rounded-xl font-medium hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
+              >
+                <Phone className="w-4 h-4" /> {showPhone ? seller?.phone : 'Show Phone'}
               </button>
               <button
                 onClick={() => setShowOfferModal(true)}
@@ -387,6 +408,50 @@ export default function ListingDetailPage() {
                   className="flex-1 bg-blue-600 text-white py-3 rounded-xl text-sm font-medium hover:bg-blue-700"
                 >
                   Submit Offer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Message Modal */}
+      {showMessageModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">Send Message to {seller?.fullName}</h3>
+            <p className="text-sm text-gray-500 mb-4">About: {vehicle.year} {vehicle.make} {vehicle.model}</p>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700 block mb-1">Your Message</label>
+                <textarea
+                  value={messageText}
+                  onChange={(e) => setMessageText(e.target.value)}
+                  placeholder="Hi, I'm interested in this vehicle. Is it still available?"
+                  className="w-full py-3 px-4 border border-gray-200 rounded-xl text-sm outline-none focus:border-blue-500 resize-none h-32"
+                />
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowMessageModal(false);
+                    setMessageText('');
+                  }}
+                  className="flex-1 border border-gray-200 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    if (messageText.trim()) {
+                      alert('Message sent successfully! (Demo mode)');
+                      setShowMessageModal(false);
+                      setMessageText('');
+                    }
+                  }}
+                  className="flex-1 bg-blue-600 text-white py-3 rounded-xl text-sm font-medium hover:bg-blue-700"
+                >
+                  Send Message
                 </button>
               </div>
             </div>
