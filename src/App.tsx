@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider, AppProvider } from './context/AppContext';
+import Header from './components/Header';
+import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 import SearchPage from './pages/SearchPage';
 import ListingDetailPage from './pages/ListingDetailPage';
@@ -10,17 +12,23 @@ function App() {
     <AuthProvider>
       <AppProvider>
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/search" element={<SearchPage />} />
-            <Route path="/listing/:id" element={<ListingDetailPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/seller/*" element={<DashboardPage />} />
-            <Route path="/buyer/*" element={<DashboardPage />} />
-            <Route path="/inspector/*" element={<DashboardPage />} />
-            <Route path="/dealer/*" element={<DashboardPage />} />
-            <Route path="/admin/*" element={<DashboardPage />} />
-          </Routes>
+          <div className="min-h-screen flex flex-col">
+            <Header />
+            <main className="flex-grow">
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/search" element={<SearchPage />} />
+                <Route path="/listing/:id" element={<ListingDetailPage />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/seller/*" element={<DashboardPage />} />
+                <Route path="/buyer/*" element={<DashboardPage />} />
+                <Route path="/inspector/*" element={<DashboardPage />} />
+                <Route path="/dealer/*" element={<DashboardPage />} />
+                <Route path="/admin/*" element={<DashboardPage />} />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
         </BrowserRouter>
       </AppProvider>
     </AuthProvider>
