@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider, AppProvider, useAuth } from './context/AppContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import ProtectedRoute from './components/ProtectedRoute';
 import { PageSkeleton } from './components/Skeleton';
 import { Loader2 } from 'lucide-react';
 
@@ -51,6 +52,9 @@ const FAQPage = lazy(() => import('./pages/FAQPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const SafetyTipsPage = lazy(() => import('./pages/SafetyTipsPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage'));
 import { SellPage, InspectPage, FinancePage, InsurancePage, MessagesPage } from './pages/ServicePages';
 
 // Loading component while checking authentication
@@ -106,6 +110,11 @@ function App() {
                 <Route path="/support" element={<SupportPage />} />
                 <Route path="/dealer-application" element={<DealerApplicationPage />} />
                 
+                {/* Authentication Routes */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/unauthorized" element={<UnauthorizedPage />} />
+                
                 {/* Service Routes */}
                 <Route path="/sell" element={<SellPage />} />
                 <Route path="/inspect" element={<InspectPage />} />
@@ -115,52 +124,52 @@ function App() {
                 <Route path="/insurance/apply" element={<InsuranceApplicationPage />} />
                 <Route path="/transfer" element={<OwnershipTransferPage />} />
                 
-                {/* Authenticated User Routes */}
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/notifications" element={<NotificationsPage />} />
-                <Route path="/messages" element={<MessagesPage />} />
-                <Route path="/favorites" element={<RecentlyViewedPage />} />
-                <Route path="/recently-viewed" element={<RecentlyViewedPage />} />
-                <Route path="/saved-searches" element={<SavedSearchesPage />} />
-                <Route path="/offers" element={<OffersPage />} />
-                <Route path="/reservations" element={<ReservationsPage />} />
-                <Route path="/payment" element={<PaymentPage />} />
-                <Route path="/report/:id" element={<ReportListingPage />} />
-                <Route path="/test-drive/:id" element={<TestDrivePage />} />
-                <Route path="/repair-quotes/:inspectionId" element={<RepairQuotesPage />} />
-                <Route path="/history/:passportId" element={<VehicleHistoryPage />} />
+                {/* Protected User Routes */}
+                <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+                <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
+                <Route path="/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
+                <Route path="/favorites" element={<ProtectedRoute><RecentlyViewedPage /></ProtectedRoute>} />
+                <Route path="/recently-viewed" element={<ProtectedRoute><RecentlyViewedPage /></ProtectedRoute>} />
+                <Route path="/saved-searches" element={<ProtectedRoute><SavedSearchesPage /></ProtectedRoute>} />
+                <Route path="/offers" element={<ProtectedRoute><OffersPage /></ProtectedRoute>} />
+                <Route path="/reservations" element={<ProtectedRoute><ReservationsPage /></ProtectedRoute>} />
+                <Route path="/payment" element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
+                <Route path="/report/:id" element={<ProtectedRoute><ReportListingPage /></ProtectedRoute>} />
+                <Route path="/test-drive/:id" element={<ProtectedRoute><TestDrivePage /></ProtectedRoute>} />
+                <Route path="/repair-quotes/:inspectionId" element={<ProtectedRoute><RepairQuotesPage /></ProtectedRoute>} />
+                <Route path="/history/:passportId" element={<ProtectedRoute><VehicleHistoryPage /></ProtectedRoute>} />
                 
                 {/* Seller Routes */}
-                <Route path="/seller" element={<DashboardPage />} />
-                <Route path="/seller/analytics" element={<SellerAnalyticsPage />} />
-                <Route path="/seller/listings" element={<DashboardPage />} />
-                <Route path="/seller/offers" element={<OffersPage />} />
+                <Route path="/seller" element={<ProtectedRoute requiredRole="PRIVATE_SELLER"><DashboardPage /></ProtectedRoute>} />
+                <Route path="/seller/analytics" element={<ProtectedRoute requiredRole="PRIVATE_SELLER"><SellerAnalyticsPage /></ProtectedRoute>} />
+                <Route path="/seller/listings" element={<ProtectedRoute requiredRole="PRIVATE_SELLER"><DashboardPage /></ProtectedRoute>} />
+                <Route path="/seller/offers" element={<ProtectedRoute requiredRole="PRIVATE_SELLER"><OffersPage /></ProtectedRoute>} />
                 
                 {/* Buyer Routes */}
-                <Route path="/buyer" element={<DashboardPage />} />
-                <Route path="/buyer/favorites" element={<RecentlyViewedPage />} />
-                <Route path="/buyer/offers" element={<OffersPage />} />
-                <Route path="/buyer/reservations" element={<ReservationsPage />} />
+                <Route path="/buyer" element={<ProtectedRoute requiredRole="BUYER"><DashboardPage /></ProtectedRoute>} />
+                <Route path="/buyer/favorites" element={<ProtectedRoute requiredRole="BUYER"><RecentlyViewedPage /></ProtectedRoute>} />
+                <Route path="/buyer/offers" element={<ProtectedRoute requiredRole="BUYER"><OffersPage /></ProtectedRoute>} />
+                <Route path="/buyer/reservations" element={<ProtectedRoute requiredRole="BUYER"><ReservationsPage /></ProtectedRoute>} />
                 
                 {/* Inspector Routes */}
-                <Route path="/inspector" element={<DashboardPage />} />
-                <Route path="/inspector/jobs" element={<DashboardPage />} />
-                <Route path="/inspector/job/:id" element={<InspectorFormPage />} />
+                <Route path="/inspector" element={<ProtectedRoute requiredRole="INSPECTOR"><DashboardPage /></ProtectedRoute>} />
+                <Route path="/inspector/jobs" element={<ProtectedRoute requiredRole="INSPECTOR"><DashboardPage /></ProtectedRoute>} />
+                <Route path="/inspector/job/:id" element={<ProtectedRoute requiredRole="INSPECTOR"><InspectorFormPage /></ProtectedRoute>} />
                 
                 {/* Dealer Routes */}
-                <Route path="/dealer" element={<DashboardPage />} />
-                <Route path="/dealer/inventory" element={<DealerInventoryPage />} />
-                <Route path="/dealer/profile" element={<DealerProfilePage />} />
+                <Route path="/dealer" element={<ProtectedRoute requiredRole={["DEALER_OWNER", "DEALER_MANAGER"]}><DashboardPage /></ProtectedRoute>} />
+                <Route path="/dealer/inventory" element={<ProtectedRoute requiredRole={["DEALER_OWNER", "DEALER_MANAGER"]}><DealerInventoryPage /></ProtectedRoute>} />
+                <Route path="/dealer/profile" element={<ProtectedRoute requiredRole={["DEALER_OWNER", "DEALER_MANAGER"]}><DealerProfilePage /></ProtectedRoute>} />
                 
                 {/* Admin Routes */}
-                <Route path="/admin" element={<DashboardPage />} />
-                <Route path="/admin/users" element={<AdminUsersPage />} />
-                <Route path="/admin/listings" element={<AdminListingsPage />} />
-                <Route path="/admin/inspections" element={<AdminInspectionsPage />} />
-                <Route path="/admin/payments" element={<AdminPaymentsPage />} />
-                <Route path="/admin/audit-logs" element={<AdminAuditLogsPage />} />
-                <Route path="/admin/risk" element={<AdminRiskPage />} />
+                <Route path="/admin" element={<ProtectedRoute requiredRole={["SUPER_ADMIN", "ADMIN"]}><DashboardPage /></ProtectedRoute>} />
+                <Route path="/admin/users" element={<ProtectedRoute requiredRole={["SUPER_ADMIN", "ADMIN"]}><AdminUsersPage /></ProtectedRoute>} />
+                <Route path="/admin/listings" element={<ProtectedRoute requiredRole={["SUPER_ADMIN", "ADMIN"]}><AdminListingsPage /></ProtectedRoute>} />
+                <Route path="/admin/inspections" element={<ProtectedRoute requiredRole={["SUPER_ADMIN", "ADMIN"]}><AdminInspectionsPage /></ProtectedRoute>} />
+                <Route path="/admin/payments" element={<ProtectedRoute requiredRole={["SUPER_ADMIN", "ADMIN"]}><AdminPaymentsPage /></ProtectedRoute>} />
+                <Route path="/admin/audit-logs" element={<ProtectedRoute requiredRole={["SUPER_ADMIN", "ADMIN"]}><AdminAuditLogsPage /></ProtectedRoute>} />
+                <Route path="/admin/risk" element={<ProtectedRoute requiredRole={["SUPER_ADMIN", "ADMIN"]}><AdminRiskPage /></ProtectedRoute>} />
                 
                 {/* Catch-all */}
                 <Route path="*" element={<HomePage />} />
