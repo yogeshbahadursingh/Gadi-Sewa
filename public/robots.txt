@@ -1,0 +1,43 @@
+# GadiBazar - Nepal's Vehicle Ecosystem
+# https://gadibazar.com
+
+# Allow all crawlers by default
+User-agent: *
+Allow: /
+
+# Block private areas and admin panels
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /dashboard
+Disallow: /seller/*
+Disallow: /buyer/*
+Disallow: /inspector/*
+Disallow: /dealer/*
+Disallow: /profile
+Disallow: /messages
+Disallow: /notifications
+Disallow: /payment
+Disallow: /reservations
+Disallow: /offers
+Disallow: /favorites
+Disallow: /recently-viewed
+Disallow: /saved-searches
+Disallow: /compare
+Disallow: /button-test
+
+# Block search results and filter combinations to prevent crawl budget waste
+Disallow: /search?*
+Disallow: /*?*sort=*
+Disallow: /*?*filter=*
+
+# Allow search page itself (for discovery)
+Allow: /search
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://gadibazar.com/sitemap.xml
+
+# Host directive (for www/non-www consolidation)
+Host: gadibazar.com
