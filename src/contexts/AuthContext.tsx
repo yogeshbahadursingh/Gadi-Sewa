@@ -21,7 +21,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const checkAuth = async () => {
       try {
         const userData = await api.getCurrentUser();
-        setUser(userData.data || userData);
+        // Handle both demo mode (direct user object) and API mode (wrapped response)
+        const user = userData.data || userData;
+        setUser(user);
       } catch (error) {
         // Not authenticated
         setUser(null);

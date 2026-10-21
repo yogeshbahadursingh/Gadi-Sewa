@@ -34,99 +34,60 @@ export default function VehicleDetailPage() {
       }
       
       try {
-        // First check mock data
-        const mockVehicle = mockVehicles.find(v => v.id === id);
-        if (mockVehicle) {
-          // Check if there's a user-created version in API
-          try {
-            const apiVehicle = await api.getVehicleById(id);
-            if (apiVehicle) {
-              // Convert API vehicle to mock format
-              const converted: MockVehicle = {
-                id: apiVehicle.id,
-                title: `${apiVehicle.year} ${apiVehicle.make} ${apiVehicle.model}`,
-                make: apiVehicle.make,
-                model: apiVehicle.model,
-                variant: apiVehicle.variant || '',
-                year: apiVehicle.year,
-                category: apiVehicle.category.toLowerCase() as any,
-                price: apiVehicle.price,
-                negotiable: apiVehicle.negotiable,
-                location: {
-                  province: apiVehicle.province,
-                  district: apiVehicle.district,
-                  city: apiVehicle.city
-                },
-                mileage: apiVehicle.mileage || 0,
-                fuelType: apiVehicle.fuelType || 'PETROL',
-                transmission: apiVehicle.transmission || 'MANUAL',
-                engineCC: apiVehicle.engineCC,
-                condition: apiVehicle.condition || 'GOOD',
-                sellerType: 'individual' as const,
-                sellerName: apiVehicle.seller ? `${apiVehicle.seller.firstName} ${apiVehicle.seller.lastName}` : 'Unknown',
-                images: apiVehicle.images.length > 0 ? apiVehicle.images.map((img: any) => img.url) : ['https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80'],
-                hasPassport: apiVehicle.hasPassport,
-                passportId: apiVehicle.passportId,
-                postedDate: apiVehicle.createdAt,
-                featured: apiVehicle.featured,
-                description: apiVehicle.description || '',
-                keyFeatures: []
-              };
-              setVehicle(converted);
-            } else {
-              setVehicle(mockVehicle);
-            }
-          } catch (error) {
-            // API failed, use mock data
-            setVehicle(mockVehicle);
-          }
+        // Try API first (includes user-created vehicles)
+        const apiVehicle = await api.getVehicleById(id);
+        
+        if (apiVehicle) {
+          // Convert API vehicle to display format
+          const converted: MockVehicle = {
+            id: apiVehicle.id,
+            title: `${apiVehicle.year} ${apiVehicle.make} ${apiVehicle.model}`,
+            make: apiVehicle.make,
+            model: apiVehicle.model,
+            variant: apiVehicle.variant || '',
+            year: apiVehicle.year,
+            category: apiVehicle.category.toLowerCase() as any,
+            price: apiVehicle.price,
+            negotiable: apiVehicle.negotiable,
+            location: {
+              province: apiVehicle.province,
+              district: apiVehicle.district,
+              city: apiVehicle.city
+            },
+            mileage: apiVehicle.mileage || 0,
+            fuelType: apiVehicle.fuelType || 'PETROL',
+            transmission: apiVehicle.transmission || 'MANUAL',
+            engineCC: apiVehicle.engineCC,
+            condition: apiVehicle.condition || 'GOOD',
+            sellerType: 'individual' as const,
+            sellerName: apiVehicle.seller ? `${apiVehicle.seller.firstName} ${apiVehicle.seller.lastName}` : 'Unknown',
+            images: apiVehicle.images.length > 0 ? apiVehicle.images.map((img: any) => img.url) : ['https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80'],
+            hasPassport: apiVehicle.hasPassport,
+            passportId: apiVehicle.passportId,
+            postedDate: apiVehicle.createdAt,
+            featured: apiVehicle.featured,
+            description: apiVehicle.description || '',
+            keyFeatures: []
+          };
+          setVehicle(converted);
         } else {
-          // Not in mock data, try API only
-          try {
-            const apiVehicle = await api.getVehicleById(id);
-            if (apiVehicle) {
-              const converted: MockVehicle = {
-                id: apiVehicle.id,
-                title: `${apiVehicle.year} ${apiVehicle.make} ${apiVehicle.model}`,
-                make: apiVehicle.make,
-                model: apiVehicle.model,
-                variant: apiVehicle.variant || '',
-                year: apiVehicle.year,
-                category: apiVehicle.category.toLowerCase() as any,
-                price: apiVehicle.price,
-                negotiable: apiVehicle.negotiable,
-                location: {
-                  province: apiVehicle.province,
-                  district: apiVehicle.district,
-                  city: apiVehicle.city
-                },
-                mileage: apiVehicle.mileage || 0,
-                fuelType: apiVehicle.fuelType || 'PETROL',
-                transmission: apiVehicle.transmission || 'MANUAL',
-                engineCC: apiVehicle.engineCC,
-                condition: apiVehicle.condition || 'GOOD',
-                sellerType: 'individual' as const,
-                sellerName: apiVehicle.seller ? `${apiVehicle.seller.firstName} ${apiVehicle.seller.lastName}` : 'Unknown',
-                images: apiVehicle.images.length > 0 ? apiVehicle.images.map((img: any) => img.url) : ['https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80'],
-                hasPassport: apiVehicle.hasPassport,
-                passportId: apiVehicle.passportId,
-                postedDate: apiVehicle.createdAt,
-                featured: apiVehicle.featured,
-                description: apiVehicle.description || '',
-                keyFeatures: []
-              };
-              setVehicle(converted);
-            } else {
-              setError('Vehicle not found');
-            }
-          } catch (error) {
-            console.error('Failed to load vehicle:', error);
-            setError('Failed to load vehicle. Please try again.');
+          // Fall back to mock data
+          const mockVehicle = mockVehicles.find(v => v.id === id);
+          if (mockVehicle) {
+            setVehicle(mockVehicle);
+          } else {
+            setError('Vehicle not found');
           }
         }
       } catch (error) {
-        console.error('Unexpected error:', error);
-        setError('An unexpected error occurred');
+        console.error('Failed to load vehicle:', error);
+        // Fall back to mock data on API error
+        const mockVehicle = mockVehicles.find(v => v.id === id);
+        if (mockVehicle) {
+          setVehicle(mockVehicle);
+        } else {
+          setError('Failed to load vehicle. Please try again.');
+        }
       } finally {
         setLoading(false);
       }

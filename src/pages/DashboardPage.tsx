@@ -24,9 +24,12 @@ export default function DashboardPage() {
   const loadVehicles = async () => {
     try {
       const data = await api.getMyVehicles();
-      setMyVehicles(data.data || data);
+      // Handle both demo mode (direct array) and API mode (wrapped response)
+      const vehicles = Array.isArray(data) ? data : (data.data || []);
+      setMyVehicles(vehicles);
     } catch (error) {
       console.error('Failed to load vehicles:', error);
+      setMyVehicles([]);
     } finally {
       setLoading(false);
     }

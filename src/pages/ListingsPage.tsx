@@ -62,36 +62,41 @@ export default function ListingsPage() {
   // Combine mock data with user vehicles
   const allVehicles = useMemo(() => {
     // Convert user vehicles to match mock vehicle format
-    const convertedUserVehicles: MockVehicle[] = userVehicles.map(v => ({
-      id: v.id,
-      title: `${v.year} ${v.make} ${v.model}`,
-      make: v.make,
-      model: v.model,
-      variant: v.variant || '',
-      year: v.year,
-      category: v.category.toLowerCase() as any,
-      price: v.price,
-      negotiable: v.negotiable,
-      location: {
-        province: v.province,
-        district: v.district,
-        city: v.city
-      },
-      mileage: v.mileage || 0,
-      fuelType: v.fuelType || 'PETROL',
-      transmission: v.transmission || 'MANUAL',
-      engineCC: v.engineCC,
-      condition: v.condition || 'GOOD',
-      sellerType: 'individual' as const,
-      sellerName: v.seller ? `${v.seller.firstName} ${v.seller.lastName}` : 'Unknown',
-      images: v.images.length > 0 ? v.images.map((img: any) => img.url) : ['https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80'],
-      hasPassport: passportData[v.id] || false,
-      passportId: passportData[v.id] ? `passport_${v.id}` : undefined,
-      postedDate: v.createdAt,
-      featured: v.featured,
-      description: v.description || '',
-      keyFeatures: []
-    }));
+    const convertedUserVehicles: MockVehicle[] = userVehicles.map(v => {
+      // Normalize category to lowercase for consistency
+      const normalizedCategory = v.category.toLowerCase();
+      
+      return {
+        id: v.id,
+        title: `${v.year} ${v.make} ${v.model}`,
+        make: v.make,
+        model: v.model,
+        variant: v.variant || '',
+        year: v.year,
+        category: normalizedCategory as any,
+        price: v.price,
+        negotiable: v.negotiable,
+        location: {
+          province: v.province,
+          district: v.district,
+          city: v.city
+        },
+        mileage: v.mileage || 0,
+        fuelType: v.fuelType || 'PETROL',
+        transmission: v.transmission || 'MANUAL',
+        engineCC: v.engineCC,
+        condition: v.condition || 'GOOD',
+        sellerType: 'individual' as const,
+        sellerName: v.seller ? `${v.seller.firstName} ${v.seller.lastName}` : 'Unknown',
+        images: v.images.length > 0 ? v.images.map((img: any) => img.url) : ['https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80'],
+        hasPassport: passportData[v.id] || false,
+        passportId: passportData[v.id] ? `passport_${v.id}` : undefined,
+        postedDate: v.createdAt,
+        featured: v.featured,
+        description: v.description || '',
+        keyFeatures: []
+      };
+    });
     
     // Override mock vehicle passport status with computed data (without mutating original)
     const updatedMockVehicles = mockVehicles.map(v => {
