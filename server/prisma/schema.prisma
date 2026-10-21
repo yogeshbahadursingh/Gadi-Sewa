@@ -27,14 +27,16 @@ model User {
   updatedAt     DateTime  @updatedAt
 
   // Relations
-  roles         UserRole[]
-  vehicles      Vehicle[]
-  favorites     Favorite[]
-  enquiries     Enquiry[]
-  messages      Message[]
-  inspections   Inspection[]
-  passports     VehiclePassport[]
-  notifications Notification[]
+  roles                    UserRole[]
+  vehicles                 Vehicle[]
+  favorites                Favorite[]
+  enquiries                Enquiry[]
+  messages                 Message[]
+  inspections              Inspection[]
+  inspectedPassports       VehiclePassport[] @relation("InspectorPassports")
+  reviewedPassports        VehiclePassport[] @relation("ReviewerPassports")
+  conversationParticipants ConversationParticipant[]
+  notifications            Notification[]
 
   @@map("users")
 }
