@@ -60,6 +60,45 @@ export interface VehicleImage {
   isPrimary: boolean;
 }
 
+export interface Favourite {
+  id: string;
+  userId: string;
+  vehicleId: string;
+  createdAt: string;
+}
+
+export interface Enquiry {
+  id: string;
+  vehicleId: string;
+  buyerId: string;
+  message: string;
+  offerAmount?: number;
+  status: 'NEW' | 'READ' | 'REPLIED' | 'CLOSED';
+  createdAt: string;
+  vehicle?: Vehicle;
+  buyer?: { id: string; firstName: string; lastName: string; email: string };
+}
+
+export interface Inspection {
+  id: string;
+  vehicleId: string;
+  inspectorId?: string;
+  status: 'REQUESTED' | 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED';
+  findings?: string;
+  photos?: string[];
+  createdAt: string;
+  completedAt?: string;
+}
+
+export interface Passport {
+  id: string;
+  vehicleId: string;
+  passportNumber: string;
+  status: 'PENDING' | 'PUBLISHED' | 'EXPIRED' | 'REVOKED';
+  inspectionDate?: string;
+  publishedAt?: string;
+}
+
 // LocalStorage helpers
 const STORAGE_KEYS = {
   USERS: 'gadi_sewa_users',
@@ -67,6 +106,9 @@ const STORAGE_KEYS = {
   TOKEN: 'gadi_sewa_token',
   VEHICLES: 'gadi_sewa_vehicles',
   FAVORITES: 'gadi_sewa_favorites',
+  ENQUIRIES: 'gadi_sewa_enquiries',
+  INSPECTIONS: 'gadi_sewa_inspections',
+  PASSPORTS: 'gadi_sewa_passports',
 };
 
 function getStorage<T>(key: string, defaultValue: T): T {
@@ -294,7 +336,186 @@ const demoAPI = {
     vehicle.views = (vehicle.views || 0) + 1;
     setStorage(STORAGE_KEYS.VEHICLES, vehicles);
     
+    // Compute passport status from inspections
+    const passports = getStorage<Passport[]>(STORAGE_KEYS.PASSPORTS, []);
+    const passport = passports.find(p => p.vehicleId === id && p.status === 'PUBLISHED');
+    vehicle.hasPassport = !!passport;
+    vehicle.passportId = passport?.id;
+    
     return vehicle;
+  },
+  
+  // Favorites
+  async addFavourite(vehicleId: string) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const favourites = getStorage<Favourite[]>(STORAGE_KEYS.FAVORITES, []);
+    
+    // Check if already favourited
+    if (favourites.find(f => f.userId === currentUser.id && f.vehicleId === vehicleId)) {
+      return { message: 'Already in favourites' };
+    }
+    
+    const favourite: Favourite = {
+      id: `fav_${Date.now()}`,
+      userId: currentUser.id,
+      vehicleId,
+      createdAt: new Date().toISOString()
+    };
+    
+    favourites.push(favourite);
+    setStorage(STORAGE_KEYS.FAVORITES, favourites);
+    
+    return favourite;
+  },
+  
+  async removeFavourite(vehicleId: string) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const favourites = getStorage<Favourite[]>(STORAGE_KEYS.FAVORITES, []);
+    const filtered = favourites.filter(f => !(f.userId === currentUser.id && f.vehicleId === vehicleId));
+    setStorage(STORAGE_KEYS.FAVORITES, filtered);
+    
+    return { message: 'Removed from favourites' };
+  },
+  
+  async getMyFavourites() {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const favourites = getStorage<Favourite[]>(STORAGE_KEYS.FAVORITES, []);
+    const userFavourites = favourites.filter(f => f.userId === currentUser.id);
+    
+    const vehicles = getStorage<Vehicle[]>(STORAGE_KEYS.VEHICLES, []);
+    const favouriteVehicles = userFavourites.map(fav => {
+      const vehicle = vehicles.find(v => v.id === fav.vehicleId);
+      return vehicle ? { ...vehicle, favouriteId: fav.id } : null;
+    }).filter(Boolean);
+    
+    return favouriteVehicles;
+  },
+  
+  async isFavourite(vehicleId: string) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) return false;
+    
+    const favourites = getStorage<Favourite[]>(STORAGE_KEYS.FAVORITES, []);
+    return !!favourites.find(f => f.userId === currentUser.id && f.vehicleId === vehicleId);
+  },
+  
+  // Enquiries
+  async createEnquiry(vehicleId: string, message: string, offerAmount?: number) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const enquiries = getStorage<Enquiry[]>(STORAGE_KEYS.ENQUIRIES, []);
+    
+    const enquiry: Enquiry = {
+      id: `enq_${Date.now()}`,
+      vehicleId,
+      buyerId: currentUser.id,
+      message,
+      offerAmount,
+      status: 'NEW',
+      createdAt: new Date().toISOString(),
+      buyer: {
+        id: currentUser.id,
+        firstName: currentUser.firstName,
+        lastName: currentUser.lastName,
+        email: currentUser.email
+      }
+    };
+    
+    enquiries.push(enquiry);
+    setStorage(STORAGE_KEYS.ENQUIRIES, enquiries);
+    
+    return enquiry;
+  },
+  
+  async getMyEnquiries() {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const enquiries = getStorage<Enquiry[]>(STORAGE_KEYS.ENQUIRIES, []);
+    const vehicles = getStorage<Vehicle[]>(STORAGE_KEYS.VEHICLES, []);
+    
+    const userEnquiries = enquiries.filter(e => e.buyerId === currentUser.id);
+    return userEnquiries.map(enq => ({
+      ...enq,
+      vehicle: vehicles.find(v => v.id === enq.vehicleId)
+    }));
+  },
+  
+  async getEnquiriesForMyVehicles() {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const vehicles = getStorage<Vehicle[]>(STORAGE_KEYS.VEHICLES, []);
+    const myVehicleIds = vehicles.filter(v => v.sellerId === currentUser.id).map(v => v.id);
+    
+    const enquiries = getStorage<Enquiry[]>(STORAGE_KEYS.ENQUIRIES, []);
+    const relevantEnquiries = enquiries.filter(e => myVehicleIds.includes(e.vehicleId));
+    
+    return relevantEnquiries.map(enq => ({
+      ...enq,
+      vehicle: vehicles.find(v => v.id === enq.vehicleId)
+    }));
+  },
+  
+  // Profile
+  async updateProfile(data: { firstName?: string; lastName?: string; phone?: string }) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const users = getStorage<any[]>(STORAGE_KEYS.USERS, []);
+    const index = users.findIndex(u => u.id === currentUser.id);
+    
+    if (index === -1) throw new Error('User not found');
+    
+    users[index] = { ...users[index], ...data };
+    setStorage(STORAGE_KEYS.USERS, users);
+    
+    const updatedUser = { ...users[index], password: undefined };
+    setStorage(STORAGE_KEYS.CURRENT_USER, updatedUser);
+    
+    return updatedUser;
+  },
+  
+  async changePassword(currentPassword: string, newPassword: string) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const users = getStorage<any[]>(STORAGE_KEYS.USERS, []);
+    const user = users.find(u => u.id === currentUser.id);
+    
+    if (!user) throw new Error('User not found');
+    if (user.password !== currentPassword) throw new Error('Current password is incorrect');
+    if (newPassword.length < 8) throw new Error('New password must be at least 8 characters');
+    
+    const index = users.findIndex(u => u.id === currentUser.id);
+    users[index].password = newPassword;
+    setStorage(STORAGE_KEYS.USERS, users);
+    
+    return { message: 'Password changed successfully' };
+  },
+  
+  // Image upload (base64 for demo mode)
+  async uploadImage(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsDataURL(file);
+    });
+  },
+  
+  // Passport status (computed from inspections)
+  async getPassportStatus(vehicleId: string): Promise<{ hasPassport: boolean; passport?: Passport }> {
+    const passports = getStorage<Passport[]>(STORAGE_KEYS.PASSPORTS, []);
+    const passport = passports.find(p => p.vehicleId === vehicleId && p.status === 'PUBLISHED');
+    return { hasPassport: !!passport, passport };
   }
 };
 
@@ -414,6 +635,131 @@ export const api = DEMO_MODE ? demoAPI : {
     const res = await fetch(`${API_URL}/api/vehicles/${id}`);
     if (!res.ok) throw new Error('Vehicle not found');
     return res.json();
+  },
+  
+  async addFavourite(vehicleId: string) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/favourites`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ vehicleId })
+    });
+    if (!res.ok) throw new Error('Failed to add favourite');
+    return res.json();
+  },
+  
+  async removeFavourite(vehicleId: string) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/favourites/${vehicleId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Failed to remove favourite');
+    return res.json();
+  },
+  
+  async getMyFavourites() {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/favourites`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Failed to fetch favourites');
+    return res.json();
+  },
+  
+  async isFavourite(vehicleId: string) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/favourites/check/${vehicleId}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) return false;
+    const data = await res.json();
+    return data.isFavourite;
+  },
+  
+  async createEnquiry(vehicleId: string, message: string, offerAmount?: number) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/enquiries`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ vehicleId, message, offerAmount })
+    });
+    if (!res.ok) throw new Error('Failed to create enquiry');
+    return res.json();
+  },
+  
+  async getMyEnquiries() {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/enquiries/buyer`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Failed to fetch enquiries');
+    return res.json();
+  },
+  
+  async getEnquiriesForMyVehicles() {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/enquiries/seller`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Failed to fetch enquiries');
+    return res.json();
+  },
+  
+  async updateProfile(data: { firstName?: string; lastName?: string; phone?: string }) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/users/profile`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Failed to update profile');
+    return res.json();
+  },
+  
+  async changePassword(currentPassword: string, newPassword: string) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/users/change-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ currentPassword, newPassword })
+    });
+    if (!res.ok) throw new Error('Failed to change password');
+    return res.json();
+  },
+  
+  async uploadImage(file: File): Promise<string> {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    const res = await fetch(`${API_URL}/api/upload`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: formData
+    });
+    if (!res.ok) throw new Error('Failed to upload image');
+    const data = await res.json();
+    return data.url;
+  },
+  
+  async getPassportStatus(vehicleId: string) {
+    const res = await fetch(`${API_URL}/api/passports/vehicle/${vehicleId}`);
+    if (!res.ok) return { hasPassport: false };
+    const data = await res.json();
+    return { hasPassport: true, passport: data.passport };
   }
 };
 

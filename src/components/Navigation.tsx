@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Search, Shield, ChevronDown, Car, Bike, Zap, Wrench, ShieldCheck, User } from 'lucide-react';
+import { Menu, X, Search, Shield, ChevronDown, Car, Bike, Zap, Wrench, ShieldCheck, User, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -189,6 +189,13 @@ export default function Navigation() {
                   <User className="w-4 h-4" />
                   <span className="text-sm font-medium">{user?.firstName}</span>
                 </Link>
+                <Link
+                  to="/favourites"
+                  className={`p-2.5 rounded-full transition-colors ${isDark ? 'hover:bg-ivory/10' : 'hover:bg-obsidian/5'}`}
+                  aria-label="My favourites"
+                >
+                  <Heart className={`w-5 h-5 transition-colors ${isDark ? 'text-ivory/70' : 'text-obsidian/60'}`} />
+                </Link>
                 <button
                   onClick={logout}
                   className="px-5 py-2.5 bg-gold text-obsidian text-sm font-semibold rounded-full hover:bg-gold-light transition-colors duration-300 shadow-[var(--shadow-gold)]"
@@ -270,6 +277,24 @@ export default function Navigation() {
                       className="block w-full text-center px-5 py-4 bg-obsidian text-ivory text-base font-semibold rounded-2xl"
                     >
                       My Dashboard
+                    </Link>
+                    <Link
+                      to="/favourites"
+                      className="block w-full text-center px-5 py-4 border border-obsidian/10 text-obsidian text-base font-medium rounded-2xl"
+                    >
+                      My Favourites
+                    </Link>
+                    <Link
+                      to="/enquiries"
+                      className="block w-full text-center px-5 py-4 border border-obsidian/10 text-obsidian text-base font-medium rounded-2xl"
+                    >
+                      My Enquiries
+                    </Link>
+                    <Link
+                      to="/profile"
+                      className="block w-full text-center px-5 py-4 border border-obsidian/10 text-obsidian text-base font-medium rounded-2xl"
+                    >
+                      My Profile
                     </Link>
                     <button
                       onClick={logout}

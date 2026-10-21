@@ -8,13 +8,26 @@ import {
 import { vehicles, formatPrice, formatMileage } from '../data/vehicles';
 import PassportBadge from '../components/PassportBadge';
 import VehicleCard from '../components/VehicleCard';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { api } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function VehicleDetailPage() {
   const { id } = useParams();
+  const { isAuthenticated } = useAuth();
   const vehicle = vehicles.find(v => v.id === id);
   const [isFavourite, setIsFavourite] = useState(false);
-  const [contactMessage, setContactMessage] = useState<string | null>(null);
+  const [enquiryMessage, setEnquiryMessage] = useState('');
+  const [offerAmount, setOfferAmount] = useState('');
+  const [enquiryStatus, setEnquiryStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [enquiryError, setEnquiryError] = useState('');
+  
+  // Check if vehicle is in favourites on mount
+  useEffect(() => {
+    if (id && isAuthenticated) {
+      api.isFavourite(id).then(setIsFavourite).catch(() => {});
+    }
+  }, [id, isAuthenticated]);
 
   if (!vehicle) {
     return (
@@ -73,7 +86,23 @@ export default function VehicleDetailPage() {
               </div>
               <div className="absolute top-4 right-4 flex gap-2">
                 <button
-                  onClick={() => setIsFavourite(!isFavourite)}
+                  onClick={async () => {
+                    if (!isAuthenticated) {
+                      window.location.hash = '/login';
+                      return;
+                    }
+                    try {
+                      if (isFavourite) {
+                        await api.removeFavourite(id!);
+                        setIsFavourite(false);
+                      } else {
+                        await api.addFavourite(id!);
+                        setIsFavourite(true);
+                      }
+                    } catch (err) {
+                      console.error('Failed to toggle favourite:', err);
+                    }
+                  }}
                   className="p-2.5 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white transition-all shadow-sm active:scale-95"
                   aria-label={isFavourite ? 'Remove from favourites' : 'Add to favourites'}
                   aria-pressed={isFavourite}
@@ -81,6 +110,18 @@ export default function VehicleDetailPage() {
                   <Heart className={`w-5 h-5 transition-colors ${isFavourite ? 'fill-red-500 text-red-500' : 'text-obsidian/50'}`} />
                 </button>
                 <button
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({
+                        title: vehicle.title,
+                        text: `Check out this ${vehicle.year} ${vehicle.make} ${vehicle.model}`,
+                        url: window.location.href
+                      });
+                    } else {
+                      navigator.clipboard.writeText(window.location.href);
+                      alert('Link copied to clipboard!');
+                    }
+                  }}
                   className="p-2.5 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white transition-all shadow-sm active:scale-95"
                   aria-label="Share this listing"
                 >
@@ -246,33 +287,101 @@ export default function VehicleDetailPage() {
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <button
-                    onClick={() => setContactMessage('Sign in required to view seller contact details. Account creation is coming soon.')}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-obsidian text-ivory text-sm font-semibold rounded-xl hover:bg-emerald transition-colors"
-                  >
-                    <Phone className="w-4 h-4" />
-                    Contact Seller
-                  </button>
-                  <button
-                    onClick={() => setContactMessage('Messaging is coming soon. Sign in to enquire about this vehicle.')}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gold/10 text-gold-dark text-sm font-semibold rounded-xl hover:bg-gold/20 transition-colors"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    Send Enquiry
-                  </button>
-                </div>
-
-                {/* Contact message */}
-                {contactMessage && (
-                  <div className="mt-3 p-3 bg-ivory-warm border border-obsidian/[0.06] rounded-xl">
-                    <p className="text-xs text-obsidian/70">{contactMessage}</p>
-                    <button
-                      onClick={() => setContactMessage(null)}
-                      className="text-xs text-gold hover:text-gold-dark font-medium mt-1"
+                {/* Enquiry Form */}
+                {isAuthenticated ? (
+                  <div className="space-y-3">
+                    {enquiryStatus === 'sent' ? (
+                      <div className="p-4 bg-emerald/10 border border-emerald/20 rounded-xl">
+                        <div className="flex items-center gap-2 mb-2">
+                          <CheckCircle2 className="w-5 h-5 text-emerald" />
+                          <p className="text-sm font-semibold text-emerald">Enquiry Sent!</p>
+                        </div>
+                        <p className="text-xs text-obsidian/70">
+                          The seller has been notified and will respond to your enquiry soon.
+                        </p>
+                        <button
+                          onClick={() => {
+                            setEnquiryStatus('idle');
+                            setEnquiryMessage('');
+                            setOfferAmount('');
+                          }}
+                          className="text-xs text-gold hover:text-gold-dark font-medium mt-2"
+                        >
+                          Send Another Enquiry
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <div>
+                          <label className="block text-xs font-medium text-obsidian/70 mb-1">
+                            Message to Seller
+                          </label>
+                          <textarea
+                            value={enquiryMessage}
+                            onChange={(e) => setEnquiryMessage(e.target.value)}
+                            placeholder="I'm interested in this vehicle..."
+                            rows={3}
+                            className="w-full px-3 py-2 bg-ivory border border-obsidian/[0.06] rounded-lg text-sm outline-none focus:border-gold/40 transition-colors resize-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-obsidian/70 mb-1">
+                            Offer Amount (optional)
+                          </label>
+                          <input
+                            type="number"
+                            value={offerAmount}
+                            onChange={(e) => setOfferAmount(e.target.value)}
+                            placeholder="रू 500000"
+                            className="w-full px-3 py-2 bg-ivory border border-obsidian/[0.06] rounded-lg text-sm outline-none focus:border-gold/40 transition-colors"
+                          />
+                        </div>
+                        {enquiryError && (
+                          <div className="p-2 bg-red-50 border border-red-200 rounded-lg">
+                            <p className="text-xs text-red-800">{enquiryError}</p>
+                          </div>
+                        )}
+                        <button
+                          onClick={async () => {
+                            if (!enquiryMessage.trim()) {
+                              setEnquiryError('Please enter a message');
+                              return;
+                            }
+                            setEnquiryStatus('sending');
+                            setEnquiryError('');
+                            try {
+                              await api.createEnquiry(
+                                id!,
+                                enquiryMessage,
+                                offerAmount ? parseInt(offerAmount) : undefined
+                              );
+                              setEnquiryStatus('sent');
+                            } catch (err: any) {
+                              setEnquiryError(err.message || 'Failed to send enquiry');
+                              setEnquiryStatus('error');
+                            }
+                          }}
+                          disabled={enquiryStatus === 'sending'}
+                          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-obsidian text-ivory text-sm font-semibold rounded-xl hover:bg-emerald transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {enquiryStatus === 'sending' ? 'Sending...' : 'Send Enquiry'}
+                          {enquiryStatus !== 'sending' && <MessageCircle className="w-4 h-4" />}
+                        </button>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <Link
+                      to="/login"
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-obsidian text-ivory text-sm font-semibold rounded-xl hover:bg-emerald transition-colors"
                     >
-                      Dismiss
-                    </button>
+                      <Phone className="w-4 h-4" />
+                      Sign In to Contact Seller
+                    </Link>
+                    <p className="text-xs text-obsidian/50 text-center">
+                      Create an account to enquire about this vehicle
+                    </p>
                   </div>
                 )}
 

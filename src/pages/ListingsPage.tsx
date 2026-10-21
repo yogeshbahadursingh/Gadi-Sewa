@@ -40,6 +40,21 @@ export default function ListingsPage() {
     loadUserVehicles();
   }, []);
 
+  // Load passport data from localStorage
+  const [passportData, setPassportData] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    // Load passports from localStorage
+    const passports = JSON.parse(localStorage.getItem('gadi_sewa_passports') || '[]');
+    const passportMap: Record<string, boolean> = {};
+    passports.forEach((p: any) => {
+      if (p.status === 'PUBLISHED') {
+        passportMap[p.vehicleId] = true;
+      }
+    });
+    setPassportData(passportMap);
+  }, []);
+
   // Combine mock data with user vehicles
   const allVehicles = useMemo(() => {
     // Convert user vehicles to match mock vehicle format
@@ -66,16 +81,22 @@ export default function ListingsPage() {
       sellerType: 'individual' as const,
       sellerName: v.seller ? `${v.seller.firstName} ${v.seller.lastName}` : 'Unknown',
       images: v.images.length > 0 ? v.images.map((img: any) => img.url) : ['https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80'],
-      hasPassport: v.hasPassport,
-      passportId: v.passportId,
+      hasPassport: passportData[v.id] || false,
+      passportId: passportData[v.id] ? `passport_${v.id}` : undefined,
       postedDate: v.createdAt,
       featured: v.featured,
       description: v.description || '',
       keyFeatures: []
     }));
     
-    return [...mockVehicles, ...convertedUserVehicles];
-  }, [userVehicles]);
+    // Override mock vehicle passport status with computed data
+    const updatedMockVehicles = mockVehicles.map(v => ({
+      ...v,
+      hasPassport: passportData[v.id] !== undefined ? passportData[v.id] : v.hasPassport
+    }));
+    
+    return [...updatedMockVehicles, ...convertedUserVehicles];
+  }, [userVehicles, passportData]);
 
   const filteredVehicles = useMemo(() => {
     let result = [...allVehicles];

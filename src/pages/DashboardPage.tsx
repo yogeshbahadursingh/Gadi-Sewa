@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Car, Plus, Eye, Edit, Trash2, CheckCircle, Clock, AlertCircle, LogOut } from 'lucide-react';
+import { Car, Plus, Eye, Edit, Trash2, CheckCircle, Clock, AlertCircle, LogOut, Heart, MessageCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { api, Vehicle } from '../services/api';
 import { formatPrice } from '../data/vehicles';
@@ -66,6 +66,25 @@ export default function DashboardPage() {
     navigate('/');
   };
 
+  const [enquiriesCount, setEnquiriesCount] = useState(0);
+  const [favouritesCount, setFavouritesCount] = useState(0);
+
+  useEffect(() => {
+    const loadCounts = async () => {
+      try {
+        const [enquiries, favourites] = await Promise.all([
+          api.getEnquiriesForMyVehicles(),
+          api.getMyFavourites()
+        ]);
+        setEnquiriesCount(enquiries?.length || 0);
+        setFavouritesCount(favourites?.length || 0);
+      } catch (error) {
+        console.error('Failed to load counts:', error);
+      }
+    };
+    loadCounts();
+  }, []);
+
   const stats = {
     total: myVehicles.length,
     published: myVehicles.filter(v => v.status === 'PUBLISHED').length,
@@ -89,6 +108,20 @@ export default function DashboardPage() {
             <p className="text-slate-warm mt-1">Manage your vehicles and account</p>
           </div>
           <div className="flex items-center gap-3">
+            <Link
+              to="/favourites"
+              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-obsidian/10 text-obsidian text-sm font-medium rounded-full hover:bg-obsidian/5 transition-colors"
+            >
+              <Heart className="w-4 h-4" />
+              Favourites ({favouritesCount})
+            </Link>
+            <Link
+              to="/enquiries"
+              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-obsidian/10 text-obsidian text-sm font-medium rounded-full hover:bg-obsidian/5 transition-colors"
+            >
+              <MessageCircle className="w-4 h-4" />
+              Enquiries ({enquiriesCount})
+            </Link>
             <Link
               to="/sell"
               className="flex items-center gap-2 px-5 py-2.5 bg-obsidian text-ivory text-sm font-medium rounded-full hover:bg-emerald transition-colors"
