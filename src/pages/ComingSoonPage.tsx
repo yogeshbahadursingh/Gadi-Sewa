@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Construction, ShieldCheck, Wrench, Car, Users, Building2, Calculator, Heart, MapPin, Info, Phone } from 'lucide-react';
+import { ArrowLeft, Construction, ShieldCheck, Wrench, Car, Users, Building2, Calculator, Info, Phone } from 'lucide-react';
 
 const pageMeta: Record<string, { title: string; description: string; icon: React.ReactNode; phase: string }> = {
   '/inspect': {

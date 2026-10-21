@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useState, FormEvent } from 'react';
 import {
@@ -23,6 +23,7 @@ const stagger = {
 };
 
 export default function HomePage() {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const featuredVehicles = vehicles.filter(v => v.featured).slice(0, 6);
   const passportVehicles = vehicles.filter(v => v.hasPassport).slice(0, 4);
@@ -30,9 +31,9 @@ export default function HomePage() {
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      window.location.hash = `/listings?q=${encodeURIComponent(searchQuery.trim())}`;
+      navigate(`/listings?q=${encodeURIComponent(searchQuery.trim())}`);
     } else {
-      window.location.hash = '/listings';
+      navigate('/listings');
     }
   };
 

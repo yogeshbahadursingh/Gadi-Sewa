@@ -1,8 +1,8 @@
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  ArrowLeft, MapPin, Gauge, Fuel, Calendar, Heart, Share2,
-  Phone, MessageCircle, Shield, ShieldCheck, Camera, FileText,
+  MapPin, Gauge, Fuel, Calendar, Heart, Share2,
+  Phone, MessageCircle, Shield, ShieldCheck, Camera,
   ChevronRight, CheckCircle2, AlertCircle
 } from 'lucide-react';
 import { vehicles, formatPrice, formatMileage } from '../data/vehicles';
@@ -13,8 +13,8 @@ import { useState } from 'react';
 export default function VehicleDetailPage() {
   const { id } = useParams();
   const vehicle = vehicles.find(v => v.id === id);
-  const [activeImage, setActiveImage] = useState(0);
   const [isFavourite, setIsFavourite] = useState(false);
+  const [contactMessage, setContactMessage] = useState<string | null>(null);
 
   if (!vehicle) {
     return (
@@ -62,7 +62,7 @@ export default function VehicleDetailPage() {
             >
               <div className="aspect-[16/9] lg:aspect-[16/8]">
                 <img
-                  src={vehicle.images[activeImage]}
+                  src={vehicle.images[0]}
                   alt={vehicle.title}
                   className="w-full h-full object-cover"
                 />
@@ -247,15 +247,34 @@ export default function VehicleDetailPage() {
                 </div>
 
                 <div className="space-y-3">
-                  <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-obsidian text-ivory text-sm font-semibold rounded-xl hover:bg-emerald transition-colors">
+                  <button
+                    onClick={() => setContactMessage('Sign in required to view seller contact details. Account creation is coming soon.')}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-obsidian text-ivory text-sm font-semibold rounded-xl hover:bg-emerald transition-colors"
+                  >
                     <Phone className="w-4 h-4" />
-                    Call Seller
+                    Contact Seller
                   </button>
-                  <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gold/10 text-gold-dark text-sm font-semibold rounded-xl hover:bg-gold/20 transition-colors">
+                  <button
+                    onClick={() => setContactMessage('Messaging is coming soon. Sign in to enquire about this vehicle.')}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gold/10 text-gold-dark text-sm font-semibold rounded-xl hover:bg-gold/20 transition-colors"
+                  >
                     <MessageCircle className="w-4 h-4" />
-                    Send Message
+                    Send Enquiry
                   </button>
                 </div>
+
+                {/* Contact message */}
+                {contactMessage && (
+                  <div className="mt-3 p-3 bg-ivory-warm border border-obsidian/[0.06] rounded-xl">
+                    <p className="text-xs text-obsidian/70">{contactMessage}</p>
+                    <button
+                      onClick={() => setContactMessage(null)}
+                      className="text-xs text-gold hover:text-gold-dark font-medium mt-1"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                )}
 
                 <div className="mt-4 pt-4 border-t border-obsidian/[0.04]">
                   <p className="text-xs text-slate-warm text-center">

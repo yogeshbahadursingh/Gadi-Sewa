@@ -57,7 +57,7 @@ export default function Navigation() {
     { to: '/listings?category=motorcycle', label: 'Motorcycles', icon: <Bike className="w-4 h-4" /> },
     { to: '/listings?category=scooter', label: 'Scooters', icon: <Bike className="w-4 h-4" /> },
     { to: '/listings?category=van', label: 'Commercial', icon: <Car className="w-4 h-4" /> },
-    { to: '/passport', label: 'Inspections', icon: <ShieldCheck className="w-4 h-4" /> },
+    { to: '/passport', label: 'Vehicle Passport', icon: <ShieldCheck className="w-4 h-4" /> },
   ];
 
   return (
