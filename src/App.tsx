@@ -15,6 +15,7 @@ import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 import FavouritesPage from './pages/FavouritesPage';
 import EnquiriesPage from './pages/EnquiriesPage';
+import EditVehiclePage from './pages/EditVehiclePage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -42,6 +43,7 @@ function AppLayout() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/favourites" element={<FavouritesPage />} />
           <Route path="/enquiries" element={<EnquiriesPage />} />
+          <Route path="/vehicle/:id/edit" element={<EditVehiclePage />} />
           {/* Coming Soon pages */}
           <Route path="/inspect" element={<ComingSoonPage />} />
           <Route path="/garage" element={<ComingSoonPage />} />

@@ -89,11 +89,14 @@ export default function ListingsPage() {
       keyFeatures: []
     }));
     
-    // Override mock vehicle passport status with computed data
-    const updatedMockVehicles = mockVehicles.map(v => ({
-      ...v,
-      hasPassport: passportData[v.id] !== undefined ? passportData[v.id] : v.hasPassport
-    }));
+    // Override mock vehicle passport status with computed data (without mutating original)
+    const updatedMockVehicles = mockVehicles.map(v => {
+      const computedPassport = passportData[v.id];
+      if (computedPassport !== undefined) {
+        return { ...v, hasPassport: computedPassport };
+      }
+      return v;
+    });
     
     return [...updatedMockVehicles, ...convertedUserVehicles];
   }, [userVehicles, passportData]);

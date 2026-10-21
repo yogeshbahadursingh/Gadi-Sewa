@@ -5,22 +5,121 @@ import {
   Phone, MessageCircle, Shield, ShieldCheck, Camera,
   ChevronRight, CheckCircle2, AlertCircle
 } from 'lucide-react';
-import { vehicles, formatPrice, formatMileage } from '../data/vehicles';
+import { vehicles as mockVehicles, formatPrice, formatMileage, Vehicle as MockVehicle } from '../data/vehicles';
 import PassportBadge from '../components/PassportBadge';
 import VehicleCard from '../components/VehicleCard';
 import { useState, useEffect } from 'react';
-import { api } from '../services/api';
+import { api, Vehicle as ApiVehicle } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function VehicleDetailPage() {
   const { id } = useParams();
-  const { isAuthenticated } = useAuth();
-  const vehicle = vehicles.find(v => v.id === id);
+  const { isAuthenticated, user } = useAuth();
+  const [vehicle, setVehicle] = useState<MockVehicle | null>(null);
+  const [loading, setLoading] = useState(true);
   const [isFavourite, setIsFavourite] = useState(false);
   const [enquiryMessage, setEnquiryMessage] = useState('');
   const [offerAmount, setOfferAmount] = useState('');
   const [enquiryStatus, setEnquiryStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [enquiryError, setEnquiryError] = useState('');
+  
+  // Load vehicle from API or mock data
+  useEffect(() => {
+    const loadVehicle = async () => {
+      if (!id) return;
+      
+      // First check mock data
+      const mockVehicle = mockVehicles.find(v => v.id === id);
+      if (mockVehicle) {
+        // Check if there's a user-created version in API
+        try {
+          const apiVehicle = await api.getVehicleById(id);
+          if (apiVehicle) {
+            // Convert API vehicle to mock format
+            const converted: MockVehicle = {
+              id: apiVehicle.id,
+              title: `${apiVehicle.year} ${apiVehicle.make} ${apiVehicle.model}`,
+              make: apiVehicle.make,
+              model: apiVehicle.model,
+              variant: apiVehicle.variant || '',
+              year: apiVehicle.year,
+              category: apiVehicle.category.toLowerCase() as any,
+              price: apiVehicle.price,
+              negotiable: apiVehicle.negotiable,
+              location: {
+                province: apiVehicle.province,
+                district: apiVehicle.district,
+                city: apiVehicle.city
+              },
+              mileage: apiVehicle.mileage || 0,
+              fuelType: apiVehicle.fuelType || 'PETROL',
+              transmission: apiVehicle.transmission || 'MANUAL',
+              engineCC: apiVehicle.engineCC,
+              condition: apiVehicle.condition || 'GOOD',
+              sellerType: 'individual' as const,
+              sellerName: apiVehicle.seller ? `${apiVehicle.seller.firstName} ${apiVehicle.seller.lastName}` : 'Unknown',
+              images: apiVehicle.images.length > 0 ? apiVehicle.images.map((img: any) => img.url) : ['https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80'],
+              hasPassport: apiVehicle.hasPassport,
+              passportId: apiVehicle.passportId,
+              postedDate: apiVehicle.createdAt,
+              featured: apiVehicle.featured,
+              description: apiVehicle.description || '',
+              keyFeatures: []
+            };
+            setVehicle(converted);
+          } else {
+            setVehicle(mockVehicle);
+          }
+        } catch (error) {
+          // API failed, use mock data
+          setVehicle(mockVehicle);
+        }
+      } else {
+        // Not in mock data, try API only
+        try {
+          const apiVehicle = await api.getVehicleById(id);
+          if (apiVehicle) {
+            const converted: MockVehicle = {
+              id: apiVehicle.id,
+              title: `${apiVehicle.year} ${apiVehicle.make} ${apiVehicle.model}`,
+              make: apiVehicle.make,
+              model: apiVehicle.model,
+              variant: apiVehicle.variant || '',
+              year: apiVehicle.year,
+              category: apiVehicle.category.toLowerCase() as any,
+              price: apiVehicle.price,
+              negotiable: apiVehicle.negotiable,
+              location: {
+                province: apiVehicle.province,
+                district: apiVehicle.district,
+                city: apiVehicle.city
+              },
+              mileage: apiVehicle.mileage || 0,
+              fuelType: apiVehicle.fuelType || 'PETROL',
+              transmission: apiVehicle.transmission || 'MANUAL',
+              engineCC: apiVehicle.engineCC,
+              condition: apiVehicle.condition || 'GOOD',
+              sellerType: 'individual' as const,
+              sellerName: apiVehicle.seller ? `${apiVehicle.seller.firstName} ${apiVehicle.seller.lastName}` : 'Unknown',
+              images: apiVehicle.images.length > 0 ? apiVehicle.images.map((img: any) => img.url) : ['https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80'],
+              hasPassport: apiVehicle.hasPassport,
+              passportId: apiVehicle.passportId,
+              postedDate: apiVehicle.createdAt,
+              featured: apiVehicle.featured,
+              description: apiVehicle.description || '',
+              keyFeatures: []
+            };
+            setVehicle(converted);
+          }
+        } catch (error) {
+          console.error('Failed to load vehicle:', error);
+        }
+      }
+      setLoading(false);
+    };
+    
+    loadVehicle();
+  }, [id]);
   
   // Check if vehicle is in favourites on mount
   useEffect(() => {
@@ -43,9 +142,11 @@ export default function VehicleDetailPage() {
     );
   }
 
-  const similarVehicles = vehicles
-    .filter(v => v.id !== vehicle.id && (v.category === vehicle.category || v.make === vehicle.make))
-    .slice(0, 3);
+  const similarVehicles = vehicle 
+    ? mockVehicles
+        .filter((v: MockVehicle) => v.id !== vehicle.id && (v.category === vehicle.category || v.make === vehicle.make))
+        .slice(0, 3)
+    : [];
 
   return (
     <main className="min-h-screen bg-ivory pt-20 lg:pt-24">

@@ -248,6 +248,13 @@ export default function DashboardPage() {
                         >
                           <Eye className="w-4 h-4" />
                         </Link>
+                        <Link
+                          to={`/vehicle/${vehicle.id}/edit`}
+                          className="p-2 text-obsidian/40 hover:text-obsidian transition-colors"
+                          aria-label="Edit vehicle"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Link>
                         <button
                           onClick={() => handleDelete(vehicle.id)}
                           className="p-2 text-obsidian/40 hover:text-red-600 transition-colors"

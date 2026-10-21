@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Car, Camera, MapPin, FileText, CheckCircle2, ChevronRight,
-  ArrowRight, Upload, Shield, AlertCircle, Info
+  ArrowRight, Upload, Shield, AlertCircle, Info, X
 } from 'lucide-react';
 import { categories, brands } from '../data/vehicles';
 import { api } from '../services/api';
@@ -21,6 +21,8 @@ export default function SellPage() {
   const { isAuthenticated } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [saving, setSaving] = useState(false);
+  const [images, setImages] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     category: '', make: '', model: '', variant: '', year: '',
     price: '', negotiable: false, province: '', district: '', city: '',
@@ -50,6 +52,42 @@ export default function SellPage() {
 
   const updateField = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    try {
+      const newImages: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          alert('Please upload only image files');
+          continue;
+        }
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert('Image size must be less than 5MB');
+          continue;
+        }
+        // Convert to base64
+        const base64 = await api.uploadImage(file);
+        newImages.push(base64);
+      }
+      setImages(prev => [...prev, ...newImages]);
+    } catch (error) {
+      console.error('Failed to upload images:', error);
+      alert('Failed to upload images');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -198,16 +236,62 @@ export default function SellPage() {
                 <p className="text-sm text-slate-warm mb-6">Upload clear photos from multiple angles. Good photos help sell faster.</p>
                 
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                  <div className="aspect-square border-2 border-dashed border-obsidian/10 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-gold/30 hover:bg-gold/[0.02] transition-colors">
-                    <Upload className="w-8 h-8 text-obsidian/20 mb-2" />
-                    <span className="text-xs text-obsidian/40">Upload Photo</span>
-                  </div>
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="aspect-square bg-ivory-dark rounded-2xl flex items-center justify-center">
+                  {/* Upload button */}
+                  <label className="aspect-square border-2 border-dashed border-obsidian/10 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-gold/30 hover:bg-gold/[0.02] transition-colors relative">
+                    {uploading ? (
+                      <div className="animate-spin w-8 h-8 border-2 border-gold border-t-transparent rounded-full" />
+                    ) : (
+                      <>
+                        <Upload className="w-8 h-8 text-obsidian/20 mb-2" />
+                        <span className="text-xs text-obsidian/40">Upload Photo</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageUpload}
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                      disabled={uploading}
+                    />
+                  </label>
+
+                  {/* Display uploaded images */}
+                  {images.map((img, index) => (
+                    <div key={index} className="aspect-square bg-ivory-dark rounded-2xl relative overflow-hidden group">
+                      <img
+                        src={img}
+                        alt={`Vehicle photo ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                      {index === 0 && (
+                        <span className="absolute top-2 left-2 px-2 py-1 bg-gold text-obsidian text-xs font-semibold rounded-full">
+                          Primary
+                        </span>
+                      )}
+                      <button
+                        onClick={() => removeImage(index)}
+                        className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-label="Remove image"
+                      >
+                        <X className="w-4 h-4 text-obsidian" />
+                      </button>
+                    </div>
+                  ))}
+
+                  {/* Placeholder slots */}
+                  {images.length < 3 && Array.from({ length: 3 - images.length }).map((_, i) => (
+                    <div key={`placeholder-${i}`} className="aspect-square bg-ivory-dark rounded-2xl flex items-center justify-center">
                       <Camera className="w-6 h-6 text-obsidian/10" />
                     </div>
                   ))}
                 </div>
+
+                {images.length > 0 && (
+                  <p className="text-xs text-obsidian/50 mt-3">
+                    {images.length} photo{images.length !== 1 ? 's' : ''} uploaded. First photo will be the primary image.
+                  </p>
+                )}
 
                 <div className="mt-6 p-4 bg-ivory-warm rounded-xl flex items-start gap-3">
                   <Info className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" />
@@ -361,6 +445,23 @@ export default function SellPage() {
                     </p>
                   </div>
                   
+                  {/* Image preview */}
+                  {images.length > 0 && (
+                    <div className="mb-4">
+                      <p className="text-xs text-obsidian/40 mb-2">Photos ({images.length})</p>
+                      <div className="flex gap-2 overflow-x-auto pb-2">
+                        {images.map((img, index) => (
+                          <img
+                            key={index}
+                            src={img}
+                            alt={`Preview ${index + 1}`}
+                            className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
                     <div><span className="text-obsidian/40">Category:</span> <span className="text-obsidian">{formData.category || '—'}</span></div>
                     <div><span className="text-obsidian/40">Fuel:</span> <span className="text-obsidian">{formData.fuelType || '—'}</span></div>
@@ -401,6 +502,11 @@ export default function SellPage() {
                         engineCC: formData.engineCC ? parseInt(formData.engineCC) : undefined,
                         condition: formData.condition || undefined,
                         description: formData.description || undefined,
+                        images: images.map((url, index) => ({
+                          url,
+                          order: index,
+                          isPrimary: index === 0
+                        })),
                       };
                       
                       const vehicle = await api.createVehicle(vehicleData);
