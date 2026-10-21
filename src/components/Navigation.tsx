@@ -1,92 +1,186 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Search, Shield, ChevronDown } from 'lucide-react';
+import { Menu, X, Search, Shield, ChevronDown, Car, Bike, Zap, Wrench, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
 
+  const isHomePage = location.pathname === '/';
+  const isDark = isHomePage && !scrolled;
+
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
+    const handleScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
     setIsOpen(false);
+    setMoreOpen(false);
   }, [location]);
 
-  const navLinks = [
-    { to: '/listings', label: 'Buy' },
-    { to: '/listings?category=electric', label: 'Electric' },
-    { to: '/passport', label: 'Vehicle Passport' },
-    { to: '/sell', label: 'Sell' },
+  // Close "More" dropdown on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
+        setMoreOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  // Lock body scroll when mobile menu open
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
+
+  const isActive = (path: string) => {
+    if (path === '/listings') {
+      return location.pathname === '/listings';
+    }
+    return location.pathname === path;
+  };
+
+  const textColor = isDark ? 'text-ivory/90' : 'text-obsidian/70';
+  const textColorHover = isDark ? 'hover:text-ivory' : 'hover:text-obsidian';
+  const logoColor = isDark ? 'text-ivory' : 'text-obsidian';
+  const logoSubColor = isDark ? 'text-ivory/50' : 'text-slate-warm';
+
+  const moreLinks = [
+    { to: '/listings?category=motorcycle', label: 'Motorcycles', icon: <Bike className="w-4 h-4" /> },
+    { to: '/listings?category=scooter', label: 'Scooters', icon: <Bike className="w-4 h-4" /> },
+    { to: '/listings?category=van', label: 'Commercial', icon: <Car className="w-4 h-4" /> },
+    { to: '/passport', label: 'Inspections', icon: <ShieldCheck className="w-4 h-4" /> },
   ];
 
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled
+        scrolled || !isHomePage
           ? 'glass shadow-[var(--shadow-soft)] border-b border-[var(--color-border-subtle)]'
           : 'bg-transparent'
       }`}
     >
-      <nav className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
+          <Link to="/" className="flex items-center gap-2.5 group" aria-label="Gadi-Sewa Home">
             <div className="relative">
-              <div className="w-9 h-9 rounded-lg bg-obsidian flex items-center justify-center group-hover:bg-emerald transition-colors duration-300">
+              <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors duration-300 ${
+                isDark ? 'bg-ivory/10 group-hover:bg-ivory/20' : 'bg-obsidian group-hover:bg-emerald'
+              }`}>
                 <Shield className="w-5 h-5 text-gold" />
               </div>
-              <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-gold rounded-full border-2 border-ivory" />
             </div>
             <div className="flex flex-col">
-              <span className="font-display text-lg font-semibold text-obsidian leading-tight tracking-tight">
+              <span className={`font-display text-lg font-semibold leading-tight tracking-tight transition-colors duration-300 ${logoColor}`}>
                 Gadi<span className="text-gold">-</span>Sewa
               </span>
-              <span className="text-[9px] uppercase tracking-[0.2em] text-slate-warm font-medium hidden sm:block">
+              <span className={`text-[9px] uppercase tracking-[0.2em] font-medium hidden sm:block transition-colors duration-300 ${logoSubColor}`}>
                 Nepal's Vehicle Trust
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 border-gold-animate ${
-                  location.pathname === link.to
-                    ? 'text-gold'
-                    : 'text-obsidian/70 hover:text-obsidian'
-                }`}
+          <div className="hidden lg:flex items-center gap-0.5">
+            <Link
+              to="/listings"
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${textColor} ${textColorHover} ${
+                isActive('/listings') ? 'text-gold' : ''
+              }`}
+            >
+              Buy
+            </Link>
+            <Link
+              to="/listings?category=electric"
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${textColor} ${textColorHover}`}
+            >
+              Electric
+            </Link>
+            <Link
+              to="/passport"
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${textColor} ${textColorHover} ${
+                isActive('/passport') ? 'text-gold' : ''
+              }`}
+            >
+              Vehicle Passport
+            </Link>
+            <Link
+              to="/sell"
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${textColor} ${textColorHover} ${
+                isActive('/sell') ? 'text-gold' : ''
+              }`}
+            >
+              Sell
+            </Link>
+
+            {/* More dropdown — now functional */}
+            <div className="relative" ref={moreRef}>
+              <button
+                onClick={() => setMoreOpen(!moreOpen)}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 flex items-center gap-1 ${textColor} ${textColorHover}`}
+                aria-expanded={moreOpen}
+                aria-haspopup="true"
               >
-                {link.label}
-              </Link>
-            ))}
-            <div className="relative group">
-              <button className="px-4 py-2 text-sm font-medium text-obsidian/70 hover:text-obsidian transition-colors flex items-center gap-1">
-                More <ChevronDown className="w-3.5 h-3.5" />
+                More <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${moreOpen ? 'rotate-180' : ''}`} />
               </button>
+              <AnimatePresence>
+                {moreOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-full right-0 mt-2 w-52 bg-white rounded-xl shadow-[var(--shadow-elevated)] border border-obsidian/[0.06] py-2 overflow-hidden"
+                    role="menu"
+                  >
+                    {moreLinks.map((link) => (
+                      <Link
+                        key={link.label}
+                        to={link.to}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-obsidian/70 hover:text-obsidian hover:bg-ivory transition-colors"
+                        role="menuitem"
+                      >
+                        <span className="text-gold/60">{link.icon}</span>
+                        {link.label}
+                      </Link>
+                    ))}
+                    <div className="border-t border-obsidian/[0.04] mt-1 pt-1">
+                      <Link
+                        to="/listings"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-obsidian/70 hover:text-obsidian hover:bg-ivory transition-colors"
+                        role="menuitem"
+                      >
+                        <span className="text-gold/60"><Wrench className="w-4 h-4" /></span>
+                        Workshops
+                      </Link>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
 
           {/* Desktop Actions */}
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-2">
             <Link
               to="/listings"
-              className="p-2.5 rounded-full hover:bg-obsidian/5 transition-colors"
+              className={`p-2.5 rounded-full transition-colors ${isDark ? 'hover:bg-ivory/10' : 'hover:bg-obsidian/5'}`}
               aria-label="Search vehicles"
             >
-              <Search className="w-5 h-5 text-obsidian/70" />
+              <Search className={`w-5 h-5 transition-colors ${isDark ? 'text-ivory/70' : 'text-obsidian/60'}`} />
             </Link>
             <Link
               to="/sell"
-              className="px-5 py-2.5 bg-obsidian text-ivory text-sm font-medium rounded-full hover:bg-emerald transition-colors duration-300 shadow-[var(--shadow-soft)]"
+              className="px-5 py-2.5 bg-gold text-obsidian text-sm font-semibold rounded-full hover:bg-gold-light transition-colors duration-300 shadow-[var(--shadow-gold)]"
             >
               List Your Vehicle
             </Link>
@@ -95,45 +189,61 @@ export default function Navigation() {
           {/* Mobile menu button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 rounded-lg hover:bg-obsidian/5 transition-colors"
-            aria-label="Toggle menu"
+            className={`lg:hidden p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-ivory/10' : 'hover:bg-obsidian/5'}`}
+            aria-label={isOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isOpen}
           >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isOpen ? (
+              <X className={`w-6 h-6 ${isDark ? 'text-ivory' : 'text-obsidian'}`} />
+            ) : (
+              <Menu className={`w-6 h-6 ${isDark ? 'text-ivory' : 'text-obsidian'}`} />
+            )}
           </button>
         </div>
       </nav>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Navigation — Full screen overlay */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="lg:hidden glass border-t border-[var(--color-border-subtle)]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="lg:hidden fixed inset-0 top-16 bg-ivory z-40 overflow-y-auto"
           >
-            <div className="px-4 py-6 space-y-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className={`block px-4 py-3 text-base font-medium rounded-xl transition-colors ${
-                    location.pathname === link.to
-                      ? 'bg-obsidian/5 text-gold'
-                      : 'text-obsidian/70 hover:bg-obsidian/5 hover:text-obsidian'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <div className="pt-4 space-y-3">
+            <div className="px-5 py-8">
+              <nav className="space-y-1" aria-label="Mobile navigation">
+                {[
+                  { to: '/listings', label: 'Buy a Vehicle' },
+                  { to: '/listings?category=electric', label: 'Electric Vehicles' },
+                  { to: '/passport', label: 'Vehicle Passport' },
+                  { to: '/sell', label: 'Sell Your Vehicle' },
+                ].map((link) => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    className={`block px-4 py-4 text-lg font-medium rounded-xl transition-colors ${
+                      isActive(link.to.split('?')[0])
+                        ? 'bg-obsidian/5 text-gold'
+                        : 'text-obsidian/80 hover:bg-obsidian/5'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+
+              <div className="mt-8 pt-8 border-t border-obsidian/[0.06]">
                 <Link
                   to="/sell"
-                  className="block w-full text-center px-5 py-3 bg-obsidian text-ivory text-sm font-medium rounded-full"
+                  className="block w-full text-center px-5 py-4 bg-obsidian text-ivory text-base font-semibold rounded-2xl"
                 >
                   List Your Vehicle
                 </Link>
+                <p className="text-center text-xs text-slate-warm mt-4">
+                  Nepal's trusted vehicle marketplace
+                </p>
               </div>
             </div>
           </motion.div>

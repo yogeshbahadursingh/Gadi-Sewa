@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Shield, MapPin, Phone, Mail, Facebook, Instagram, Twitter } from 'lucide-react';
+import { Shield, MapPin, Mail } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -71,11 +71,7 @@ export default function Footer() {
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2 text-ivory/50">
                 <MapPin className="w-4 h-4 text-gold/70" />
-                <span>Lalitpur, Bagmati Province, Nepal</span>
-              </div>
-              <div className="flex items-center gap-2 text-ivory/50">
-                <Phone className="w-4 h-4 text-gold/70" />
-                <span>+977-1-XXXXXXX</span>
+                <span>Kathmandu, Nepal</span>
               </div>
               <div className="flex items-center gap-2 text-ivory/50">
                 <Mail className="w-4 h-4 text-gold/70" />
@@ -117,16 +113,8 @@ export default function Footer() {
               <Link to="/terms" className="hover:text-gold transition-colors">Terms of Service</Link>
               <Link to="/cookies" className="hover:text-gold transition-colors">Cookie Policy</Link>
             </div>
-            <div className="flex items-center gap-4">
-              <a href="#" className="p-2 rounded-full hover:bg-ivory/10 transition-colors" aria-label="Facebook">
-                <Facebook className="w-4 h-4 text-ivory/50" />
-              </a>
-              <a href="#" className="p-2 rounded-full hover:bg-ivory/10 transition-colors" aria-label="Instagram">
-                <Instagram className="w-4 h-4 text-ivory/50" />
-              </a>
-              <a href="#" className="p-2 rounded-full hover:bg-ivory/10 transition-colors" aria-label="Twitter">
-                <Twitter className="w-4 h-4 text-ivory/50" />
-              </a>
+            <div className="flex items-center gap-1 text-xs text-ivory/30">
+              <span>Built with care in Nepal</span>
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { HashRouter, Routes, Route, useLocation, Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
@@ -46,9 +46,9 @@ function NotFound() {
         <p className="text-slate-warm mb-8 max-w-md mx-auto">
           The page you're looking for doesn't exist or has been moved.
         </p>
-        <a href="/" className="inline-flex items-center gap-2 px-6 py-3 bg-obsidian text-ivory text-sm font-medium rounded-full hover:bg-emerald transition-colors">
+        <Link to="/" className="inline-flex items-center gap-2 px-6 py-3 bg-obsidian text-ivory text-sm font-medium rounded-full hover:bg-emerald transition-colors">
           Return Home
-        </a>
+        </Link>
       </div>
     </main>
   );

@@ -228,13 +228,14 @@ export default function ListingsPage() {
           <AnimatePresence>
             {showFilters && (
               <motion.aside
-                initial={{ opacity: 0, x: -20, width: 0 }}
-                animate={{ opacity: 1, x: 0, width: 280 }}
-                exit={{ opacity: 0, x: -20, width: 0 }}
-                transition={{ duration: 0.3 }}
-                className="hidden lg:block flex-shrink-0"
+                initial={{ opacity: 0, marginLeft: -20 }}
+                animate={{ opacity: 1, marginLeft: 0 }}
+                exit={{ opacity: 0, marginLeft: -20 }}
+                transition={{ duration: 0.25 }}
+                className="hidden lg:block flex-shrink-0 w-[280px]"
+                aria-label="Filter options"
               >
-                <div className="sticky top-28 bg-white rounded-2xl border border-obsidian/[0.04] p-6 w-[280px]">
+                <div className="sticky top-28 bg-white rounded-2xl border border-obsidian/[0.04] p-6">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="font-semibold text-obsidian">Filters</h3>
                     {activeFilterCount > 0 && (

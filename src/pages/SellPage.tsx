@@ -23,6 +23,8 @@ export default function SellPage() {
     condition: '', description: '', hasPassport: false,
   });
 
+  const provinces = ['Bagmati', 'Gandaki', 'Lumbini', 'Koshi', 'Madhesh', 'Sudurpashchim', 'Karnali'];
+
   const updateField = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -204,31 +206,44 @@ export default function SellPage() {
                 
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div>
-                    <label className="text-xs font-medium text-obsidian/60 uppercase tracking-wider mb-2 block">Location *</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      <select className="px-3 py-3 bg-ivory border border-obsidian/[0.06] rounded-xl text-sm outline-none">
-                        <option>Province</option>
-                      </select>
-                      <select className="px-3 py-3 bg-ivory border border-obsidian/[0.06] rounded-xl text-sm outline-none">
-                        <option>District</option>
-                      </select>
-                      <select className="px-3 py-3 bg-ivory border border-obsidian/[0.06] rounded-xl text-sm outline-none">
-                        <option>City</option>
-                      </select>
-                    </div>
+                    <label className="text-xs font-medium text-obsidian/60 uppercase tracking-wider mb-2 block">Province *</label>
+                    <select
+                      value={formData.province}
+                      onChange={(e) => updateField('province', e.target.value)}
+                      className="w-full px-4 py-3 bg-ivory border border-obsidian/[0.06] rounded-xl text-sm outline-none focus:border-gold/40"
+                    >
+                      <option value="">Select province</option>
+                      {provinces.map(p => <option key={p} value={p}>{p}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-obsidian/60 uppercase tracking-wider mb-2 block">City *</label>
+                    <input
+                      type="text"
+                      value={formData.city}
+                      onChange={(e) => updateField('city', e.target.value)}
+                      placeholder="e.g. Kathmandu"
+                      className="w-full px-4 py-3 bg-ivory border border-obsidian/[0.06] rounded-xl text-sm outline-none focus:border-gold/40"
+                    />
                   </div>
                   <div>
                     <label className="text-xs font-medium text-obsidian/60 uppercase tracking-wider mb-2 block">Mileage (km)</label>
                     <input
                       type="number"
+                      value={formData.mileage}
+                      onChange={(e) => updateField('mileage', e.target.value)}
                       placeholder="e.g. 25000"
                       className="w-full px-4 py-3 bg-ivory border border-obsidian/[0.06] rounded-xl text-sm outline-none focus:border-gold/40"
                     />
                   </div>
                   <div>
                     <label className="text-xs font-medium text-obsidian/60 uppercase tracking-wider mb-2 block">Fuel Type</label>
-                    <select className="w-full px-4 py-3 bg-ivory border border-obsidian/[0.06] rounded-xl text-sm outline-none focus:border-gold/40">
-                      <option>Select fuel type</option>
+                    <select
+                      value={formData.fuelType}
+                      onChange={(e) => updateField('fuelType', e.target.value)}
+                      className="w-full px-4 py-3 bg-ivory border border-obsidian/[0.06] rounded-xl text-sm outline-none focus:border-gold/40"
+                    >
+                      <option value="">Select fuel type</option>
                       <option>Petrol</option>
                       <option>Diesel</option>
                       <option>Electric</option>
@@ -237,16 +252,24 @@ export default function SellPage() {
                   </div>
                   <div>
                     <label className="text-xs font-medium text-obsidian/60 uppercase tracking-wider mb-2 block">Transmission</label>
-                    <select className="w-full px-4 py-3 bg-ivory border border-obsidian/[0.06] rounded-xl text-sm outline-none focus:border-gold/40">
-                      <option>Select transmission</option>
+                    <select
+                      value={formData.transmission}
+                      onChange={(e) => updateField('transmission', e.target.value)}
+                      className="w-full px-4 py-3 bg-ivory border border-obsidian/[0.06] rounded-xl text-sm outline-none focus:border-gold/40"
+                    >
+                      <option value="">Select transmission</option>
                       <option>Automatic</option>
                       <option>Manual</option>
                     </select>
                   </div>
                   <div>
                     <label className="text-xs font-medium text-obsidian/60 uppercase tracking-wider mb-2 block">Condition</label>
-                    <select className="w-full px-4 py-3 bg-ivory border border-obsidian/[0.06] rounded-xl text-sm outline-none focus:border-gold/40">
-                      <option>Select condition</option>
+                    <select
+                      value={formData.condition}
+                      onChange={(e) => updateField('condition', e.target.value)}
+                      className="w-full px-4 py-3 bg-ivory border border-obsidian/[0.06] rounded-xl text-sm outline-none focus:border-gold/40"
+                    >
+                      <option value="">Select condition</option>
                       <option>Like New</option>
                       <option>Excellent</option>
                       <option>Very Good</option>
@@ -258,6 +281,8 @@ export default function SellPage() {
                     <label className="text-xs font-medium text-obsidian/60 uppercase tracking-wider mb-2 block">Engine (cc)</label>
                     <input
                       type="number"
+                      value={formData.engineCC}
+                      onChange={(e) => updateField('engineCC', e.target.value)}
                       placeholder="e.g. 1500"
                       className="w-full px-4 py-3 bg-ivory border border-obsidian/[0.06] rounded-xl text-sm outline-none focus:border-gold/40"
                     />
@@ -268,6 +293,8 @@ export default function SellPage() {
                   <label className="text-xs font-medium text-obsidian/60 uppercase tracking-wider mb-2 block">Description</label>
                   <textarea
                     rows={4}
+                    value={formData.description}
+                    onChange={(e) => updateField('description', e.target.value)}
                     placeholder="Describe your vehicle, its history, any modifications or defects..."
                     className="w-full px-4 py-3 bg-ivory border border-obsidian/[0.06] rounded-xl text-sm outline-none focus:border-gold/40 resize-none"
                   />
@@ -280,7 +307,7 @@ export default function SellPage() {
                     <div>
                       <p className="text-sm font-semibold text-obsidian">Add Vehicle Passport</p>
                       <p className="text-xs text-obsidian/60 mt-1">
-                        Vehicles with a Gadi-Sewa Vehicle Passport get 3x more views and sell faster. 
+                        Vehicles with a Gadi-Sewa Vehicle Passport attract more serious buyers and build trust. 
                         Book an independent inspection to get yours.
                       </p>
                       <Link to="/inspect" className="inline-flex items-center gap-1 text-xs font-medium text-emerald mt-2 hover:text-emerald-light">
@@ -297,23 +324,27 @@ export default function SellPage() {
                 <h2 className="font-display text-xl font-semibold text-obsidian mb-6">Review Your Listing</h2>
                 
                 <div className="bg-ivory rounded-xl p-6 mb-6">
-                  <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-start justify-between mb-4 gap-4">
                     <div>
                       <h3 className="font-display text-lg font-semibold text-obsidian">
-                        {formData.make || '[Brand]'} {formData.model || '[Model]'}
+                        {formData.make && formData.model ? `${formData.make} ${formData.model}` : 'Vehicle listing'}
                       </h3>
-                      <p className="text-sm text-slate-warm">{formData.year || '[Year]'} · {formData.variant || '[Variant]'}</p>
+                      <p className="text-sm text-slate-warm">
+                        {[formData.year, formData.variant].filter(Boolean).join(' · ') || 'Details to be confirmed'}
+                      </p>
                     </div>
-                    <p className="font-display text-xl font-bold text-obsidian">
-                      {formData.price ? `रू ${Number(formData.price).toLocaleString()}` : 'रू [Price]'}
+                    <p className="font-display text-xl font-bold text-obsidian text-right">
+                      {formData.price ? `रू ${Number(formData.price).toLocaleString('en-NP')}` : '—'}
                     </p>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
                     <div><span className="text-obsidian/40">Category:</span> <span className="text-obsidian">{formData.category || '—'}</span></div>
                     <div><span className="text-obsidian/40">Fuel:</span> <span className="text-obsidian">{formData.fuelType || '—'}</span></div>
                     <div><span className="text-obsidian/40">Transmission:</span> <span className="text-obsidian">{formData.transmission || '—'}</span></div>
                     <div><span className="text-obsidian/40">Condition:</span> <span className="text-obsidian">{formData.condition || '—'}</span></div>
+                    <div><span className="text-obsidian/40">Location:</span> <span className="text-obsidian">{formData.city || formData.province || '—'}</span></div>
+                    <div><span className="text-obsidian/40">Mileage:</span> <span className="text-obsidian">{formData.mileage ? `${Number(formData.mileage).toLocaleString()} km` : '—'}</span></div>
                   </div>
                 </div>
 
@@ -327,8 +358,11 @@ export default function SellPage() {
                 </div>
 
                 <button className="w-full py-4 bg-obsidian text-ivory text-sm font-bold rounded-xl hover:bg-emerald transition-colors flex items-center justify-center gap-2">
-                  Publish Listing <ArrowRight className="w-4 h-4" />
+                  Save Draft <ArrowRight className="w-4 h-4" />
                 </button>
+                <p className="text-center text-xs text-slate-warm mt-3">
+                  Listing submission requires account creation and verification.
+                </p>
               </div>
             )}
           </motion.div>

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { MapPin, Gauge, Fuel, Calendar, Heart } from 'lucide-react';
+import { MapPin, Gauge, Fuel, Heart } from 'lucide-react';
 import { Vehicle, formatPrice, formatMileage } from '../data/vehicles';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -20,41 +20,41 @@ export default function VehicleCard({ vehicle, index = 0, variant = 'default' }:
     <motion.article
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.05 }}
+      transition={{ duration: 0.4, delay: Math.min(index * 0.05, 0.3) }}
       className={`group relative bg-white rounded-2xl overflow-hidden card-premium border border-obsidian/[0.04] ${
-        isFeatured ? 'ring-1 ring-gold/20' : ''
+        isFeatured ? 'ring-1 ring-gold/20 shadow-[var(--shadow-soft)]' : ''
       }`}
     >
       {/* Image Container */}
       <div className="relative aspect-[16/10] overflow-hidden bg-ivory-dark">
         {!imageLoaded && (
-          <div className="absolute inset-0 skeleton" />
+          <div className="absolute inset-0 skeleton" aria-hidden="true" />
         )}
         <img
           src={vehicle.images[0]}
-          alt={`${vehicle.make} ${vehicle.model}`}
-          className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${
+          alt={`${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.variant}`}
+          className={`w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03] ${
             imageLoaded ? 'opacity-100' : 'opacity-0'
           }`}
           onLoad={() => setImageLoaded(true)}
           loading="lazy"
         />
         
-        {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-obsidian/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        {/* Overlay gradient — always visible at bottom for text legibility */}
+        <div className="absolute inset-0 bg-gradient-to-t from-obsidian/30 via-transparent to-transparent pointer-events-none" />
         
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
           {vehicle.hasPassport && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald/95 text-ivory text-[11px] font-semibold rounded-full backdrop-blur-sm">
-              <svg className="w-3 h-3" viewBox="0 0 16 16" fill="currentColor">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald text-ivory text-[11px] font-semibold rounded-full shadow-sm">
+              <svg className="w-3 h-3" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
                 <path d="M8 0L10 5.5L16 6L11.5 10L13 16L8 12.5L3 16L4.5 10L0 6L6 5.5L8 0Z"/>
               </svg>
               Passport Verified
             </span>
           )}
-          {isFeatured && (
-            <span className="inline-flex items-center px-2.5 py-1 bg-gold/95 text-obsidian text-[11px] font-semibold rounded-full backdrop-blur-sm">
+          {isFeatured && !vehicle.hasPassport && (
+            <span className="inline-flex items-center px-2.5 py-1 bg-gold text-obsidian text-[11px] font-semibold rounded-full shadow-sm">
               Featured
             </span>
           )}
@@ -62,73 +62,59 @@ export default function VehicleCard({ vehicle, index = 0, variant = 'default' }:
 
         {/* Favourite button */}
         <button
-          onClick={(e) => { e.preventDefault(); setIsFavourite(!isFavourite); }}
-          className="absolute top-3 right-3 p-2 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white transition-colors shadow-sm"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsFavourite(!isFavourite); }}
+          className="absolute top-3 right-3 p-2 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white transition-all duration-200 shadow-sm hover:shadow-md active:scale-95"
           aria-label={isFavourite ? 'Remove from favourites' : 'Add to favourites'}
         >
-          <Heart className={`w-4 h-4 transition-colors ${isFavourite ? 'fill-red-500 text-red-500' : 'text-obsidian/50'}`} />
+          <Heart className={`w-4 h-4 transition-colors duration-200 ${isFavourite ? 'fill-red-500 text-red-500' : 'text-obsidian/40'}`} />
         </button>
-
-        {/* Price overlay on hover */}
-        <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="flex items-center justify-between">
-            <span className="text-white text-sm font-medium drop-shadow-lg">
-              View Details →
-            </span>
-          </div>
-        </div>
       </div>
 
       {/* Content */}
-      <Link to={`/vehicle/${vehicle.id}`} className="block p-4 lg:p-5">
-        {/* Title & Year */}
-        <div className="mb-3">
-          <h3 className="font-display text-lg font-semibold text-obsidian group-hover:text-emerald transition-colors duration-200 line-clamp-1">
-            {vehicle.title}
-          </h3>
-          <p className="text-xs text-slate-warm mt-0.5">
-            {vehicle.year} · {vehicle.variant}
-          </p>
-        </div>
+      <Link to={`/vehicle/${vehicle.id}`} className="block p-4 lg:p-5 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 rounded-b-2xl">
+        {/* Title */}
+        <h3 className="font-display text-lg font-semibold text-obsidian group-hover:text-emerald transition-colors duration-200 line-clamp-1 leading-snug">
+          {vehicle.title}
+        </h3>
+        <p className="text-xs text-slate-warm mt-1">
+          {vehicle.year} · {vehicle.variant}
+        </p>
 
         {/* Price */}
-        <div className="mb-3">
-          <span className="text-xl font-bold text-obsidian">
+        <div className="mt-3 mb-3 flex items-baseline gap-2 flex-wrap">
+          <span className="text-xl font-bold text-obsidian tracking-tight">
             {formatPrice(vehicle.price)}
           </span>
           {vehicle.negotiable && (
-            <span className="ml-2 text-xs text-emerald font-medium bg-emerald/10 px-2 py-0.5 rounded-full">
+            <span className="text-[11px] text-emerald font-medium bg-emerald/8 px-2 py-0.5 rounded-full">
               Negotiable
             </span>
           )}
         </div>
 
         {/* Specs */}
-        <div className="flex items-center gap-3 text-xs text-slate-warm mb-3">
+        <div className="flex items-center gap-3 text-xs text-slate-warm">
           <span className="flex items-center gap-1">
-            <Gauge className="w-3.5 h-3.5" />
+            <Gauge className="w-3.5 h-3.5 text-obsidian/30" aria-hidden="true" />
             {formatMileage(vehicle.mileage)}
           </span>
+          <span className="w-px h-3 bg-obsidian/10" aria-hidden="true" />
           <span className="flex items-center gap-1">
-            <Fuel className="w-3.5 h-3.5" />
+            <Fuel className="w-3.5 h-3.5 text-obsidian/30" aria-hidden="true" />
             {vehicle.fuelType}
-          </span>
-          <span className="flex items-center gap-1">
-            <Calendar className="w-3.5 h-3.5" />
-            {vehicle.year}
           </span>
         </div>
 
         {/* Location & Seller */}
-        <div className="flex items-center justify-between pt-3 border-t border-obsidian/[0.04]">
+        <div className="flex items-center justify-between mt-3 pt-3 border-t border-obsidian/[0.04]">
           <span className="flex items-center gap-1 text-xs text-slate-warm">
-            <MapPin className="w-3 h-3" />
-            {vehicle.location.city}
+            <MapPin className="w-3 h-3 text-obsidian/25" aria-hidden="true" />
+            {vehicle.location.city}, {vehicle.location.province}
           </span>
           <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${
             vehicle.sellerType === 'dealer'
               ? 'bg-gold/10 text-gold-dark'
-              : 'bg-obsidian/5 text-obsidian/60'
+              : 'bg-obsidian/[0.04] text-obsidian/50'
           }`}>
             {vehicle.sellerType === 'dealer' ? 'Dealer' : 'Private'}
           </span>

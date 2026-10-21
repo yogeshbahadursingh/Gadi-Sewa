@@ -39,12 +39,12 @@ export default function VehicleDetailPage() {
       {/* Breadcrumb */}
       <div className="bg-white border-b border-obsidian/[0.04]">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <nav className="flex items-center gap-2 text-xs text-slate-warm">
+          <nav className="flex items-center gap-2 text-xs text-slate-warm" aria-label="Breadcrumb">
             <Link to="/" className="hover:text-obsidian transition-colors">Home</Link>
-            <ChevronRight className="w-3 h-3" />
+            <ChevronRight className="w-3 h-3 text-obsidian/20" aria-hidden="true" />
             <Link to="/listings" className="hover:text-obsidian transition-colors">Vehicles</Link>
-            <ChevronRight className="w-3 h-3" />
-            <span className="text-obsidian font-medium">{vehicle.title}</span>
+            <ChevronRight className="w-3 h-3 text-obsidian/20" aria-hidden="true" />
+            <span className="text-obsidian font-medium truncate max-w-[200px] sm:max-w-none" aria-current="page">{vehicle.title}</span>
           </nav>
         </div>
       </div>
@@ -74,11 +74,16 @@ export default function VehicleDetailPage() {
               <div className="absolute top-4 right-4 flex gap-2">
                 <button
                   onClick={() => setIsFavourite(!isFavourite)}
-                  className="p-2.5 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white transition-colors shadow-sm"
+                  className="p-2.5 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white transition-all shadow-sm active:scale-95"
+                  aria-label={isFavourite ? 'Remove from favourites' : 'Add to favourites'}
+                  aria-pressed={isFavourite}
                 >
-                  <Heart className={`w-5 h-5 ${isFavourite ? 'fill-red-500 text-red-500' : 'text-obsidian/50'}`} />
+                  <Heart className={`w-5 h-5 transition-colors ${isFavourite ? 'fill-red-500 text-red-500' : 'text-obsidian/50'}`} />
                 </button>
-                <button className="p-2.5 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white transition-colors shadow-sm">
+                <button
+                  className="p-2.5 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white transition-all shadow-sm active:scale-95"
+                  aria-label="Share this listing"
+                >
                   <Share2 className="w-5 h-5 text-obsidian/50" />
                 </button>
               </div>
