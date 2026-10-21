@@ -82,21 +82,38 @@ export interface Enquiry {
 export interface Inspection {
   id: string;
   vehicleId: string;
+  buyerId?: string;
   inspectorId?: string;
-  status: 'REQUESTED' | 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED';
+  status: 'REQUESTED' | 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+  preferredDate?: string;
+  notes?: string;
+  checklist?: any;
   findings?: string;
   photos?: string[];
+  overallRating?: string;
+  estimatedValue?: number;
+  issues?: string[];
   createdAt: string;
+  assignedAt?: string;
   completedAt?: string;
+  approvedAt?: string;
+  approvedBy?: string;
 }
 
 export interface Passport {
   id: string;
   vehicleId: string;
+  inspectionId?: string;
   passportNumber: string;
   status: 'PENDING' | 'PUBLISHED' | 'EXPIRED' | 'REVOKED';
   inspectionDate?: string;
   publishedAt?: string;
+  checklist?: any;
+  findings?: string;
+  photos?: string[];
+  overallRating?: string;
+  estimatedValue?: number;
+  issues?: string[];
 }
 
 // LocalStorage helpers
@@ -516,6 +533,268 @@ const demoAPI = {
     const passports = getStorage<Passport[]>(STORAGE_KEYS.PASSPORTS, []);
     const passport = passports.find(p => p.vehicleId === vehicleId && p.status === 'PUBLISHED');
     return { hasPassport: !!passport, passport };
+  },
+  
+  // ===== INSPECTION SYSTEM =====
+  
+  // Request an inspection for a vehicle
+  async requestInspection(vehicleId: string, preferredDate?: string, notes?: string) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const inspections = getStorage<Inspection[]>(STORAGE_KEYS.INSPECTIONS, []);
+    
+    // Check if inspection already exists
+    const existing = inspections.find(i => i.vehicleId === vehicleId && !['REJECTED', 'CANCELLED'].includes(i.status));
+    if (existing) {
+      throw new Error('Inspection already requested for this vehicle');
+    }
+    
+    const inspection: Inspection = {
+      id: `insp_${Date.now()}`,
+      vehicleId,
+      buyerId: currentUser.id,
+      status: 'REQUESTED',
+      preferredDate,
+      notes,
+      createdAt: new Date().toISOString()
+    };
+    
+    inspections.push(inspection);
+    setStorage(STORAGE_KEYS.INSPECTIONS, inspections);
+    
+    return inspection;
+  },
+  
+  // Get my inspection requests (as buyer)
+  async getMyInspectionRequests() {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const inspections = getStorage<Inspection[]>(STORAGE_KEYS.INSPECTIONS, []);
+    const vehicles = getStorage<Vehicle[]>(STORAGE_KEYS.VEHICLES, []);
+    
+    return inspections
+      .filter(i => i.buyerId === currentUser.id)
+      .map(i => ({
+        ...i,
+        vehicle: vehicles.find(v => v.id === i.vehicleId)
+      }))
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  },
+  
+  // Get all inspections (for admin/inspector)
+  async getAllInspections() {
+    const inspections = getStorage<Inspection[]>(STORAGE_KEYS.INSPECTIONS, []);
+    const vehicles = getStorage<Vehicle[]>(STORAGE_KEYS.VEHICLES, []);
+    const users = getStorage<any[]>(STORAGE_KEYS.USERS, []);
+    
+    return inspections.map(i => ({
+      ...i,
+      vehicle: vehicles.find(v => v.id === i.vehicleId),
+      buyer: users.find(u => u.id === i.buyerId),
+      inspector: i.inspectorId ? users.find(u => u.id === i.inspectorId) : null
+    }));
+  },
+  
+  // Assign inspector to inspection
+  async assignInspector(inspectionId: string, inspectorId: string) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    // Check if user is admin or reviewer
+    if (!currentUser.roles.includes('ADMIN') && !currentUser.roles.includes('REVIEWER')) {
+      throw new Error('Not authorized to assign inspectors');
+    }
+    
+    const inspections = getStorage<Inspection[]>(STORAGE_KEYS.INSPECTIONS, []);
+    const index = inspections.findIndex(i => i.id === inspectionId);
+    
+    if (index === -1) throw new Error('Inspection not found');
+    
+    inspections[index].inspectorId = inspectorId;
+    inspections[index].status = 'SCHEDULED';
+    inspections[index].assignedAt = new Date().toISOString();
+    
+    setStorage(STORAGE_KEYS.INSPECTIONS, inspections);
+    
+    return inspections[index];
+  },
+  
+  // Update inspection status
+  async updateInspectionStatus(inspectionId: string, status: Inspection['status']) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const inspections = getStorage<Inspection[]>(STORAGE_KEYS.INSPECTIONS, []);
+    const index = inspections.findIndex(i => i.id === inspectionId);
+    
+    if (index === -1) throw new Error('Inspection not found');
+    
+    // Verify ownership (inspector can only update their own inspections)
+    if (inspections[index].inspectorId && inspections[index].inspectorId !== currentUser.id) {
+      if (!currentUser.roles.includes('ADMIN') && !currentUser.roles.includes('REVIEWER')) {
+        throw new Error('Not authorized');
+      }
+    }
+    
+    inspections[index].status = status;
+    if (status === 'COMPLETED') {
+      inspections[index].completedAt = new Date().toISOString();
+    }
+    
+    setStorage(STORAGE_KEYS.INSPECTIONS, inspections);
+    
+    return inspections[index];
+  },
+  
+  // Submit inspection with checklist data
+  async submitInspection(inspectionId: string, data: {
+    checklist: any;
+    findings: string;
+    photos: string[];
+    overallRating: string;
+    estimatedValue?: number;
+    issues?: string[];
+  }) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const inspections = getStorage<Inspection[]>(STORAGE_KEYS.INSPECTIONS, []);
+    const index = inspections.findIndex(i => i.id === inspectionId);
+    
+    if (index === -1) throw new Error('Inspection not found');
+    
+    // Verify inspector owns this inspection
+    if (inspections[index].inspectorId !== currentUser.id) {
+      throw new Error('Not authorized');
+    }
+    
+    inspections[index] = {
+      ...inspections[index],
+      checklist: data.checklist,
+      findings: data.findings,
+      photos: data.photos,
+      overallRating: data.overallRating,
+      estimatedValue: data.estimatedValue,
+      issues: data.issues,
+      status: 'COMPLETED',
+      completedAt: new Date().toISOString()
+    };
+    
+    setStorage(STORAGE_KEYS.INSPECTIONS, inspections);
+    
+    return inspections[index];
+  },
+  
+  // Approve inspection and create passport
+  async approveInspection(inspectionId: string) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    // Check if user is admin or reviewer
+    if (!currentUser.roles.includes('ADMIN') && !currentUser.roles.includes('REVIEWER')) {
+      throw new Error('Not authorized to approve inspections');
+    }
+    
+    const inspections = getStorage<Inspection[]>(STORAGE_KEYS.INSPECTIONS, []);
+    const index = inspections.findIndex(i => i.id === inspectionId);
+    
+    if (index === -1) throw new Error('Inspection not found');
+    
+    if (inspections[index].status !== 'COMPLETED') {
+      throw new Error('Inspection must be completed before approval');
+    }
+    
+    inspections[index].status = 'APPROVED';
+    inspections[index].approvedAt = new Date().toISOString();
+    inspections[index].approvedBy = currentUser.id;
+    
+    setStorage(STORAGE_KEYS.INSPECTIONS, inspections);
+    
+    // Create passport
+    const passport = await this.createPassportFromInspection(inspectionId);
+    
+    return { inspection: inspections[index], passport };
+  },
+  
+  // Create passport from approved inspection
+  async createPassportFromInspection(inspectionId: string) {
+    const inspections = getStorage<Inspection[]>(STORAGE_KEYS.INSPECTIONS, []);
+    const inspection = inspections.find(i => i.id === inspectionId);
+    
+    if (!inspection) throw new Error('Inspection not found');
+    
+    if (inspection.status !== 'APPROVED') {
+      throw new Error('Inspection must be approved');
+    }
+    
+    const passports = getStorage<Passport[]>(STORAGE_KEYS.PASSPORTS, []);
+    
+    // Check if passport already exists
+    const existing = passports.find(p => p.vehicleId === inspection.vehicleId);
+    if (existing) {
+      throw new Error('Passport already exists for this vehicle');
+    }
+    
+    const passportNumber = `GS-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+    
+    const passport: Passport = {
+      id: `pass_${Date.now()}`,
+      vehicleId: inspection.vehicleId,
+      inspectionId: inspection.id,
+      passportNumber,
+      status: 'PUBLISHED',
+      inspectionDate: inspection.completedAt || new Date().toISOString(),
+      publishedAt: new Date().toISOString(),
+      checklist: inspection.checklist,
+      findings: inspection.findings,
+      photos: inspection.photos,
+      overallRating: inspection.overallRating,
+      estimatedValue: inspection.estimatedValue,
+      issues: inspection.issues
+    };
+    
+    passports.push(passport);
+    setStorage(STORAGE_KEYS.PASSPORTS, passports);
+    
+    // Update vehicle hasPassport flag
+    const vehicles = getStorage<Vehicle[]>(STORAGE_KEYS.VEHICLES, []);
+    const vehicleIndex = vehicles.findIndex(v => v.id === inspection.vehicleId);
+    if (vehicleIndex !== -1) {
+      vehicles[vehicleIndex].hasPassport = true;
+      vehicles[vehicleIndex].passportId = passport.id;
+      setStorage(STORAGE_KEYS.VEHICLES, vehicles);
+    }
+    
+    return passport;
+  },
+  
+  // Get passport details
+  async getPassportDetails(passportId: string) {
+    const passports = getStorage<Passport[]>(STORAGE_KEYS.PASSPORTS, []);
+    const passport = passports.find(p => p.id === passportId);
+    
+    if (!passport) throw new Error('Passport not found');
+    
+    const vehicles = getStorage<Vehicle[]>(STORAGE_KEYS.VEHICLES, []);
+    const vehicle = vehicles.find(v => v.id === passport.vehicleId);
+    
+    return {
+      ...passport,
+      vehicle
+    };
+  },
+  
+  // Get all passports
+  async getAllPassports() {
+    const passports = getStorage<Passport[]>(STORAGE_KEYS.PASSPORTS, []);
+    const vehicles = getStorage<Vehicle[]>(STORAGE_KEYS.VEHICLES, []);
+    
+    return passports.map(p => ({
+      ...p,
+      vehicle: vehicles.find(v => v.id === p.vehicleId)
+    }));
   }
 };
 
@@ -760,6 +1039,120 @@ export const api = DEMO_MODE ? demoAPI : {
     if (!res.ok) return { hasPassport: false };
     const data = await res.json();
     return { hasPassport: true, passport: data.passport };
+  },
+  
+  // ===== INSPECTION SYSTEM =====
+  
+  async requestInspection(vehicleId: string, preferredDate?: string, notes?: string) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/inspections/request`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ vehicleId, preferredDate, notes })
+    });
+    if (!res.ok) throw new Error('Failed to request inspection');
+    return res.json();
+  },
+  
+  async getMyInspectionRequests() {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/inspections/my-requests`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Failed to fetch inspection requests');
+    return res.json();
+  },
+  
+  async getAllInspections() {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/inspections`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Failed to fetch inspections');
+    return res.json();
+  },
+  
+  async assignInspector(inspectionId: string, inspectorId: string) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/inspections/${inspectionId}/assign`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ inspectorId })
+    });
+    if (!res.ok) throw new Error('Failed to assign inspector');
+    return res.json();
+  },
+  
+  async updateInspectionStatus(inspectionId: string, status: string) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/inspections/${inspectionId}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ status })
+    });
+    if (!res.ok) throw new Error('Failed to update inspection status');
+    return res.json();
+  },
+  
+  async submitInspection(inspectionId: string, data: any) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/inspections/${inspectionId}/submit`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Failed to submit inspection');
+    return res.json();
+  },
+  
+  async approveInspection(inspectionId: string) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/inspections/${inspectionId}/approve`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    if (!res.ok) throw new Error('Failed to approve inspection');
+    return res.json();
+  },
+  
+  async createPassportFromInspection(inspectionId: string) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/passports/from-inspection/${inspectionId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    if (!res.ok) throw new Error('Failed to create passport');
+    return res.json();
+  },
+  
+  async getPassportDetails(passportId: string) {
+    const res = await fetch(`${API_URL}/api/passports/${passportId}`);
+    if (!res.ok) throw new Error('Passport not found');
+    return res.json();
+  },
+  
+  async getAllPassports() {
+    const res = await fetch(`${API_URL}/api/passports`);
+    if (!res.ok) throw new Error('Failed to fetch passports');
+    return res.json();
   }
 };
 

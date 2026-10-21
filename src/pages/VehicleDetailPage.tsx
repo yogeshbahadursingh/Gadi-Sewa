@@ -279,6 +279,17 @@ export default function VehicleDetailPage() {
                 passportId={vehicle.passportId}
                 passportDate={vehicle.passportDate}
               />
+              
+              {/* Request Inspection Button */}
+              {!vehicle.hasPassport && isAuthenticated && (
+                <Link
+                  to={`/inspect/booking?vehicleId=${vehicle.id}`}
+                  className="mt-4 w-full flex items-center justify-center gap-2 px-6 py-3 bg-emerald/10 border border-emerald/20 text-emerald text-sm font-semibold rounded-xl hover:bg-emerald/20 transition-colors"
+                >
+                  <Shield className="w-4 h-4" />
+                  Request Independent Inspection
+                </Link>
+              )}
             </motion.div>
 
             {/* Description */}

@@ -1,4 +1,5 @@
 import { Shield, ShieldCheck, ShieldAlert, ShieldX, ExternalLink } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface PassportBadgeProps {
   hasPassport: boolean;
@@ -41,10 +42,10 @@ export default function PassportBadge({ hasPassport, passportId, passportDate, c
             <p className="text-obsidian/70">{passportDate ? new Date(passportDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}</p>
           </div>
         </div>
-        {showLink && (
-          <a href={`/passport/${passportId}`} className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-emerald hover:text-emerald-light transition-colors">
+        {showLink && passportId && (
+          <Link to={`/passport/${passportId}`} className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-emerald hover:text-emerald-light transition-colors">
             View Full Report <ExternalLink className="w-3 h-3" />
-          </a>
+          </Link>
         )}
       </div>
     );
@@ -68,9 +69,9 @@ export default function PassportBadge({ hasPassport, passportId, passportDate, c
         <div>
           <p className="text-sm font-semibold text-obsidian/70">Vehicle Passport: Not Available</p>
           <p className="text-xs text-obsidian/40 mt-0.5">This vehicle has not been independently inspected yet.</p>
-          <a href="/inspect" className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-gold-dark hover:text-gold transition-colors">
-            Request an Independent Inspection <ExternalLink className="w-3 h-3" />
-          </a>
+          <Link to="/inspect" className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-gold-dark hover:text-gold transition-colors">
+            Learn About Inspections <ExternalLink className="w-3 h-3" />
+          </Link>
         </div>
       </div>
     </div>
