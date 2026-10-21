@@ -7,6 +7,7 @@ import ListingsPage from './pages/ListingsPage';
 import VehicleDetailPage from './pages/VehicleDetailPage';
 import PassportPage from './pages/PassportPage';
 import SellPage from './pages/SellPage';
+import ComingSoonPage from './pages/ComingSoonPage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -28,7 +29,23 @@ function AppLayout() {
           <Route path="/vehicle/:id" element={<VehicleDetailPage />} />
           <Route path="/passport" element={<PassportPage />} />
           <Route path="/sell" element={<SellPage />} />
-          {/* Catch-all */}
+          {/* Coming Soon pages — all planned features */}
+          <Route path="/inspect" element={<ComingSoonPage />} />
+          <Route path="/garage" element={<ComingSoonPage />} />
+          <Route path="/workshops" element={<ComingSoonPage />} />
+          <Route path="/valuation" element={<ComingSoonPage />} />
+          <Route path="/dealer" element={<ComingSoonPage />} />
+          <Route path="/pricing" element={<ComingSoonPage />} />
+          <Route path="/seller-guide" element={<ComingSoonPage />} />
+          <Route path="/about" element={<ComingSoonPage />} />
+          <Route path="/how-it-works" element={<ComingSoonPage />} />
+          <Route path="/trust" element={<ComingSoonPage />} />
+          <Route path="/careers" element={<ComingSoonPage />} />
+          <Route path="/contact" element={<ComingSoonPage />} />
+          <Route path="/privacy" element={<ComingSoonPage />} />
+          <Route path="/terms" element={<ComingSoonPage />} />
+          <Route path="/cookies" element={<ComingSoonPage />} />
+          {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

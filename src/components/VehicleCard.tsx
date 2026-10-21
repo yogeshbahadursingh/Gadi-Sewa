@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { MapPin, Gauge, Fuel, Heart } from 'lucide-react';
+import { MapPin, Gauge, Fuel, Heart, ShieldCheck } from 'lucide-react';
 import { Vehicle, formatPrice, formatMileage } from '../data/vehicles';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -47,9 +47,7 @@ export default function VehicleCard({ vehicle, index = 0, variant = 'default' }:
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
           {vehicle.hasPassport && (
             <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald text-ivory text-[11px] font-semibold rounded-full shadow-sm">
-              <svg className="w-3 h-3" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path d="M8 0L10 5.5L16 6L11.5 10L13 16L8 12.5L3 16L4.5 10L0 6L6 5.5L8 0Z"/>
-              </svg>
+              <ShieldCheck className="w-3 h-3" aria-hidden="true" />
               Passport Verified
             </span>
           )}
