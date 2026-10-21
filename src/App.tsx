@@ -1,5 +1,6 @@
 import { HashRouter, Routes, Route, useLocation, Link } from 'react-router-dom';
 import { useEffect } from 'react';
+import { AuthProvider } from './contexts/AuthContext';
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
@@ -8,6 +9,9 @@ import VehicleDetailPage from './pages/VehicleDetailPage';
 import PassportPage from './pages/PassportPage';
 import SellPage from './pages/SellPage';
 import ComingSoonPage from './pages/ComingSoonPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import DashboardPage from './pages/DashboardPage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -29,7 +33,10 @@ function AppLayout() {
           <Route path="/vehicle/:id" element={<VehicleDetailPage />} />
           <Route path="/passport" element={<PassportPage />} />
           <Route path="/sell" element={<SellPage />} />
-          {/* Coming Soon pages — all planned features */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          {/* Coming Soon pages */}
           <Route path="/inspect" element={<ComingSoonPage />} />
           <Route path="/garage" element={<ComingSoonPage />} />
           <Route path="/workshops" element={<ComingSoonPage />} />
@@ -74,7 +81,9 @@ function NotFound() {
 export default function App() {
   return (
     <HashRouter>
-      <AppLayout />
+      <AuthProvider>
+        <AppLayout />
+      </AuthProvider>
     </HashRouter>
   );
 }

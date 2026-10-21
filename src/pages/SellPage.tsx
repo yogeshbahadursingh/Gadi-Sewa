@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Car, Camera, MapPin, FileText, CheckCircle2, ChevronRight,
   ArrowRight, Upload, Shield, AlertCircle, Info
 } from 'lucide-react';
 import { categories, brands } from '../data/vehicles';
+import { api } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 const steps = [
   { id: 1, label: 'Vehicle Info', icon: <Car className="w-4 h-4" /> },
@@ -15,7 +17,10 @@ const steps = [
 ];
 
 export default function SellPage() {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     category: '', make: '', model: '', variant: '', year: '',
     price: '', negotiable: false, province: '', district: '', city: '',
@@ -24,6 +29,24 @@ export default function SellPage() {
   });
 
   const provinces = ['Bagmati', 'Gandaki', 'Lumbini', 'Koshi', 'Madhesh', 'Sudurpashchim', 'Karnali'];
+
+  // Redirect to login if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <main className="min-h-screen bg-ivory pt-20 lg:pt-24 flex items-center justify-center">
+        <div className="max-w-md mx-auto px-4 text-center">
+          <h1 className="font-display text-2xl font-bold text-obsidian mb-4">Sign in required</h1>
+          <p className="text-slate-warm mb-6">You need to be signed in to list a vehicle.</p>
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-obsidian text-ivory text-sm font-medium rounded-full hover:bg-emerald transition-colors"
+          >
+            Sign In
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
   const updateField = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -357,11 +380,46 @@ export default function SellPage() {
                   </div>
                 </div>
 
-                <button className="w-full py-4 bg-obsidian text-ivory text-sm font-bold rounded-xl hover:bg-emerald transition-colors flex items-center justify-center gap-2">
-                  Save Draft <ArrowRight className="w-4 h-4" />
+                <button
+                  onClick={async () => {
+                    setSaving(true);
+                    try {
+                      const vehicleData = {
+                        category: formData.category,
+                        make: formData.make,
+                        model: formData.model,
+                        variant: formData.variant || undefined,
+                        year: parseInt(formData.year),
+                        price: parseInt(formData.price),
+                        negotiable: formData.negotiable,
+                        province: formData.province,
+                        district: formData.district || formData.province,
+                        city: formData.city,
+                        mileage: formData.mileage ? parseInt(formData.mileage) : undefined,
+                        fuelType: formData.fuelType || undefined,
+                        transmission: formData.transmission || undefined,
+                        engineCC: formData.engineCC ? parseInt(formData.engineCC) : undefined,
+                        condition: formData.condition || undefined,
+                        description: formData.description || undefined,
+                      };
+                      
+                      const vehicle = await api.createVehicle(vehicleData);
+                      alert('Vehicle saved as draft! You can publish it from your dashboard.');
+                      navigate('/dashboard');
+                    } catch (error: any) {
+                      alert('Failed to save vehicle: ' + error.message);
+                    } finally {
+                      setSaving(false);
+                    }
+                  }}
+                  disabled={saving}
+                  className="w-full py-4 bg-obsidian text-ivory text-sm font-bold rounded-xl hover:bg-emerald transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {saving ? 'Saving...' : 'Save as Draft'}
+                  {!saving && <ArrowRight className="w-4 h-4" />}
                 </button>
                 <p className="text-center text-xs text-slate-warm mt-3">
-                  Listing submission requires account creation and verification.
+                  Your listing will be saved as a draft. You can publish it from your dashboard.
                 </p>
               </div>
             )}

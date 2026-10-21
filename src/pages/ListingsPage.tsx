@@ -1,17 +1,19 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, SlidersHorizontal, X, ArrowUpDown, ShieldCheck, Grid3X3, List
 } from 'lucide-react';
 import VehicleCard from '../components/VehicleCard';
-import { vehicles, brands, provinces, categories } from '../data/vehicles';
+import { vehicles as mockVehicles, brands, provinces, categories, Vehicle as MockVehicle } from '../data/vehicles';
+import { api, Vehicle as ApiVehicle } from '../services/api';
 
 export default function ListingsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('relevance');
+  const [userVehicles, setUserVehicles] = useState<ApiVehicle[]>([]);
 
   const [filters, setFilters] = useState({
     search: searchParams.get('q') || '',
@@ -25,8 +27,58 @@ export default function ListingsPage() {
     passport: searchParams.get('passport') || '',
   });
 
+  // Load user-created vehicles
+  useEffect(() => {
+    const loadUserVehicles = async () => {
+      try {
+        const data = await api.getAllVehicles({});
+        setUserVehicles(data.vehicles || []);
+      } catch (error) {
+        console.error('Failed to load user vehicles:', error);
+      }
+    };
+    loadUserVehicles();
+  }, []);
+
+  // Combine mock data with user vehicles
+  const allVehicles = useMemo(() => {
+    // Convert user vehicles to match mock vehicle format
+    const convertedUserVehicles: MockVehicle[] = userVehicles.map(v => ({
+      id: v.id,
+      title: `${v.year} ${v.make} ${v.model}`,
+      make: v.make,
+      model: v.model,
+      variant: v.variant || '',
+      year: v.year,
+      category: v.category.toLowerCase() as any,
+      price: v.price,
+      negotiable: v.negotiable,
+      location: {
+        province: v.province,
+        district: v.district,
+        city: v.city
+      },
+      mileage: v.mileage || 0,
+      fuelType: v.fuelType || 'PETROL',
+      transmission: v.transmission || 'MANUAL',
+      engineCC: v.engineCC,
+      condition: v.condition || 'GOOD',
+      sellerType: 'individual' as const,
+      sellerName: v.seller ? `${v.seller.firstName} ${v.seller.lastName}` : 'Unknown',
+      images: v.images.length > 0 ? v.images.map((img: any) => img.url) : ['https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80'],
+      hasPassport: v.hasPassport,
+      passportId: v.passportId,
+      postedDate: v.createdAt,
+      featured: v.featured,
+      description: v.description || '',
+      keyFeatures: []
+    }));
+    
+    return [...mockVehicles, ...convertedUserVehicles];
+  }, [userVehicles]);
+
   const filteredVehicles = useMemo(() => {
-    let result = [...vehicles];
+    let result = [...allVehicles];
 
     if (filters.search) {
       const q = filters.search.toLowerCase();

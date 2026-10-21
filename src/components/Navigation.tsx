@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Search, Shield, ChevronDown, Car, Bike, Zap, Wrench, ShieldCheck } from 'lucide-react';
+import { Menu, X, Search, Shield, ChevronDown, Car, Bike, Zap, Wrench, ShieldCheck, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,6 +10,7 @@ export default function Navigation() {
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
+  const { user, logout, isAuthenticated } = useAuth();
 
   const isHomePage = location.pathname === '/';
   const isDark = isHomePage && !scrolled;
@@ -178,12 +180,38 @@ export default function Navigation() {
             >
               <Search className={`w-5 h-5 transition-colors ${isDark ? 'text-ivory/70' : 'text-obsidian/60'}`} />
             </Link>
-            <Link
-              to="/sell"
-              className="px-5 py-2.5 bg-gold text-obsidian text-sm font-semibold rounded-full hover:bg-gold-light transition-colors duration-300 shadow-[var(--shadow-gold)]"
-            >
-              List Your Vehicle
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <Link
+                  to="/dashboard"
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-full transition-colors ${isDark ? 'hover:bg-ivory/10 text-ivory/90' : 'hover:bg-obsidian/5 text-obsidian/70'}`}
+                >
+                  <User className="w-4 h-4" />
+                  <span className="text-sm font-medium">{user?.firstName}</span>
+                </Link>
+                <button
+                  onClick={logout}
+                  className="px-5 py-2.5 bg-gold text-obsidian text-sm font-semibold rounded-full hover:bg-gold-light transition-colors duration-300 shadow-[var(--shadow-gold)]"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className={`px-5 py-2.5 rounded-full transition-colors text-sm font-medium ${isDark ? 'text-ivory/90 hover:bg-ivory/10' : 'text-obsidian/70 hover:bg-obsidian/5'}`}
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/sell"
+                  className="px-5 py-2.5 bg-gold text-obsidian text-sm font-semibold rounded-full hover:bg-gold-light transition-colors duration-300 shadow-[var(--shadow-gold)]"
+                >
+                  List Your Vehicle
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -234,13 +262,38 @@ export default function Navigation() {
                 ))}
               </nav>
 
-              <div className="mt-8 pt-8 border-t border-obsidian/[0.06]">
-                <Link
-                  to="/sell"
-                  className="block w-full text-center px-5 py-4 bg-obsidian text-ivory text-base font-semibold rounded-2xl"
-                >
-                  List Your Vehicle
-                </Link>
+              <div className="mt-8 pt-8 border-t border-obsidian/[0.06] space-y-3">
+                {isAuthenticated ? (
+                  <>
+                    <Link
+                      to="/dashboard"
+                      className="block w-full text-center px-5 py-4 bg-obsidian text-ivory text-base font-semibold rounded-2xl"
+                    >
+                      My Dashboard
+                    </Link>
+                    <button
+                      onClick={logout}
+                      className="block w-full text-center px-5 py-4 border border-obsidian/10 text-obsidian text-base font-medium rounded-2xl"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      className="block w-full text-center px-5 py-4 bg-obsidian text-ivory text-base font-semibold rounded-2xl"
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      to="/sell"
+                      className="block w-full text-center px-5 py-4 border border-obsidian/10 text-obsidian text-base font-medium rounded-2xl"
+                    >
+                      List Your Vehicle
+                    </Link>
+                  </>
+                )}
                 <p className="text-center text-xs text-slate-warm mt-4">
                   Nepal's trusted vehicle marketplace
                 </p>
