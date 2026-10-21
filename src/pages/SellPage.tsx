@@ -483,6 +483,22 @@ export default function SellPage() {
 
                 <button
                   onClick={async () => {
+                    // Validation
+                    if (!formData.category || !formData.make || !formData.model || !formData.year || !formData.price || !formData.province || !formData.city) {
+                      alert('Please fill in all required fields (marked with *)');
+                      return;
+                    }
+                    
+                    if (parseInt(formData.year) < 1900 || parseInt(formData.year) > new Date().getFullYear() + 1) {
+                      alert('Please enter a valid year');
+                      return;
+                    }
+                    
+                    if (parseInt(formData.price) <= 0) {
+                      alert('Please enter a valid price');
+                      return;
+                    }
+
                     setSaving(true);
                     try {
                       const vehicleData = {

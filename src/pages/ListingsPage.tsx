@@ -14,6 +14,7 @@ export default function ListingsPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('relevance');
   const [userVehicles, setUserVehicles] = useState<ApiVehicle[]>([]);
+  const [loadingUserVehicles, setLoadingUserVehicles] = useState(true);
 
   const [filters, setFilters] = useState({
     search: searchParams.get('q') || '',
@@ -30,11 +31,14 @@ export default function ListingsPage() {
   // Load user-created vehicles
   useEffect(() => {
     const loadUserVehicles = async () => {
+      setLoadingUserVehicles(true);
       try {
         const data = await api.getAllVehicles({});
         setUserVehicles(data.vehicles || []);
       } catch (error) {
         console.error('Failed to load user vehicles:', error);
+      } finally {
+        setLoadingUserVehicles(false);
       }
     };
     loadUserVehicles();
