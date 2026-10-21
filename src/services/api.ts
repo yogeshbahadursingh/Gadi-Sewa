@@ -116,6 +116,212 @@ export interface Passport {
   issues?: string[];
 }
 
+// Phase 4 Interfaces
+export interface OwnedVehicle {
+  id: string;
+  userId: string;
+  vehicleId?: string;
+  passportId?: string;
+  make?: string;
+  model?: string;
+  year?: number;
+  registrationNumber?: string;
+  vin?: string;
+  purchaseDate?: string;
+  purchasePrice?: number;
+  currentMileage: number;
+  status: 'ACTIVE' | 'SOLD' | 'INACTIVE';
+  createdAt: string;
+  updatedAt: string;
+  maintenanceRecords?: MaintenanceRecord[];
+  documents?: VehicleDocument[];
+  expenses?: VehicleExpense[];
+  reminders?: VehicleReminder[];
+}
+
+export interface MaintenanceRecord {
+  id: string;
+  ownedVehicleId: string;
+  workshopId?: string;
+  serviceType: string;
+  serviceDate: string;
+  mileageAtService?: number;
+  cost?: number;
+  description?: string;
+  notes?: string;
+  photos?: string[];
+  invoices?: string[];
+  verifiedByWorkshop: boolean;
+  verifiedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface VehicleDocument {
+  id: string;
+  ownedVehicleId: string;
+  documentType: 'BLUEBOOK' | 'INSURANCE' | 'TAX_RECEIPT' | 'REGISTRATION' | 'POLLUTION_CERTIFICATE' | 'SERVICE_RECORD' | 'INVOICE' | 'OTHER';
+  title: string;
+  documentNumber?: string;
+  issueDate?: string;
+  expiryDate?: string;
+  fileUrl: string;
+  fileSize?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface VehicleExpense {
+  id: string;
+  ownedVehicleId: string;
+  expenseType: 'FUEL' | 'MAINTENANCE' | 'REPAIR' | 'INSURANCE' | 'TAX' | 'PARKING' | 'TOLL' | 'ACCESSORIES' | 'OTHER';
+  amount: number;
+  date: string;
+  description?: string;
+  vendor?: string;
+  receiptUrl?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface VehicleReminder {
+  id: string;
+  ownedVehicleId: string;
+  userId: string;
+  reminderType: 'SERVICE' | 'INSURANCE' | 'TAX' | 'BLUEBOOK_RENEWAL' | 'POLLUTION_CERTIFICATE' | 'CUSTOM';
+  title: string;
+  description?: string;
+  dueDate?: string;
+  mileageDue?: number;
+  status: 'PENDING' | 'COMPLETED' | 'OVERDUE' | 'CANCELLED';
+  completedAt?: string;
+  notified: boolean;
+  notifiedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Workshop {
+  id: string;
+  organisationId?: string;
+  name: string;
+  description?: string;
+  logo?: string;
+  phone: string;
+  email?: string;
+  website?: string;
+  province: string;
+  district: string;
+  city: string;
+  address: string;
+  latitude?: number;
+  longitude?: number;
+  services: string[];
+  specializations: string[];
+  openingHours?: any;
+  verified: boolean;
+  verifiedAt?: string;
+  averageRating?: number;
+  totalReviews: number;
+  createdAt: string;
+}
+
+export interface Mechanic {
+  id: string;
+  userId?: string;
+  workshopId: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  email?: string;
+  profileImage?: string;
+  specializations: string[];
+  experience?: number;
+  certification?: string;
+  available: boolean;
+  averageRating?: number;
+  totalJobs: number;
+  createdAt: string;
+}
+
+export interface ServiceBooking {
+  id: string;
+  ownedVehicleId: string;
+  workshopId: string;
+  mechanicId?: string;
+  userId: string;
+  serviceType: string;
+  description?: string;
+  scheduledDate: string;
+  scheduledTime?: string;
+  status: 'PENDING' | 'CONFIRMED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
+  estimatedCost?: number;
+  finalCost?: number;
+  customerNotes?: string;
+  workshopNotes?: string;
+  completedAt?: string;
+  cancelledAt?: string;
+  cancellationReason?: string;
+  createdAt: string;
+}
+
+export interface WorkshopReview {
+  id: string;
+  workshopId: string;
+  userId: string;
+  serviceBookingId?: string;
+  rating: number;
+  title?: string;
+  comment: string;
+  serviceType?: string;
+  serviceDate?: string;
+  verified: boolean;
+  createdAt: string;
+}
+
+export interface RoadsideAssistanceProvider {
+  id: string;
+  organisationId?: string;
+  name: string;
+  description?: string;
+  logo?: string;
+  phone: string;
+  email?: string;
+  emergencyPhone?: string;
+  province: string;
+  district: string;
+  city: string;
+  coverageAreas: string[];
+  services: string[];
+  operatingHours?: any;
+  verified: boolean;
+  verifiedAt?: string;
+  averageRating?: number;
+  totalRequests: number;
+  createdAt: string;
+}
+
+export interface RoadsideAssistanceRequest {
+  id: string;
+  ownedVehicleId: string;
+  providerId?: string;
+  userId: string;
+  requestType: 'TOWING' | 'BATTERY_JUMP_START' | 'TYRE_CHANGE' | 'FUEL_DELIVERY' | 'LOCKOUT_SERVICE' | 'MECHANICAL_BREAKDOWN' | 'ACCIDENT_RECOVERY' | 'OTHER';
+  description: string;
+  location: string;
+  latitude?: number;
+  longitude?: number;
+  status: 'PENDING' | 'ASSIGNED' | 'EN_ROUTE' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+  assignedAt?: string;
+  estimatedArrival?: string;
+  serviceNotes?: string;
+  estimatedCost?: number;
+  finalCost?: number;
+  completedAt?: string;
+  resolvedAt?: string;
+  createdAt: string;
+}
+
 // LocalStorage helpers
 const STORAGE_KEYS = {
   USERS: 'gadi_sewa_users',
@@ -126,6 +332,18 @@ const STORAGE_KEYS = {
   ENQUIRIES: 'gadi_sewa_enquiries',
   INSPECTIONS: 'gadi_sewa_inspections',
   PASSPORTS: 'gadi_sewa_passports',
+  // Phase 4
+  OWNED_VEHICLES: 'gadi_sewa_owned_vehicles',
+  MAINTENANCE_RECORDS: 'gadi_sewa_maintenance_records',
+  VEHICLE_DOCUMENTS: 'gadi_sewa_vehicle_documents',
+  VEHICLE_EXPENSES: 'gadi_sewa_vehicle_expenses',
+  VEHICLE_REMINDERS: 'gadi_sewa_vehicle_reminders',
+  WORKSHOPS: 'gadi_sewa_workshops',
+  MECHANICS: 'gadi_sewa_mechanics',
+  SERVICE_BOOKINGS: 'gadi_sewa_service_bookings',
+  WORKSHOP_REVIEWS: 'gadi_sewa_workshop_reviews',
+  ASSISTANCE_PROVIDERS: 'gadi_sewa_assistance_providers',
+  ASSISTANCE_REQUESTS: 'gadi_sewa_assistance_requests',
 };
 
 function getStorage<T>(key: string, defaultValue: T): T {
@@ -795,6 +1013,240 @@ const demoAPI = {
       ...p,
       vehicle: vehicles.find(v => v.id === p.vehicleId)
     }));
+  },
+
+  // ===== PHASE 4: MY GARAGE =====
+  
+  async getMyOwnedVehicles() {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const ownedVehicles = getStorage<OwnedVehicle[]>(STORAGE_KEYS.OWNED_VEHICLES, []);
+    const maintenanceRecords = getStorage<MaintenanceRecord[]>(STORAGE_KEYS.MAINTENANCE_RECORDS, []);
+    const documents = getStorage<VehicleDocument[]>(STORAGE_KEYS.VEHICLE_DOCUMENTS, []);
+    const expenses = getStorage<VehicleExpense[]>(STORAGE_KEYS.VEHICLE_EXPENSES, []);
+    const reminders = getStorage<VehicleReminder[]>(STORAGE_KEYS.VEHICLE_REMINDERS, []);
+    
+    return ownedVehicles
+      .filter(v => v.userId === currentUser.id)
+      .map(v => ({
+        ...v,
+        maintenanceRecords: maintenanceRecords.filter(r => r.ownedVehicleId === v.id),
+        documents: documents.filter(d => d.ownedVehicleId === v.id),
+        expenses: expenses.filter(e => e.ownedVehicleId === v.id),
+        reminders: reminders.filter(r => r.ownedVehicleId === v.id)
+      }));
+  },
+
+  async addOwnedVehicle(data: Partial<OwnedVehicle>) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const ownedVehicles = getStorage<OwnedVehicle[]>(STORAGE_KEYS.OWNED_VEHICLES, []);
+    
+    const newVehicle: OwnedVehicle = {
+      id: `owned_${Date.now()}`,
+      userId: currentUser.id,
+      make: data.make,
+      model: data.model,
+      year: data.year,
+      registrationNumber: data.registrationNumber,
+      vin: data.vin,
+      purchaseDate: data.purchaseDate,
+      purchasePrice: data.purchasePrice,
+      currentMileage: data.currentMileage || 0,
+      status: 'ACTIVE',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    ownedVehicles.push(newVehicle);
+    setStorage(STORAGE_KEYS.OWNED_VEHICLES, ownedVehicles);
+    
+    return newVehicle;
+  },
+
+  async updateOwnedVehicle(id: string, data: Partial<OwnedVehicle>) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const ownedVehicles = getStorage<OwnedVehicle[]>(STORAGE_KEYS.OWNED_VEHICLES, []);
+    const index = ownedVehicles.findIndex(v => v.id === id);
+    
+    if (index === -1) throw new Error('Vehicle not found');
+    if (ownedVehicles[index].userId !== currentUser.id) throw new Error('Not authorized');
+    
+    ownedVehicles[index] = {
+      ...ownedVehicles[index],
+      ...data,
+      updatedAt: new Date().toISOString()
+    };
+    
+    setStorage(STORAGE_KEYS.OWNED_VEHICLES, ownedVehicles);
+    
+    return ownedVehicles[index];
+  },
+
+  async deleteOwnedVehicle(id: string) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const ownedVehicles = getStorage<OwnedVehicle[]>(STORAGE_KEYS.OWNED_VEHICLES, []);
+    const vehicle = ownedVehicles.find(v => v.id === id);
+    
+    if (!vehicle) throw new Error('Vehicle not found');
+    if (vehicle.userId !== currentUser.id) throw new Error('Not authorized');
+    
+    const filtered = ownedVehicles.filter(v => v.id !== id);
+    setStorage(STORAGE_KEYS.OWNED_VEHICLES, filtered);
+    
+    return { message: 'Vehicle deleted successfully' };
+  },
+
+  async addMaintenanceRecord(ownedVehicleId: string, data: Partial<MaintenanceRecord>) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const records = getStorage<MaintenanceRecord[]>(STORAGE_KEYS.MAINTENANCE_RECORDS, []);
+    
+    const newRecord: MaintenanceRecord = {
+      id: `maint_${Date.now()}`,
+      ownedVehicleId,
+      workshopId: data.workshopId,
+      serviceType: data.serviceType || '',
+      serviceDate: data.serviceDate || new Date().toISOString(),
+      mileageAtService: data.mileageAtService,
+      cost: data.cost,
+      description: data.description,
+      notes: data.notes,
+      photos: data.photos || [],
+      invoices: data.invoices || [],
+      verifiedByWorkshop: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    records.push(newRecord);
+    setStorage(STORAGE_KEYS.MAINTENANCE_RECORDS, records);
+    
+    return newRecord;
+  },
+
+  async getMaintenanceRecords(ownedVehicleId: string) {
+    const records = getStorage<MaintenanceRecord[]>(STORAGE_KEYS.MAINTENANCE_RECORDS, []);
+    return records.filter(r => r.ownedVehicleId === ownedVehicleId);
+  },
+
+  async addVehicleDocument(ownedVehicleId: string, data: Partial<VehicleDocument>) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const documents = getStorage<VehicleDocument[]>(STORAGE_KEYS.VEHICLE_DOCUMENTS, []);
+    
+    const newDoc: VehicleDocument = {
+      id: `doc_${Date.now()}`,
+      ownedVehicleId,
+      documentType: data.documentType || 'OTHER',
+      title: data.title || '',
+      documentNumber: data.documentNumber,
+      issueDate: data.issueDate,
+      expiryDate: data.expiryDate,
+      fileUrl: data.fileUrl || '',
+      fileSize: data.fileSize,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    documents.push(newDoc);
+    setStorage(STORAGE_KEYS.VEHICLE_DOCUMENTS, documents);
+    
+    return newDoc;
+  },
+
+  async getVehicleDocuments(ownedVehicleId: string) {
+    const documents = getStorage<VehicleDocument[]>(STORAGE_KEYS.VEHICLE_DOCUMENTS, []);
+    return documents.filter(d => d.ownedVehicleId === ownedVehicleId);
+  },
+
+  async addVehicleExpense(ownedVehicleId: string, data: Partial<VehicleExpense>) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const expenses = getStorage<VehicleExpense[]>(STORAGE_KEYS.VEHICLE_EXPENSES, []);
+    
+    const newExpense: VehicleExpense = {
+      id: `exp_${Date.now()}`,
+      ownedVehicleId,
+      expenseType: data.expenseType || 'OTHER',
+      amount: data.amount || 0,
+      date: data.date || new Date().toISOString(),
+      description: data.description,
+      vendor: data.vendor,
+      receiptUrl: data.receiptUrl,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    expenses.push(newExpense);
+    setStorage(STORAGE_KEYS.VEHICLE_EXPENSES, expenses);
+    
+    return newExpense;
+  },
+
+  async getVehicleExpenses(ownedVehicleId: string) {
+    const expenses = getStorage<VehicleExpense[]>(STORAGE_KEYS.VEHICLE_EXPENSES, []);
+    return expenses.filter(e => e.ownedVehicleId === ownedVehicleId);
+  },
+
+  async addVehicleReminder(ownedVehicleId: string, data: Partial<VehicleReminder>) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const reminders = getStorage<VehicleReminder[]>(STORAGE_KEYS.VEHICLE_REMINDERS, []);
+    
+    const newReminder: VehicleReminder = {
+      id: `rem_${Date.now()}`,
+      ownedVehicleId,
+      userId: currentUser.id,
+      reminderType: data.reminderType || 'CUSTOM',
+      title: data.title || '',
+      description: data.description,
+      dueDate: data.dueDate,
+      mileageDue: data.mileageDue,
+      status: 'PENDING',
+      notified: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    reminders.push(newReminder);
+    setStorage(STORAGE_KEYS.VEHICLE_REMINDERS, reminders);
+    
+    return newReminder;
+  },
+
+  async getVehicleReminders(ownedVehicleId: string) {
+    const reminders = getStorage<VehicleReminder[]>(STORAGE_KEYS.VEHICLE_REMINDERS, []);
+    return reminders.filter(r => r.ownedVehicleId === ownedVehicleId);
+  },
+
+  async completeReminder(reminderId: string) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const reminders = getStorage<VehicleReminder[]>(STORAGE_KEYS.VEHICLE_REMINDERS, []);
+    const index = reminders.findIndex(r => r.id === reminderId);
+    
+    if (index === -1) throw new Error('Reminder not found');
+    if (reminders[index].userId !== currentUser.id) throw new Error('Not authorized');
+    
+    reminders[index].status = 'COMPLETED';
+    reminders[index].completedAt = new Date().toISOString();
+    reminders[index].updatedAt = new Date().toISOString();
+    
+    setStorage(STORAGE_KEYS.VEHICLE_REMINDERS, reminders);
+    
+    return reminders[index];
   }
 };
 
@@ -1152,6 +1604,157 @@ export const api = DEMO_MODE ? demoAPI : {
   async getAllPassports() {
     const res = await fetch(`${API_URL}/api/passports`);
     if (!res.ok) throw new Error('Failed to fetch passports');
+    return res.json();
+  },
+
+  // ===== PHASE 4: MY GARAGE =====
+  
+  async getMyOwnedVehicles() {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/garage/vehicles`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Failed to fetch owned vehicles');
+    return res.json();
+  },
+
+  async addOwnedVehicle(data: any) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/garage/vehicles`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Failed to add vehicle');
+    return res.json();
+  },
+
+  async updateOwnedVehicle(id: string, data: any) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/garage/vehicles/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Failed to update vehicle');
+    return res.json();
+  },
+
+  async deleteOwnedVehicle(id: string) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/garage/vehicles/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Failed to delete vehicle');
+    return res.json();
+  },
+
+  async addMaintenanceRecord(ownedVehicleId: string, data: any) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/garage/vehicles/${ownedVehicleId}/maintenance`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Failed to add maintenance record');
+    return res.json();
+  },
+
+  async getMaintenanceRecords(ownedVehicleId: string) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/garage/vehicles/${ownedVehicleId}/maintenance`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Failed to fetch maintenance records');
+    return res.json();
+  },
+
+  async addVehicleDocument(ownedVehicleId: string, data: any) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/garage/vehicles/${ownedVehicleId}/documents`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Failed to add document');
+    return res.json();
+  },
+
+  async getVehicleDocuments(ownedVehicleId: string) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/garage/vehicles/${ownedVehicleId}/documents`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Failed to fetch documents');
+    return res.json();
+  },
+
+  async addVehicleExpense(ownedVehicleId: string, data: any) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/garage/vehicles/${ownedVehicleId}/expenses`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Failed to add expense');
+    return res.json();
+  },
+
+  async getVehicleExpenses(ownedVehicleId: string) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/garage/vehicles/${ownedVehicleId}/expenses`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Failed to fetch expenses');
+    return res.json();
+  },
+
+  async addVehicleReminder(ownedVehicleId: string, data: any) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/garage/vehicles/${ownedVehicleId}/reminders`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Failed to add reminder');
+    return res.json();
+  },
+
+  async getVehicleReminders(ownedVehicleId: string) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/garage/vehicles/${ownedVehicleId}/reminders`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Failed to fetch reminders');
+    return res.json();
+  },
+
+  async completeReminder(reminderId: string) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/garage/reminders/${reminderId}/complete`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Failed to complete reminder');
     return res.json();
   }
 };

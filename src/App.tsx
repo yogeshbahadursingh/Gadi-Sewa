@@ -20,6 +20,8 @@ import InspectionBookingPage from './pages/InspectionBookingPage';
 import InspectorDashboardPage from './pages/InspectorDashboardPage';
 import CompleteInspectionPage from './pages/CompleteInspectionPage';
 import PassportDetailPage from './pages/PassportDetailPage';
+import MyGaragePage from './pages/MyGaragePage';
+import AddVehicleToGaragePage from './pages/AddVehicleToGaragePage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -52,6 +54,9 @@ function AppLayout() {
           <Route path="/inspect/dashboard" element={<InspectorDashboardPage />} />
           <Route path="/inspect/complete/:id" element={<CompleteInspectionPage />} />
           <Route path="/passport/:id" element={<PassportDetailPage />} />
+          {/* Phase 4: My Garage */}
+          <Route path="/garage" element={<MyGaragePage />} />
+          <Route path="/garage/add" element={<AddVehicleToGaragePage />} />
           {/* Coming Soon pages */}
           <Route path="/inspect" element={<ComingSoonPage />} />
           <Route path="/garage" element={<ComingSoonPage />} />
