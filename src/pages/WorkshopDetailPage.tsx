@@ -279,7 +279,7 @@ export default function WorkshopDetailPage() {
               {/* Book Service Button */}
               <Link
                 to={`/workshops/${workshop.id}/book`}
-                className="mt-6 w-full flex items-center justify-center gap-2 px-6 py-3 bg-obsidian text-ivory text-sm font-semibold rounded-xl hover:bg-emerald transition-colors"
+                className="mt-6 w-full flex items-center justify-center gap-2 px-6 py-3 bg-gold text-obsidian text-sm font-semibold rounded-xl hover:bg-gold-dark transition-colors"
               >
                 <Calendar className="w-4 h-4" />
                 Book a Service

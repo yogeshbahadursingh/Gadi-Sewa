@@ -25,6 +25,9 @@ import AddVehicleToGaragePage from './pages/AddVehicleToGaragePage';
 import OwnedVehicleDetailPage from './pages/OwnedVehicleDetailPage';
 import WorkshopsPage from './pages/WorkshopsPage';
 import WorkshopDetailPage from './pages/WorkshopDetailPage';
+import ServiceBookingPage from './pages/ServiceBookingPage';
+import MyBookingsPage from './pages/MyBookingsPage';
+import RoadsideAssistancePage from './pages/RoadsideAssistancePage';
 import { initializeSampleWorkshops } from './data/workshops';
 
 function ScrollToTop() {
@@ -70,6 +73,11 @@ function AppLayout() {
           {/* Phase 4: Workshops */}
           <Route path="/workshops" element={<WorkshopsPage />} />
           <Route path="/workshops/:id" element={<WorkshopDetailPage />} />
+          <Route path="/workshops/:workshopId/book" element={<ServiceBookingPage />} />
+          {/* Phase 4: Bookings */}
+          <Route path="/my-bookings" element={<MyBookingsPage />} />
+          {/* Phase 4: Roadside Assistance */}
+          <Route path="/roadside-assistance" element={<RoadsideAssistancePage />} />
           {/* Coming Soon pages */}
           <Route path="/inspect" element={<ComingSoonPage />} />
           <Route path="/workshops" element={<ComingSoonPage />} />

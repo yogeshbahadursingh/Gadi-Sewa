@@ -12,6 +12,10 @@ import vehicleRoutes from './routes/vehicles';
 import userRoutes from './routes/users';
 import inspectionRoutes from './routes/inspections';
 import passportRoutes from './routes/passports';
+import garageRoutes from './routes/garage';
+import workshopRoutes from './routes/workshops';
+import serviceBookingRoutes from './routes/service-bookings';
+import roadsideAssistanceRoutes from './routes/roadside-assistance';
 
 dotenv.config();
 
@@ -54,6 +58,10 @@ app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/inspections', inspectionRoutes);
 app.use('/api/passports', passportRoutes);
+app.use('/api/garage', garageRoutes);
+app.use('/api/workshops', workshopRoutes);
+app.use('/api/service-bookings', serviceBookingRoutes);
+app.use('/api/roadside-assistance', roadsideAssistanceRoutes);
 
 // Error handling
 app.use(errorHandler);

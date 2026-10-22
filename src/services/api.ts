@@ -263,6 +263,10 @@ export interface ServiceBooking {
   cancelledAt?: string;
   cancellationReason?: string;
   createdAt: string;
+  // Relations (optional, loaded with include)
+  ownedVehicle?: OwnedVehicle;
+  workshop?: Workshop;
+  mechanic?: Mechanic;
 }
 
 export interface WorkshopReview {
@@ -320,6 +324,9 @@ export interface RoadsideAssistanceRequest {
   completedAt?: string;
   resolvedAt?: string;
   createdAt: string;
+  // Relations (optional, loaded with include)
+  provider?: RoadsideAssistanceProvider;
+  ownedVehicle?: OwnedVehicle;
 }
 
 // LocalStorage helpers
@@ -1450,6 +1457,59 @@ const demoAPI = {
     setStorage(STORAGE_KEYS.SERVICE_BOOKINGS, bookings);
     
     return bookings[index];
+  },
+
+  // ===== ROADSIDE ASSISTANCE =====
+  
+  async getMyAssistanceRequests() {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const requests = getStorage<RoadsideAssistanceRequest[]>(STORAGE_KEYS.ASSISTANCE_REQUESTS, []);
+    return requests.filter(r => r.userId === currentUser.id);
+  },
+
+  async createAssistanceRequest(data: Partial<RoadsideAssistanceRequest>) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const requests = getStorage<RoadsideAssistanceRequest[]>(STORAGE_KEYS.ASSISTANCE_REQUESTS, []);
+    
+    const newRequest: RoadsideAssistanceRequest = {
+      id: `assistance_${Date.now()}`,
+      ownedVehicleId: data.ownedVehicleId || '',
+      providerId: data.providerId,
+      userId: currentUser.id,
+      requestType: data.requestType || 'OTHER',
+      description: data.description || '',
+      location: data.location || '',
+      latitude: data.latitude,
+      longitude: data.longitude,
+      status: 'PENDING',
+      assignedAt: data.providerId ? new Date().toISOString() : undefined,
+      createdAt: new Date().toISOString(),
+    };
+    
+    requests.push(newRequest);
+    setStorage(STORAGE_KEYS.ASSISTANCE_REQUESTS, requests);
+    
+    return newRequest;
+  },
+
+  async cancelAssistanceRequest(requestId: string) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const requests = getStorage<RoadsideAssistanceRequest[]>(STORAGE_KEYS.ASSISTANCE_REQUESTS, []);
+    const index = requests.findIndex(r => r.id === requestId);
+    
+    if (index === -1) throw new Error('Request not found');
+    if (requests[index].userId !== currentUser.id) throw new Error('Not authorized');
+    
+    requests[index].status = 'CANCELLED';
+    setStorage(STORAGE_KEYS.ASSISTANCE_REQUESTS, requests);
+    
+    return requests[index];
   }
 };
 
@@ -2162,6 +2222,41 @@ export const api = DEMO_MODE ? demoAPI : {
     setStorage(STORAGE_KEYS.SERVICE_BOOKINGS, bookings);
     
     return bookings[index];
+  },
+
+  // ===== ROADSIDE ASSISTANCE =====
+  
+  async getMyAssistanceRequests() {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/roadside-assistance/requests`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Failed to fetch assistance requests');
+    return res.json();
+  },
+
+  async createAssistanceRequest(data: Partial<RoadsideAssistanceRequest>) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/roadside-assistance/requests`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('Failed to create assistance request');
+    return res.json();
+  },
+
+  async cancelAssistanceRequest(requestId: string) {
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    const res = await fetch(`${API_URL}/api/roadside-assistance/requests/${requestId}/cancel`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) throw new Error('Failed to cancel assistance request');
+    return res.json();
   }
 };
 
