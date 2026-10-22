@@ -22,6 +22,7 @@ import CompleteInspectionPage from './pages/CompleteInspectionPage';
 import PassportDetailPage from './pages/PassportDetailPage';
 import MyGaragePage from './pages/MyGaragePage';
 import AddVehicleToGaragePage from './pages/AddVehicleToGaragePage';
+import OwnedVehicleDetailPage from './pages/OwnedVehicleDetailPage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -57,9 +58,9 @@ function AppLayout() {
           {/* Phase 4: My Garage */}
           <Route path="/garage" element={<MyGaragePage />} />
           <Route path="/garage/add" element={<AddVehicleToGaragePage />} />
+          <Route path="/garage/vehicle/:id" element={<OwnedVehicleDetailPage />} />
           {/* Coming Soon pages */}
           <Route path="/inspect" element={<ComingSoonPage />} />
-          <Route path="/garage" element={<ComingSoonPage />} />
           <Route path="/workshops" element={<ComingSoonPage />} />
           <Route path="/valuation" element={<ComingSoonPage />} />
           <Route path="/dealer" element={<ComingSoonPage />} />
