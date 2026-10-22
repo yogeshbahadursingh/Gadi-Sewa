@@ -1247,6 +1247,209 @@ const demoAPI = {
     setStorage(STORAGE_KEYS.VEHICLE_REMINDERS, reminders);
     
     return reminders[index];
+  },
+
+  // ===== WORKSHOP MARKETPLACE =====
+  
+  async getWorkshops(filters?: { province?: string; district?: string; city?: string; service?: string; search?: string }) {
+    const workshops = getStorage<Workshop[]>(STORAGE_KEYS.WORKSHOPS, []);
+    let filtered = [...workshops];
+    
+    if (filters?.province) {
+      filtered = filtered.filter(w => w.province === filters.province);
+    }
+    if (filters?.district) {
+      filtered = filtered.filter(w => w.district === filters.district);
+    }
+    if (filters?.city) {
+      filtered = filtered.filter(w => w.city === filters.city);
+    }
+    if (filters?.service) {
+      filtered = filtered.filter(w => w.services.includes(filters.service!));
+    }
+    if (filters?.search) {
+      const search = filters.search.toLowerCase();
+      filtered = filtered.filter(w => 
+        w.name.toLowerCase().includes(search) ||
+        w.description?.toLowerCase().includes(search) ||
+        w.city.toLowerCase().includes(search)
+      );
+    }
+    
+    return filtered;
+  },
+
+  async getWorkshopById(workshopId: string) {
+    const workshops = getStorage<Workshop[]>(STORAGE_KEYS.WORKSHOPS, []);
+    const workshop = workshops.find(w => w.id === workshopId);
+    if (!workshop) throw new Error('Workshop not found');
+    return workshop;
+  },
+
+  async createWorkshop(data: Partial<Workshop>) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const workshops = getStorage<Workshop[]>(STORAGE_KEYS.WORKSHOPS, []);
+    
+    const newWorkshop: Workshop = {
+      id: `workshop_${Date.now()}`,
+      organisationId: undefined,
+      name: data.name || '',
+      description: data.description,
+      logo: data.logo,
+      phone: data.phone || '',
+      email: data.email,
+      website: data.website,
+      province: data.province || '',
+      district: data.district || '',
+      city: data.city || '',
+      address: data.address || '',
+      latitude: data.latitude,
+      longitude: data.longitude,
+      services: data.services || [],
+      specializations: data.specializations || [],
+      openingHours: data.openingHours,
+      verified: false,
+      averageRating: undefined,
+      totalReviews: 0,
+      createdAt: new Date().toISOString()
+    };
+    
+    workshops.push(newWorkshop);
+    setStorage(STORAGE_KEYS.WORKSHOPS, workshops);
+    
+    return newWorkshop;
+  },
+
+  async updateWorkshop(workshopId: string, data: Partial<Workshop>) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const workshops = getStorage<Workshop[]>(STORAGE_KEYS.WORKSHOPS, []);
+    const index = workshops.findIndex(w => w.id === workshopId);
+    
+    if (index === -1) throw new Error('Workshop not found');
+    
+    workshops[index] = { ...workshops[index], ...data };
+    setStorage(STORAGE_KEYS.WORKSHOPS, workshops);
+    
+    return workshops[index];
+  },
+
+  async getWorkshopReviews(workshopId: string) {
+    const reviews = getStorage<WorkshopReview[]>(STORAGE_KEYS.WORKSHOP_REVIEWS, []);
+    return reviews.filter(r => r.workshopId === workshopId);
+  },
+
+  async addWorkshopReview(workshopId: string, data: Partial<WorkshopReview>) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const reviews = getStorage<WorkshopReview[]>(STORAGE_KEYS.WORKSHOP_REVIEWS, []);
+    
+    const newReview: WorkshopReview = {
+      id: `review_${Date.now()}`,
+      workshopId,
+      userId: currentUser.id,
+      serviceBookingId: data.serviceBookingId,
+      rating: data.rating || 5,
+      title: data.title,
+      comment: data.comment || '',
+      serviceType: data.serviceType,
+      serviceDate: data.serviceDate,
+      verified: false,
+      createdAt: new Date().toISOString()
+    };
+    
+    reviews.push(newReview);
+    setStorage(STORAGE_KEYS.WORKSHOP_REVIEWS, reviews);
+    
+    // Update workshop rating
+    const workshops = getStorage<Workshop[]>(STORAGE_KEYS.WORKSHOPS, []);
+    const workshopIndex = workshops.findIndex(w => w.id === workshopId);
+    if (workshopIndex !== -1) {
+      const workshopReviews = reviews.filter(r => r.workshopId === workshopId);
+      const avgRating = workshopReviews.reduce((sum, r) => sum + r.rating, 0) / workshopReviews.length;
+      workshops[workshopIndex].averageRating = avgRating;
+      workshops[workshopIndex].totalReviews = workshopReviews.length;
+      setStorage(STORAGE_KEYS.WORKSHOPS, workshops);
+    }
+    
+    return newReview;
+  },
+
+  async createServiceBooking(data: Partial<ServiceBooking>) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const bookings = getStorage<ServiceBooking[]>(STORAGE_KEYS.SERVICE_BOOKINGS, []);
+    
+    const newBooking: ServiceBooking = {
+      id: `booking_${Date.now()}`,
+      ownedVehicleId: data.ownedVehicleId || '',
+      workshopId: data.workshopId || '',
+      mechanicId: data.mechanicId,
+      userId: currentUser.id,
+      serviceType: data.serviceType || '',
+      description: data.description,
+      scheduledDate: data.scheduledDate || new Date().toISOString(),
+      scheduledTime: data.scheduledTime,
+      status: 'PENDING',
+      estimatedCost: data.estimatedCost,
+      finalCost: undefined,
+      customerNotes: data.customerNotes,
+      workshopNotes: undefined,
+      completedAt: undefined,
+      cancelledAt: undefined,
+      cancellationReason: undefined,
+      createdAt: new Date().toISOString()
+    };
+    
+    bookings.push(newBooking);
+    setStorage(STORAGE_KEYS.SERVICE_BOOKINGS, bookings);
+    
+    return newBooking;
+  },
+
+  async getMyServiceBookings() {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const bookings = getStorage<ServiceBooking[]>(STORAGE_KEYS.SERVICE_BOOKINGS, []);
+    return bookings.filter(b => b.userId === currentUser.id);
+  },
+
+  async getServiceBookingById(bookingId: string) {
+    const bookings = getStorage<ServiceBooking[]>(STORAGE_KEYS.SERVICE_BOOKINGS, []);
+    const booking = bookings.find(b => b.id === bookingId);
+    if (!booking) throw new Error('Booking not found');
+    return booking;
+  },
+
+  async updateServiceBookingStatus(bookingId: string, status: ServiceBooking['status'], notes?: string) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const bookings = getStorage<ServiceBooking[]>(STORAGE_KEYS.SERVICE_BOOKINGS, []);
+    const index = bookings.findIndex(b => b.id === bookingId);
+    
+    if (index === -1) throw new Error('Booking not found');
+    
+    bookings[index].status = status;
+    if (notes) {
+      bookings[index].workshopNotes = notes;
+    }
+    if (status === 'COMPLETED') {
+      bookings[index].completedAt = new Date().toISOString();
+    }
+    if (status === 'CANCELLED') {
+      bookings[index].cancelledAt = new Date().toISOString();
+    }
+    
+    setStorage(STORAGE_KEYS.SERVICE_BOOKINGS, bookings);
+    
+    return bookings[index];
   }
 };
 
@@ -1756,6 +1959,209 @@ export const api = DEMO_MODE ? demoAPI : {
     });
     if (!res.ok) throw new Error('Failed to complete reminder');
     return res.json();
+  },
+
+  // ===== WORKSHOP MARKETPLACE =====
+  
+  async getWorkshops(filters?: { province?: string; district?: string; city?: string; service?: string; search?: string }) {
+    const workshops = getStorage<Workshop[]>(STORAGE_KEYS.WORKSHOPS, []);
+    let filtered = [...workshops];
+    
+    if (filters?.province) {
+      filtered = filtered.filter(w => w.province === filters.province);
+    }
+    if (filters?.district) {
+      filtered = filtered.filter(w => w.district === filters.district);
+    }
+    if (filters?.city) {
+      filtered = filtered.filter(w => w.city === filters.city);
+    }
+    if (filters?.service) {
+      filtered = filtered.filter(w => w.services.includes(filters.service!));
+    }
+    if (filters?.search) {
+      const search = filters.search.toLowerCase();
+      filtered = filtered.filter(w => 
+        w.name.toLowerCase().includes(search) ||
+        w.description?.toLowerCase().includes(search) ||
+        w.city.toLowerCase().includes(search)
+      );
+    }
+    
+    return filtered;
+  },
+
+  async getWorkshopById(workshopId: string) {
+    const workshops = getStorage<Workshop[]>(STORAGE_KEYS.WORKSHOPS, []);
+    const workshop = workshops.find(w => w.id === workshopId);
+    if (!workshop) throw new Error('Workshop not found');
+    return workshop;
+  },
+
+  async createWorkshop(data: Partial<Workshop>) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const workshops = getStorage<Workshop[]>(STORAGE_KEYS.WORKSHOPS, []);
+    
+    const newWorkshop: Workshop = {
+      id: `workshop_${Date.now()}`,
+      organisationId: undefined,
+      name: data.name || '',
+      description: data.description,
+      logo: data.logo,
+      phone: data.phone || '',
+      email: data.email,
+      website: data.website,
+      province: data.province || '',
+      district: data.district || '',
+      city: data.city || '',
+      address: data.address || '',
+      latitude: data.latitude,
+      longitude: data.longitude,
+      services: data.services || [],
+      specializations: data.specializations || [],
+      openingHours: data.openingHours,
+      verified: false,
+      averageRating: undefined,
+      totalReviews: 0,
+      createdAt: new Date().toISOString()
+    };
+    
+    workshops.push(newWorkshop);
+    setStorage(STORAGE_KEYS.WORKSHOPS, workshops);
+    
+    return newWorkshop;
+  },
+
+  async updateWorkshop(workshopId: string, data: Partial<Workshop>) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const workshops = getStorage<Workshop[]>(STORAGE_KEYS.WORKSHOPS, []);
+    const index = workshops.findIndex(w => w.id === workshopId);
+    
+    if (index === -1) throw new Error('Workshop not found');
+    
+    workshops[index] = { ...workshops[index], ...data };
+    setStorage(STORAGE_KEYS.WORKSHOPS, workshops);
+    
+    return workshops[index];
+  },
+
+  async getWorkshopReviews(workshopId: string) {
+    const reviews = getStorage<WorkshopReview[]>(STORAGE_KEYS.WORKSHOP_REVIEWS, []);
+    return reviews.filter(r => r.workshopId === workshopId);
+  },
+
+  async addWorkshopReview(workshopId: string, data: Partial<WorkshopReview>) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const reviews = getStorage<WorkshopReview[]>(STORAGE_KEYS.WORKSHOP_REVIEWS, []);
+    
+    const newReview: WorkshopReview = {
+      id: `review_${Date.now()}`,
+      workshopId,
+      userId: currentUser.id,
+      serviceBookingId: data.serviceBookingId,
+      rating: data.rating || 5,
+      title: data.title,
+      comment: data.comment || '',
+      serviceType: data.serviceType,
+      serviceDate: data.serviceDate,
+      verified: false,
+      createdAt: new Date().toISOString()
+    };
+    
+    reviews.push(newReview);
+    setStorage(STORAGE_KEYS.WORKSHOP_REVIEWS, reviews);
+    
+    // Update workshop rating
+    const workshops = getStorage<Workshop[]>(STORAGE_KEYS.WORKSHOPS, []);
+    const workshopIndex = workshops.findIndex(w => w.id === workshopId);
+    if (workshopIndex !== -1) {
+      const workshopReviews = reviews.filter(r => r.workshopId === workshopId);
+      const avgRating = workshopReviews.reduce((sum, r) => sum + r.rating, 0) / workshopReviews.length;
+      workshops[workshopIndex].averageRating = avgRating;
+      workshops[workshopIndex].totalReviews = workshopReviews.length;
+      setStorage(STORAGE_KEYS.WORKSHOPS, workshops);
+    }
+    
+    return newReview;
+  },
+
+  async createServiceBooking(data: Partial<ServiceBooking>) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const bookings = getStorage<ServiceBooking[]>(STORAGE_KEYS.SERVICE_BOOKINGS, []);
+    
+    const newBooking: ServiceBooking = {
+      id: `booking_${Date.now()}`,
+      ownedVehicleId: data.ownedVehicleId || '',
+      workshopId: data.workshopId || '',
+      mechanicId: data.mechanicId,
+      userId: currentUser.id,
+      serviceType: data.serviceType || '',
+      description: data.description,
+      scheduledDate: data.scheduledDate || new Date().toISOString(),
+      scheduledTime: data.scheduledTime,
+      status: 'PENDING',
+      estimatedCost: data.estimatedCost,
+      finalCost: undefined,
+      customerNotes: data.customerNotes,
+      workshopNotes: undefined,
+      completedAt: undefined,
+      cancelledAt: undefined,
+      cancellationReason: undefined,
+      createdAt: new Date().toISOString()
+    };
+    
+    bookings.push(newBooking);
+    setStorage(STORAGE_KEYS.SERVICE_BOOKINGS, bookings);
+    
+    return newBooking;
+  },
+
+  async getMyServiceBookings() {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const bookings = getStorage<ServiceBooking[]>(STORAGE_KEYS.SERVICE_BOOKINGS, []);
+    return bookings.filter(b => b.userId === currentUser.id);
+  },
+
+  async getServiceBookingById(bookingId: string) {
+    const bookings = getStorage<ServiceBooking[]>(STORAGE_KEYS.SERVICE_BOOKINGS, []);
+    const booking = bookings.find(b => b.id === bookingId);
+    if (!booking) throw new Error('Booking not found');
+    return booking;
+  },
+
+  async updateServiceBookingStatus(bookingId: string, status: ServiceBooking['status'], notes?: string) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const bookings = getStorage<ServiceBooking[]>(STORAGE_KEYS.SERVICE_BOOKINGS, []);
+    const index = bookings.findIndex(b => b.id === bookingId);
+    
+    if (index === -1) throw new Error('Booking not found');
+    
+    bookings[index].status = status;
+    if (notes) {
+      bookings[index].workshopNotes = notes;
+    }
+    if (status === 'COMPLETED') {
+      bookings[index].completedAt = new Date().toISOString();
+    }
+    if (status === 'CANCELLED') {
+      bookings[index].cancelledAt = new Date().toISOString();
+    }
+    
+    setStorage(STORAGE_KEYS.SERVICE_BOOKINGS, bookings);
+    
+    return bookings[index];
   }
 };
 

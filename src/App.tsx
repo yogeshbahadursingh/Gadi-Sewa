@@ -23,6 +23,9 @@ import PassportDetailPage from './pages/PassportDetailPage';
 import MyGaragePage from './pages/MyGaragePage';
 import AddVehicleToGaragePage from './pages/AddVehicleToGaragePage';
 import OwnedVehicleDetailPage from './pages/OwnedVehicleDetailPage';
+import WorkshopsPage from './pages/WorkshopsPage';
+import WorkshopDetailPage from './pages/WorkshopDetailPage';
+import { initializeSampleWorkshops } from './data/workshops';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -33,6 +36,11 @@ function ScrollToTop() {
 }
 
 function AppLayout() {
+  useEffect(() => {
+    // Initialize sample data on first load
+    initializeSampleWorkshops();
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       <ScrollToTop />
@@ -59,6 +67,9 @@ function AppLayout() {
           <Route path="/garage" element={<MyGaragePage />} />
           <Route path="/garage/add" element={<AddVehicleToGaragePage />} />
           <Route path="/garage/vehicle/:id" element={<OwnedVehicleDetailPage />} />
+          {/* Phase 4: Workshops */}
+          <Route path="/workshops" element={<WorkshopsPage />} />
+          <Route path="/workshops/:id" element={<WorkshopDetailPage />} />
           {/* Coming Soon pages */}
           <Route path="/inspect" element={<ComingSoonPage />} />
           <Route path="/workshops" element={<ComingSoonPage />} />
