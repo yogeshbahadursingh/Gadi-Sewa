@@ -13,7 +13,7 @@ import {
 } from '../types';
 
 // Re-export types for convenience
-export type { User, Vehicle, Workshop, FinanceProvider, FinanceProduct, Inspection } from '../types';
+export type { User, Vehicle, Workshop, FinanceProvider, FinanceProduct, Inspection, Passport } from '../types';
 
 // Storage Keys
 const STORAGE_KEYS = {
@@ -464,6 +464,21 @@ export const api = {
     const passports = getStorage<Passport[]>(STORAGE_KEYS.PASSPORTS, []);
     const passport = passports.find(p => p.vehicleId === vehicleId && p.status === 'PUBLISHED');
     return { hasPassport: !!passport, passport };
+  },
+
+  async getPassportDetails(passportId: string) {
+    const passports = getStorage<Passport[]>(STORAGE_KEYS.PASSPORTS, []);
+    const passport = passports.find(p => p.id === passportId);
+    
+    if (!passport) throw new Error('Passport not found');
+    
+    const vehicles = getStorage<Vehicle[]>(STORAGE_KEYS.VEHICLES, []);
+    const vehicle = vehicles.find(v => v.id === passport.vehicleId);
+    
+    return {
+      ...passport,
+      vehicle
+    };
   },
 
   // ===== MY GARAGE =====
