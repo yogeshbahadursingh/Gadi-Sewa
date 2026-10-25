@@ -80,163 +80,232 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="min-h-screen bg-ivory pt-8 pb-20">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="font-display text-4xl font-bold text-obsidian mb-2">My Profile</h1>
-          <p className="text-obsidian/70 mb-8">Manage your account settings</p>
+    <main className="min-h-screen bg-ivory">
+      {/* Premium Header */}
+      <section className="bg-gradient-to-br from-obsidian via-obsidian-light to-obsidian relative overflow-hidden">
+        <div className="absolute inset-0 bg-mesh-luxury opacity-20"></div>
+        <div className="container-luxury relative z-10 py-16">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="badge-luxury badge-gold mb-4 inline-flex">
+              <User className="w-4 h-4" />
+              Account Settings
+            </span>
+            <h1 className="font-display text-5xl md:text-6xl font-bold text-ivory mb-4 tracking-tight">
+              My Profile
+            </h1>
+            <p className="text-xl text-ivory/70">
+              Manage your account settings and preferences
+            </p>
+          </motion.div>
+        </div>
+      </section>
 
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2">
-              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-800">{error}</p>
-            </div>
-          )}
+      <div className="container-luxury py-12">
+        <div className="max-w-3xl mx-auto">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3"
+              >
+                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-red-800 font-medium">{error}</p>
+              </motion.div>
+            )}
 
-          {/* Profile Information */}
-          <div className="bg-white rounded-2xl shadow-soft p-8 mb-6">
-            <h2 className="font-display text-xl font-bold text-obsidian mb-6">Profile Information</h2>
-            
-            <form onSubmit={handleProfileUpdate} className="space-y-5">
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-obsidian mb-2">First Name</label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-obsidian/40" />
+            {/* Profile Information */}
+            <div className="card-luxury p-8 mb-8">
+              <h2 className="font-display text-2xl font-bold text-obsidian mb-6 flex items-center gap-3">
+                <div className="w-1 h-8 bg-gradient-to-b from-gold to-gold-dark rounded-full"></div>
+                Profile Information
+              </h2>
+              
+              <form onSubmit={handleProfileUpdate} className="space-y-5">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-obsidian mb-2">First Name</label>
+                    <div className="relative">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gold" />
+                      <input
+                        type="text"
+                        value={formData.firstName}
+                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                        required
+                        className="input-luxury w-full pl-12 pr-4 py-3 rounded-xl"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-obsidian mb-2">Last Name</label>
                     <input
                       type="text"
-                      value={formData.firstName}
-                      onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                      value={formData.lastName}
+                      onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                       required
-                      className="w-full pl-10 pr-4 py-3 bg-ivory border border-obsidian/10 rounded-xl focus:border-gold focus:ring-2 focus:ring-gold/20"
+                      className="input-luxury w-full px-4 py-3 rounded-xl"
                     />
                   </div>
                 </div>
+
                 <div>
-                  <label className="block text-sm font-medium text-obsidian mb-2">Last Name</label>
-                  <input
-                    type="text"
-                    value={formData.lastName}
-                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    required
-                    className="w-full px-4 py-3 bg-ivory border border-obsidian/10 rounded-xl focus:border-gold focus:ring-2 focus:ring-gold/20"
-                  />
+                  <label className="block text-sm font-semibold text-obsidian mb-2">Email</label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gold" />
+                    <input
+                      type="email"
+                      value={user.email}
+                      disabled
+                      className="input-luxury w-full pl-12 pr-4 py-3 rounded-xl bg-ivory-dark text-obsidian/50 cursor-not-allowed"
+                    />
+                  </div>
+                  <p className="text-xs text-obsidian/60 mt-1">Email cannot be changed</p>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-obsidian mb-2">Email</label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-obsidian/40" />
-                  <input
-                    type="email"
-                    value={user.email}
-                    disabled
-                    className="w-full pl-10 pr-4 py-3 bg-ivory-dark border border-obsidian/10 rounded-xl text-obsidian/50 cursor-not-allowed"
-                  />
+                <div>
+                  <label className="block text-sm font-semibold text-obsidian mb-2">Phone</label>
+                  <div className="relative">
+                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gold" />
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="input-luxury w-full pl-12 pr-4 py-3 rounded-xl"
+                      placeholder="+977-98XXXXXXXX"
+                    />
+                  </div>
                 </div>
-                <p className="text-xs text-obsidian/40 mt-1">Email cannot be changed</p>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-obsidian mb-2">Phone</label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-obsidian/40" />
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full pl-10 pr-4 py-3 bg-ivory border border-obsidian/10 rounded-xl focus:border-gold focus:ring-2 focus:ring-gold/20"
-                    placeholder="+977-98XXXXXXXX"
-                  />
+                <button
+                  type="submit"
+                  disabled={profileStatus === 'saving'}
+                  className="btn-luxury btn-gold w-full py-3 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {profileStatus === 'saving' ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-obsidian border-t-transparent rounded-full animate-spin"></div>
+                      <span>Saving...</span>
+                    </>
+                  ) : profileStatus === 'saved' ? (
+                    <>
+                      <CheckCircle className="w-5 h-5" />
+                      <span>Saved</span>
+                    </>
+                  ) : (
+                    'Save Changes'
+                  )}
+                </button>
+
+                {profileStatus === 'saved' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-2 text-sm text-emerald font-medium"
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    Profile updated successfully
+                  </motion.div>
+                )}
+              </form>
+            </div>
+
+            {/* Change Password */}
+            <div className="card-luxury p-8">
+              <h2 className="font-display text-2xl font-bold text-obsidian mb-6 flex items-center gap-3">
+                <div className="w-1 h-8 bg-gradient-to-b from-gold to-gold-dark rounded-full"></div>
+                Change Password
+              </h2>
+              
+              <form onSubmit={handlePasswordChange} className="space-y-5">
+                <div>
+                  <label className="block text-sm font-semibold text-obsidian mb-2">Current Password</label>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gold" />
+                    <input
+                      type="password"
+                      value={passwordData.currentPassword}
+                      onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                      required
+                      className="input-luxury w-full pl-12 pr-4 py-3 rounded-xl"
+                      placeholder="••••••••"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <button
-                type="submit"
-                disabled={profileStatus === 'saving'}
-                className="w-full py-3 bg-gradient-to-r from-gold to-gold-dark text-obsidian font-semibold rounded-xl shadow-gold hover:shadow-lg transition-all disabled:opacity-50"
-              >
-                {profileStatus === 'saving' ? 'Saving...' : profileStatus === 'saved' ? '✓ Saved' : 'Save Changes'}
-              </button>
-
-              {profileStatus === 'saved' && (
-                <div className="flex items-center gap-2 text-sm text-emerald">
-                  <CheckCircle className="w-4 h-4" />
-                  Profile updated successfully
+                <div>
+                  <label className="block text-sm font-semibold text-obsidian mb-2">New Password</label>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gold" />
+                    <input
+                      type="password"
+                      value={passwordData.newPassword}
+                      onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                      required
+                      minLength={8}
+                      className="input-luxury w-full pl-12 pr-4 py-3 rounded-xl"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  <p className="text-xs text-obsidian/60 mt-1">Minimum 8 characters</p>
                 </div>
-              )}
-            </form>
-          </div>
 
-          {/* Change Password */}
-          <div className="bg-white rounded-2xl shadow-soft p-8">
-            <h2 className="font-display text-xl font-bold text-obsidian mb-6">Change Password</h2>
-            
-            <form onSubmit={handlePasswordChange} className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-obsidian mb-2">Current Password</label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-obsidian/40" />
-                  <input
-                    type="password"
-                    value={passwordData.currentPassword}
-                    onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                    required
-                    className="w-full pl-10 pr-4 py-3 bg-ivory border border-obsidian/10 rounded-xl focus:border-gold focus:ring-2 focus:ring-gold/20"
-                    placeholder="••••••••"
-                  />
+                <div>
+                  <label className="block text-sm font-semibold text-obsidian mb-2">Confirm New Password</label>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gold" />
+                    <input
+                      type="password"
+                      value={passwordData.confirmPassword}
+                      onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                      required
+                      className="input-luxury w-full pl-12 pr-4 py-3 rounded-xl"
+                      placeholder="••••••••"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-obsidian mb-2">New Password</label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-obsidian/40" />
-                  <input
-                    type="password"
-                    value={passwordData.newPassword}
-                    onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                    required
-                    minLength={8}
-                    className="w-full pl-10 pr-4 py-3 bg-ivory border border-obsidian/10 rounded-xl focus:border-gold focus:ring-2 focus:ring-gold/20"
-                    placeholder="••••••••"
-                  />
-                </div>
-              </div>
+                <button
+                  type="submit"
+                  disabled={passwordStatus === 'saving'}
+                  className="btn-luxury btn-gold w-full py-3 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {passwordStatus === 'saving' ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-obsidian border-t-transparent rounded-full animate-spin"></div>
+                      <span>Changing...</span>
+                    </>
+                  ) : passwordStatus === 'saved' ? (
+                    <>
+                      <CheckCircle className="w-5 h-5" />
+                      <span>Password Changed</span>
+                    </>
+                  ) : (
+                    'Change Password'
+                  )}
+                </button>
 
-              <div>
-                <label className="block text-sm font-medium text-obsidian mb-2">Confirm New Password</label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-obsidian/40" />
-                  <input
-                    type="password"
-                    value={passwordData.confirmPassword}
-                    onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                    required
-                    className="w-full pl-10 pr-4 py-3 bg-ivory border border-obsidian/10 rounded-xl focus:border-gold focus:ring-2 focus:ring-gold/20"
-                    placeholder="••••••••"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={passwordStatus === 'saving'}
-                className="w-full py-3 bg-gradient-to-r from-gold to-gold-dark text-obsidian font-semibold rounded-xl shadow-gold hover:shadow-lg transition-all disabled:opacity-50"
-              >
-                {passwordStatus === 'saving' ? 'Changing...' : passwordStatus === 'saved' ? '✓ Password Changed' : 'Change Password'}
-              </button>
-
-              {passwordStatus === 'saved' && (
-                <div className="flex items-center gap-2 text-sm text-emerald">
-                  <CheckCircle className="w-4 h-4" />
-                  Password changed successfully
-                </div>
-              )}
-            </form>
-          </div>
-        </motion.div>
+                {passwordStatus === 'saved' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-2 text-sm text-emerald font-medium"
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    Password changed successfully
+                  </motion.div>
+                )}
+              </form>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </main>
   );

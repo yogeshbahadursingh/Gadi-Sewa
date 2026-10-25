@@ -166,48 +166,80 @@ export default function Navigation() {
             role="menu"
             aria-label="Mobile navigation menu"
           >
-            <div className="container-luxury py-6 space-y-2">
-              {[
-                { path: '/listings', label: 'Browse Vehicles' },
-                { path: '/garage', label: 'My Garage' },
-                { path: '/workshops', label: 'Workshops' },
-                { path: '/finance', label: 'Finance' },
-                { path: '/passport', label: 'Vehicle Passport' }
-              ].map((item, index) => (
-                <motion.div
-                  key={item.path}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
+            <div className="container-luxury py-6">
+              {/* Mobile Menu Header */}
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-ivory/10">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-gold to-gold-dark rounded-xl flex items-center justify-center shadow-gold">
+                    <Car className="w-6 h-6 text-obsidian" strokeWidth={2.5} aria-hidden="true" />
+                  </div>
+                  <div>
+                    <h2 className="font-display text-lg font-bold text-ivory">Gadi-Sewa</h2>
+                    <p className="text-[10px] text-ivory/50 uppercase tracking-wider">Navigation Menu</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-2 text-ivory/60 hover:text-ivory hover:bg-ivory/5 rounded-full transition-all duration-300"
+                  aria-label="Close menu"
                 >
-                  <Link 
-                    to={item.path} 
-                    onClick={() => setIsOpen(false)}
-                    className={`block px-4 py-3 text-base font-medium rounded-xl transition-all duration-300 ${
-                      isActive(item.path)
-                        ? 'text-obsidian bg-gold/10'
-                        : 'text-ivory/80 hover:text-ivory hover:bg-ivory/5'
-                    }`}
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Main Navigation Links */}
+              <div className="space-y-2 mb-6">
+                {[
+                  { path: '/listings', label: 'Browse Vehicles', icon: Car },
+                  { path: '/garage', label: 'My Garage', icon: Car },
+                  { path: '/workshops', label: 'Workshops', icon: Car },
+                  { path: '/finance', label: 'Finance', icon: Car },
+                  { path: '/passport', label: 'Vehicle Passport', icon: Shield }
+                ].map((item, index) => (
+                  <motion.div
+                    key={item.path}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
                   >
-                    {item.label}
-                  </Link>
-                </motion.div>
-              ))}
+                    <Link 
+                      to={item.path} 
+                      onClick={() => setIsOpen(false)}
+                      className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-xl transition-all duration-300 ${
+                        isActive(item.path)
+                          ? 'text-obsidian bg-gold/10 border-l-4 border-gold'
+                          : 'text-ivory/80 hover:text-ivory hover:bg-ivory/5'
+                      }`}
+                    >
+                      <item.icon className="w-5 h-5" aria-hidden="true" />
+                      <span>{item.label}</span>
+                      {isActive(item.path) && (
+                        <span className="ml-auto w-2 h-2 bg-gold rounded-full" aria-hidden="true"></span>
+                      )}
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
               
-              <div className="pt-4 mt-4 border-t border-ivory/10">
+              {/* Auth Section */}
+              <div className="pt-4 border-t border-ivory/10">
                 {isAuthenticated ? (
                   <>
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.25 }}
+                      className="mb-2"
                     >
                       <Link 
                         to="/dashboard" 
                         onClick={() => setIsOpen(false)}
-                        className="block px-4 py-3 text-base font-medium text-ivory/80 hover:text-ivory hover:bg-ivory/5 rounded-xl transition-all duration-300"
+                        className="flex items-center gap-3 px-4 py-3 text-base font-medium text-ivory/80 hover:text-ivory hover:bg-ivory/5 rounded-xl transition-all duration-300"
                       >
-                        Dashboard
+                        <div className="w-8 h-8 bg-gradient-to-br from-gold to-gold-dark rounded-full flex items-center justify-center" aria-hidden="true">
+                          <User className="w-4 h-4 text-obsidian" aria-hidden="true" />
+                        </div>
+                        <span>Dashboard</span>
                       </Link>
                     </motion.div>
                     <motion.div
@@ -217,9 +249,10 @@ export default function Navigation() {
                     >
                       <button 
                         onClick={() => { logout(); setIsOpen(false); }}
-                        className="block w-full text-left px-4 py-3 text-base font-medium text-ivory/80 hover:text-ivory hover:bg-ivory/5 rounded-xl transition-all duration-300"
+                        className="flex items-center gap-3 w-full text-left px-4 py-3 text-base font-medium text-ivory/80 hover:text-ivory hover:bg-ivory/5 rounded-xl transition-all duration-300"
                       >
-                        Logout
+                        <span className="w-5 h-5" aria-hidden="true"></span>
+                        <span>Logout</span>
                       </button>
                     </motion.div>
                   </>
@@ -229,13 +262,15 @@ export default function Navigation() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.25 }}
+                      className="mb-2"
                     >
                       <Link 
                         to="/login" 
                         onClick={() => setIsOpen(false)}
-                        className="block px-4 py-3 text-base font-medium text-ivory/80 hover:text-ivory hover:bg-ivory/5 rounded-xl transition-all duration-300"
+                        className="flex items-center gap-3 px-4 py-3 text-base font-medium text-ivory/80 hover:text-ivory hover:bg-ivory/5 rounded-xl transition-all duration-300"
                       >
-                        Sign In
+                        <span className="w-5 h-5" aria-hidden="true"></span>
+                        <span>Sign In</span>
                       </Link>
                     </motion.div>
                     <motion.div
@@ -253,6 +288,14 @@ export default function Navigation() {
                     </motion.div>
                   </>
                 )}
+              </div>
+
+              {/* Mobile Menu Footer */}
+              <div className="mt-6 pt-4 border-t border-ivory/10">
+                <div className="flex items-center gap-2 px-4 py-2 text-xs text-ivory/50">
+                  <Shield className="w-4 h-4 text-gold" aria-hidden="true" />
+                  <span>Nepal's Premier Automotive Platform</span>
+                </div>
               </div>
             </div>
           </motion.div>
