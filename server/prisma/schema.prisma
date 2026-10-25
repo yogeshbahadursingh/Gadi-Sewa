@@ -1,0 +1,971 @@
+// Prisma Schema for Gadi-Sewa - Nepal's Premier Automotive Platform
+// This schema defines the complete data model for the automotive ecosystem
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  firstName     String
+  lastName      String
+  phone         String?
+  avatar        String?
+  emailVerified Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  roles              UserRole[]
+  vehicles           Vehicle[]
+  favorites          Favorite[]
+  enquiries          Enquiry[]
+  messages           Message[]
+  ownedVehicles      OwnedVehicle[]
+  inspections        Inspection[]
+  serviceBookings    ServiceBooking[]
+  workshopReviews    WorkshopReview[]
+  assistanceRequests RoadsideAssistanceRequest[]
+  partOrders         PartOrder[]
+  productReviews     ProductReview[]
+  bids               Bid[]
+  fleets             Fleet[]
+  financeApplications FinanceApplication[]
+
+  @@map("users")
+}
+
+enum Role {
+  BUYER
+  SELLER
+  DEALER_OWNER
+  DEALER_EMPLOYEE
+  INSPECTOR
+  REVIEWER
+  WORKSHOP_OWNER
+  WORKSHOP_MECHANIC
+  ROADSIDE_PROVIDER
+  PARTS_MERCHANT
+  FLEET_MANAGER
+  ADMIN
+}
+
+model UserRole {
+  id             String   @id @default(cuid())
+  userId         String
+  role           Role
+  organizationId String?
+  createdAt      DateTime @default(now())
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization? @relation(fields: [organizationId], references: [id])
+
+  @@unique([userId, role, organizationId])
+  @@map("user_roles")
+}
+
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  type        OrgType
+  address     String?
+  phone       String?
+  email       String?
+  logo        String?
+  verified    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  roles       UserRole[]
+  dealerships Dealership[]
+  workshops   Workshop[]
+  fleets      Fleet[]
+
+  @@map("organizations")
+}
+
+enum OrgType {
+  DEALERSHIP
+  WORKSHOP
+  INSPECTION_SERVICE
+  ROADSIDE_ASSISTANCE
+  PARTS_MERCHANT
+  FLEET_OPERATOR
+}
+
+// ============================================
+// VEHICLE MARKETPLACE
+// ============================================
+
+model Vehicle {
+  id              String        @id @default(cuid())
+  sellerId        String
+  status          ListingStatus @default(DRAFT)
+  
+  // Basic Info
+  category        VehicleCategory
+  make            String
+  model           String
+  variant         String?
+  year            Int
+  price           Int
+  negotiable      Boolean       @default(false)
+  
+  // Specifications
+  mileage         Int?
+  fuelType        FuelType?
+  transmission    Transmission?
+  engineCC        Int?
+  
+  // Location
+  province        String
+  district        String
+  city            String
+  
+  // Details
+  description     String?
+  condition       VehicleCondition?
+  
+  // Metadata
+  views           Int           @default(0)
+  featured        Boolean       @default(false)
+  publishedAt     DateTime?
+  expiresAt       DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Relations
+  seller          User              @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  images          VehicleImage[]
+  favorites       Favorite[]
+  enquiries       Enquiry[]
+  passports       VehiclePassport[]
+  inspections     Inspection[]
+
+  @@index([status, category])
+  @@index([province, district])
+  @@index([price])
+  @@map("vehicles")
+}
+
+enum VehicleCategory {
+  CAR
+  SUV
+  MOTORCYCLE
+  SCOOTER
+  ELECTRIC_CAR
+  ELECTRIC_BIKE
+  ELECTRIC_SCOOTER
+  VAN
+  TRUCK
+  BUS
+}
+
+enum FuelType {
+  PETROL
+  DIESEL
+  ELECTRIC
+  HYBRID
+  CNG
+  LPG
+}
+
+enum Transmission {
+  MANUAL
+  AUTOMATIC
+  CVT
+}
+
+enum VehicleCondition {
+  NEW
+  LIKE_NEW
+  EXCELLENT
+  VERY_GOOD
+  GOOD
+  FAIR
+  POOR
+}
+
+enum ListingStatus {
+  DRAFT
+  PENDING_REVIEW
+  PUBLISHED
+  SOLD
+  EXPIRED
+  REMOVED
+}
+
+model VehicleImage {
+  id        String   @id @default(cuid())
+  vehicleId String
+  url       String
+  order     Int      @default(0)
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@map("vehicle_images")
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  vehicleId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, vehicleId])
+  @@map("favorites")
+}
+
+model Enquiry {
+  id          String        @id @default(cuid())
+  vehicleId   String
+  buyerId     String
+  message     String
+  status      EnquiryStatus @default(NEW)
+  offerAmount Int?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  buyer   User    @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+
+  @@map("enquiries")
+}
+
+enum EnquiryStatus {
+  NEW
+  READ
+  REPLIED
+  NEGOTIATING
+  CLOSED
+}
+
+// ============================================
+// MESSAGING
+// ============================================
+
+model Conversation {
+  id        String   @id @default(cuid())
+  vehicleId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participants ConversationParticipant[]
+  messages     Message[]
+
+  @@map("conversations")
+}
+
+model ConversationParticipant {
+  id             String   @id @default(cuid())
+  conversationId String
+  userId         String
+  joinedAt       DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String
+  read           Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
+}
+
+// ============================================
+// VEHICLE PASSPORT & INSPECTIONS
+// ============================================
+
+model VehiclePassport {
+  id              String          @id @default(cuid())
+  vehicleId       String
+  passportNumber  String          @unique
+  version         Int             @default(1)
+  status          PassportStatus  @default(PENDING)
+  
+  // Inspection Details
+  inspectionId    String?
+  inspectionDate  DateTime?
+  inspectorId     String?
+  reviewerId      String?
+  
+  // Condition Grades
+  engineGrade     String?
+  bodyGrade       String?
+  interiorGrade   String?
+  mechanicalGrade String?
+  electricalGrade String?
+  
+  // Findings
+  summary         String?
+  findings        Json?
+  recommendations String?
+  
+  // Evidence
+  evidencePhotos  String[]
+  documents       String[]
+  
+  // Verification
+  qrCode          String?
+  verifiedAt      DateTime?
+  
+  // Audit Trail
+  approvedAt      DateTime?
+  approvedBy      String?
+  revokedAt       DateTime?
+  revokedBy       String?
+  revokeReason    String?
+  
+  // Metadata
+  publishedAt     DateTime?
+  expiresAt       DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  vehicle   Vehicle    @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  inspector User?      @relation("InspectorPassports", fields: [inspectorId], references: [id])
+  reviewer  User?      @relation("ReviewerPassports", fields: [reviewerId], references: [id])
+
+  @@unique([vehicleId, version])
+  @@index([vehicleId, status])
+  @@index([passportNumber])
+  @@map("vehicle_passports")
+}
+
+enum PassportStatus {
+  PENDING
+  INSPECTION_SCHEDULED
+  INSPECTION_IN_PROGRESS
+  UNDER_REVIEW
+  APPROVED
+  PUBLISHED
+  EXPIRED
+  REVOKED
+}
+
+model Inspection {
+  id              String             @id @default(cuid())
+  vehicleId       String
+  requestId       String?
+  inspectorId     String?
+  status          InspectionStatus   @default(REQUESTED)
+  
+  // Inspection Details
+  scheduledDate   DateTime?
+  completedDate   DateTime?
+  location        String?
+  
+  // Checklist Results
+  checklist       Json?
+  
+  // Findings
+  findings        String?
+  defects         Json?
+  recommendations String?
+  
+  // Evidence
+  photos          String[]
+  odometerPhoto   String?
+  chassisPhoto    String?
+  
+  // Audit Trail
+  approvedAt      DateTime?
+  approvedBy      String?
+  rejectionReason String?
+  
+  // Metadata
+  notes           String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  inspector User?   @relation(fields: [inspectorId], references: [id])
+
+  @@index([vehicleId, status])
+  @@index([inspectorId, status])
+  @@map("inspections")
+}
+
+enum InspectionStatus {
+  REQUESTED
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+}
+
+// ============================================
+// DEALERSHIPS
+// ============================================
+
+model Dealership {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  address        String
+  phone          String?
+  email          String?
+  verified       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("dealerships")
+}
+
+// ============================================
+// MY GARAGE & OWNERSHIP
+// ============================================
+
+model OwnedVehicle {
+  id              String   @id @default(cuid())
+  userId          String
+  vehicleId       String?
+  passportId      String?
+  
+  // Vehicle Details
+  make            String?
+  model           String?
+  year            Int?
+  registrationNumber String?
+  vin             String?
+  
+  // Ownership Info
+  purchaseDate    DateTime?
+  purchasePrice   Int?
+  
+  // Current Status
+  currentMileage  Int      @default(0)
+  status          OwnedVehicleStatus @default(ACTIVE)
+  
+  // Metadata
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  maintenanceRecords MaintenanceRecord[]
+  documents       VehicleDocument[]
+  expenses        VehicleExpense[]
+  reminders       VehicleReminder[]
+  serviceBookings ServiceBooking[]
+  assistanceRequests RoadsideAssistanceRequest[]
+
+  @@index([userId, status])
+  @@map("owned_vehicles")
+}
+
+enum OwnedVehicleStatus {
+  ACTIVE
+  SOLD
+  INACTIVE
+}
+
+model MaintenanceRecord {
+  id              String   @id @default(cuid())
+  ownedVehicleId  String
+  workshopId      String?
+  
+  // Service Details
+  serviceType     String
+  serviceDate     DateTime
+  mileageAtService Int?
+  cost            Int?
+  
+  // Description
+  description     String?
+  notes           String?
+  
+  // Evidence
+  photos          String[]
+  invoices        String[]
+  
+  // Verification
+  verifiedByWorkshop Boolean @default(false)
+  verifiedAt      DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  ownedVehicle    OwnedVehicle @relation(fields: [ownedVehicleId], references: [id], onDelete: Cascade)
+  workshop        Workshop?    @relation(fields: [workshopId], references: [id])
+
+  @@index([ownedVehicleId, serviceDate])
+  @@map("maintenance_records")
+}
+
+model VehicleDocument {
+  id              String   @id @default(cuid())
+  ownedVehicleId  String
+  
+  // Document Info
+  documentType    DocumentType
+  title           String
+  documentNumber  String?
+  
+  // Dates
+  issueDate       DateTime?
+  expiryDate      DateTime?
+  
+  // File
+  fileUrl         String
+  fileSize        Int?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  ownedVehicle    OwnedVehicle @relation(fields: [ownedVehicleId], references: [id], onDelete: Cascade)
+
+  @@index([ownedVehicleId, documentType])
+  @@map("vehicle_documents")
+}
+
+enum DocumentType {
+  BLUEBOOK
+  INSURANCE
+  TAX_RECEIPT
+  REGISTRATION
+  POLLUTION_CERTIFICATE
+  SERVICE_RECORD
+  INVOICE
+  OTHER
+}
+
+model VehicleExpense {
+  id              String   @id @default(cuid())
+  ownedVehicleId  String
+  
+  // Expense Details
+  expenseType     ExpenseType
+  amount          Int
+  date            DateTime
+  
+  // Description
+  description     String?
+  vendor          String?
+  
+  // Evidence
+  receiptUrl      String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  ownedVehicle    OwnedVehicle @relation(fields: [ownedVehicleId], references: [id], onDelete: Cascade)
+
+  @@index([ownedVehicleId, date])
+  @@index([ownedVehicleId, expenseType])
+  @@map("vehicle_expenses")
+}
+
+enum ExpenseType {
+  FUEL
+  MAINTENANCE
+  REPAIR
+  INSURANCE
+  TAX
+  PARKING
+  TOLL
+  ACCESSORIES
+  OTHER
+}
+
+model VehicleReminder {
+  id              String   @id @default(cuid())
+  ownedVehicleId  String
+  userId          String
+  
+  // Reminder Info
+  reminderType    ReminderType
+  title           String
+  description     String?
+  
+  // Timing
+  dueDate         DateTime?
+  mileageDue      Int?
+  
+  // Status
+  status          ReminderStatus @default(PENDING)
+  completedAt     DateTime?
+  
+  // Notification
+  notified        Boolean @default(false)
+  notifiedAt      DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  ownedVehicle    OwnedVehicle @relation(fields: [ownedVehicleId], references: [id], onDelete: Cascade)
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status, dueDate])
+  @@index([ownedVehicleId, reminderType])
+  @@map("vehicle_reminders")
+}
+
+enum ReminderType {
+  SERVICE
+  INSURANCE
+  TAX
+  BLUEBOOK_RENEWAL
+  POLLUTION_CERTIFICATE
+  CUSTOM
+}
+
+enum ReminderStatus {
+  PENDING
+  COMPLETED
+  OVERDUE
+  CANCELLED
+}
+
+// ============================================
+// WORKSHOPS & MECHANICS
+// ============================================
+
+model Workshop {
+  id              String   @id @default(cuid())
+  organizationId  String?
+  
+  // Basic Info
+  name            String
+  description     String?
+  logo            String?
+  
+  // Contact
+  phone           String
+  email           String?
+  website         String?
+  
+  // Location
+  province        String
+  district        String
+  city            String
+  address         String
+  latitude        Float?
+  longitude       Float?
+  
+  // Services
+  services        String[]
+  specializations String[]
+  
+  // Business Info
+  openingHours    Json?
+  verified        Boolean  @default(false)
+  verifiedAt      DateTime?
+  
+  // Ratings
+  averageRating   Float?
+  totalReviews    Int     @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization    Organization? @relation(fields: [organizationId], references: [id])
+  mechanics       Mechanic[]
+  serviceBookings ServiceBooking[]
+  reviews         WorkshopReview[]
+  maintenanceRecords MaintenanceRecord[]
+
+  @@index([province, district])
+  @@index([verified])
+  @@map("workshops")
+}
+
+model Mechanic {
+  id              String   @id @default(cuid())
+  userId          String?
+  workshopId      String
+  
+  // Personal Info
+  firstName       String
+  lastName        String
+  phone           String?
+  email           String?
+  profileImage    String?
+  
+  // Professional Info
+  specializations String[]
+  experience      Int?
+  certification   String?
+  
+  // Status
+  available       Boolean @default(true)
+  
+  // Ratings
+  averageRating   Float?
+  totalJobs       Int     @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User?         @relation(fields: [userId], references: [id])
+  workshop        Workshop      @relation(fields: [workshopId], references: [id], onDelete: Cascade)
+  serviceBookings ServiceBooking[]
+
+  @@index([workshopId, available])
+  @@map("mechanics")
+}
+
+model ServiceBooking {
+  id              String   @id @default(cuid())
+  ownedVehicleId  String
+  workshopId      String
+  mechanicId      String?
+  userId          String
+  
+  // Booking Details
+  serviceType     String
+  description     String?
+  scheduledDate   DateTime
+  scheduledTime   String?
+  
+  // Status
+  status          BookingStatus @default(PENDING)
+  
+  // Pricing
+  estimatedCost   Int?
+  finalCost       Int?
+  
+  // Notes
+  customerNotes   String?
+  workshopNotes   String?
+  
+  // Completion
+  completedAt     DateTime?
+  cancelledAt     DateTime?
+  cancellationReason String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  ownedVehicle    OwnedVehicle @relation(fields: [ownedVehicleId], references: [id])
+  workshop        Workshop     @relation(fields: [workshopId], references: [id])
+  mechanic        Mechanic?    @relation(fields: [mechanicId], references: [id])
+  user            User         @relation(fields: [userId], references: [id])
+
+  @@index([userId, status])
+  @@index([workshopId, scheduledDate])
+  @@index([mechanicId, scheduledDate])
+  @@map("service_bookings")
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+model WorkshopReview {
+  id              String   @id @default(cuid())
+  workshopId      String
+  userId          String
+  serviceBookingId String?
+  
+  // Review Content
+  rating          Int
+  title           String?
+  comment         String
+  
+  // Service Details
+  serviceType     String?
+  serviceDate     DateTime?
+  
+  // Verification
+  verified        Boolean @default(false)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  workshop        Workshop      @relation(fields: [workshopId], references: [id], onDelete: Cascade)
+  user            User          @relation(fields: [userId], references: [id])
+  serviceBooking  ServiceBooking? @relation(fields: [serviceBookingId], references: [id])
+
+  @@unique([workshopId, userId, serviceBookingId])
+  @@index([workshopId, rating])
+  @@map("workshop_reviews")
+}
+
+// ============================================
+// ROADSIDE ASSISTANCE
+// ============================================
+
+model RoadsideAssistanceProvider {
+  id              String   @id @default(cuid())
+  organizationId  String?
+  
+  // Provider Info
+  name            String
+  description     String?
+  logo            String?
+  
+  // Contact
+  phone           String
+  email           String?
+  emergencyPhone  String?
+  
+  // Location & Coverage
+  province        String
+  district        String
+  city            String
+  coverageAreas   String[]
+  
+  // Services
+  services        String[]
+  
+  // Business Info
+  operatingHours  Json?
+  verified        Boolean @default(false)
+  verifiedAt      DateTime?
+  
+  // Ratings
+  averageRating   Float?
+  totalRequests   Int     @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization    Organization? @relation(fields: [organizationId], references: [id])
+  assistanceRequests RoadsideAssistanceRequest[]
+
+  @@index([province, district])
+  @@index([verified])
+  @@map("roadside_assistance_providers")
+}
+
+model RoadsideAssistanceRequest {
+  id              String   @id @default(cuid())
+  ownedVehicleId  String
+  providerId      String?
+  userId          String
+  
+  // Request Details
+  requestType     AssistanceType
+  description     String
+  
+  // Location
+  location        String
+  latitude        Float?
+  longitude       Float?
+  
+  // Status
+  status          AssistanceStatus @default(PENDING)
+  
+  // Provider Assignment
+  assignedAt      DateTime?
+  estimatedArrival DateTime?
+  
+  // Service Details
+  serviceNotes    String?
+  estimatedCost   Int?
+  finalCost       Int?
+  
+  // Completion
+  completedAt     DateTime?
+  resolvedAt      DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  ownedVehicle    OwnedVehicle              @relation(fields: [ownedVehicleId], references: [id])
+  provider        RoadsideAssistanceProvider? @relation(fields: [providerId], references: [id])
+  user            User                      @relation(fields: [userId], references: [id])
+
+  @@index([userId, status])
+  @@index([providerId, status])
+  @@map("roadside_assistance_requests")
+}
+
+enum AssistanceType {
+  TOWING
+  BATTERY_JUMP_START
+  TYRE_CHANGE
+  FUEL_DELIVERY
+  LOCKOUT_SERVICE
+  MECHANICAL_BREAKDOWN
+  ACCIDENT_RECOVERY
+  OTHER
+}
+
+enum AssistanceStatus {
+  PENDING
+  ASSIGNED
+  EN_ROUTE
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  data      Json?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read, createdAt])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  ENQUIRY_RECEIVED
+  ENQUIRY_REPLIED
+  MESSAGE_RECEIVED
+  FAVORITE_PRICE_DROP
+  PASSPORT_READY
+  INSPECTION_SCHEDULED
+  LISTING_APPROVED
+  LISTING_EXPIRING
+  MAINTENANCE_REMINDER
+  INSURANCE_REMINDER
+  TAX_REMINDER
+  BLUEBOOK_REMINDER
+  SERVICE_BOOKING_CONFIRMED
+  SERVICE_BOOKING_COMPLETED
+  ROADSIDE_ASSISTANCE_REQUESTED
+  ROADSIDE_ASSISTANCE_ASSIGNED
+  ROADSIDE_ASSISTANCE_COMPLETED
+  WORKSHOP_REVIEW_RECEIVED
+  SYSTEM
+}
