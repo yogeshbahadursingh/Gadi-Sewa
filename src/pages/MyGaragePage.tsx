@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Car, Plus, Wrench, FileText, DollarSign, Bell } from 'lucide-react';
+import { Car, Plus, Wrench, FileText, DollarSign, Bell, ArrowRight, TrendingUp, Shield } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { api } from '../services/api';
 
 export default function MyGaragePage() {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [ownedVehicles, setOwnedVehicles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -36,106 +36,194 @@ export default function MyGaragePage() {
     return `रू ${price.toLocaleString('en-NP')}`;
   };
 
+  const stats = {
+    totalVehicles: ownedVehicles.length,
+    totalServices: ownedVehicles.reduce((sum, v) => sum + (v.maintenanceRecords?.length || 0), 0),
+    totalExpenses: ownedVehicles.reduce((sum, v) => sum + (v.expenses?.reduce((s: number, e: any) => s + e.amount, 0) || 0), 0),
+    pendingReminders: ownedVehicles.reduce((sum, v) => sum + (v.reminders?.filter((r: any) => r.status === 'PENDING').length || 0), 0),
+  };
+
   return (
-    <main className="min-h-screen bg-ivory pt-8 pb-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="flex items-center justify-between mb-8">
+    <main className="min-h-screen bg-ivory">
+      {/* Premium Header */}
+      <section className="bg-gradient-to-br from-obsidian via-obsidian-light to-obsidian relative overflow-hidden">
+        <div className="absolute inset-0 bg-mesh-luxury opacity-20"></div>
+        <div className="container-luxury relative z-10 py-16">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex items-center justify-between"
+          >
             <div>
-              <h1 className="font-display text-4xl font-bold text-obsidian">My Garage</h1>
-              <p className="text-obsidian/70 mt-1">Manage your vehicles, maintenance, and documents</p>
+              <span className="badge-luxury badge-gold mb-4 inline-flex">
+                <Car className="w-4 h-4" />
+                Vehicle Ownership
+              </span>
+              <h1 className="font-display text-5xl md:text-6xl font-bold text-ivory mb-2 tracking-tight">
+                My Garage
+              </h1>
+              <p className="text-xl text-ivory/70">
+                Manage your vehicles, maintenance, and documents in one place
+              </p>
             </div>
             <Link
               to="/garage/add"
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gold to-gold-dark text-obsidian font-semibold rounded-full shadow-gold hover:shadow-lg transition-all"
+              className="btn-luxury btn-gold px-8 py-4 text-base font-semibold rounded-full flex items-center gap-3 group"
             >
               <Plus className="w-5 h-5" />
-              Add Vehicle
+              <span>Add Vehicle</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
-          </div>
+          </motion.div>
+        </div>
+      </section>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            {[
-              { label: 'Vehicles', value: ownedVehicles.length, icon: Car },
-              { label: 'Services', value: ownedVehicles.reduce((sum, v) => sum + (v.maintenanceRecords?.length || 0), 0), icon: Wrench },
-              { label: 'Expenses', value: formatPrice(ownedVehicles.reduce((sum, v) => sum + (v.expenses?.reduce((s: number, e: any) => s + e.amount, 0) || 0), 0)), icon: DollarSign },
-              { label: 'Reminders', value: ownedVehicles.reduce((sum, v) => sum + (v.reminders?.filter((r: any) => r.status === 'PENDING').length || 0), 0), icon: Bell },
-            ].map((stat) => (
-              <div key={stat.label} className="bg-white rounded-2xl p-6 shadow-soft">
-                <stat.icon className="w-8 h-8 text-gold mb-2" />
-                <p className="text-2xl font-bold text-obsidian">{stat.value}</p>
-                <p className="text-sm text-obsidian/70 mt-1">{stat.label}</p>
-              </div>
-            ))}
-          </div>
+      <div className="container-luxury py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          {/* Stats Grid */}
+          {ownedVehicles.length > 0 && (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              {[
+                { label: 'Total Vehicles', value: stats.totalVehicles, icon: Car, color: 'from-gold/10 to-gold/5', iconColor: 'text-gold' },
+                { label: 'Service Records', value: stats.totalServices, icon: Wrench, color: 'from-emerald/10 to-emerald/5', iconColor: 'text-emerald' },
+                { label: 'Total Expenses', value: formatPrice(stats.totalExpenses), icon: DollarSign, color: 'from-obsidian/10 to-obsidian/5', iconColor: 'text-obsidian' },
+                { label: 'Pending Reminders', value: stats.pendingReminders, icon: Bell, color: 'from-gold/10 to-gold/5', iconColor: 'text-gold' },
+              ].map((stat, index) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * index }}
+                  className="card-luxury p-6"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`w-14 h-14 bg-gradient-to-br ${stat.color} rounded-2xl flex items-center justify-center`}>
+                      <stat.icon className={`w-7 h-7 ${stat.iconColor}`} />
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-obsidian/20" />
+                  </div>
+                  <p className="text-3xl font-bold text-obsidian mb-1">{stat.value}</p>
+                  <p className="text-sm text-obsidian/60">{stat.label}</p>
+                </motion.div>
+              ))}
+            </div>
+          )}
 
-          {/* Vehicles List */}
+          {/* Content */}
           {loading ? (
-            <div className="text-center py-12">
+            <div className="card-luxury p-12 text-center">
+              <div className="w-16 h-16 border-4 border-gold border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
               <p className="text-obsidian/70">Loading your garage...</p>
             </div>
           ) : ownedVehicles.length === 0 ? (
-            <div className="bg-white rounded-2xl p-12 text-center shadow-soft">
-              <Car className="w-16 h-16 text-obsidian/10 mx-auto mb-4" />
-              <h3 className="font-display text-xl font-bold text-obsidian mb-2">No vehicles yet</h3>
-              <p className="text-obsidian/70 mb-6">Add your first vehicle to start tracking maintenance and expenses</p>
+            <div className="card-luxury p-16 text-center">
+              <div className="w-20 h-20 mx-auto mb-6 bg-obsidian/5 rounded-full flex items-center justify-center">
+                <Car className="w-10 h-10 text-obsidian/20" />
+              </div>
+              <h3 className="font-display text-2xl font-bold text-obsidian mb-3">No vehicles yet</h3>
+              <p className="text-obsidian/70 mb-6 max-w-md mx-auto">
+                Add your first vehicle to start tracking maintenance, expenses, and documents
+              </p>
               <Link
                 to="/garage/add"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gold to-gold-dark text-obsidian font-semibold rounded-full shadow-gold hover:shadow-lg transition-all"
+                className="btn-luxury btn-gold px-8 py-4 rounded-full font-semibold inline-flex items-center gap-2"
               >
                 <Plus className="w-5 h-5" />
                 Add Your First Vehicle
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {ownedVehicles.map((vehicle) => (
-                <Link
-                  key={vehicle.id}
-                  to={`/garage/vehicle/${vehicle.id}`}
-                  className="block bg-white rounded-2xl shadow-soft p-6 card-premium"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="font-display text-lg font-bold text-obsidian">
-                        {vehicle.year} {vehicle.make} {vehicle.model}
-                      </h3>
-                      {vehicle.registrationNumber && (
-                        <p className="text-xs text-obsidian/70 mt-1">{vehicle.registrationNumber}</p>
-                      )}
-                    </div>
-                    <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
-                      vehicle.status === 'ACTIVE' ? 'bg-emerald/10 text-emerald' : 'bg-obsidian/10 text-obsidian/60'
-                    }`}>
-                      {vehicle.status}
-                    </span>
-                  </div>
+            <>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="font-display text-3xl font-bold text-obsidian flex items-center gap-3">
+                  <div className="w-1 h-8 bg-gradient-to-b from-gold to-gold-dark rounded-full"></div>
+                  Your Vehicles
+                </h2>
+              </div>
 
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center justify-between">
-                      <span className="text-obsidian/70">Mileage:</span>
-                      <span className="font-medium text-obsidian">{vehicle.currentMileage.toLocaleString()} km</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-obsidian/70">Services:</span>
-                      <span className="font-medium text-obsidian">{vehicle.maintenanceRecords?.length || 0}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-obsidian/70">Documents:</span>
-                      <span className="font-medium text-obsidian">{vehicle.documents?.length || 0}</span>
-                    </div>
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
+                {ownedVehicles.map((vehicle) => (
+                  <motion.div
+                    key={vehicle.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="group"
+                  >
+                    <Link
+                      to={`/garage/vehicle/${vehicle.id}`}
+                      className="block card-luxury p-6 hover:shadow-ultra transition-all duration-300"
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <h3 className="font-display text-xl font-bold text-obsidian mb-1 group-hover:text-gradient-gold transition-all duration-300">
+                            {vehicle.year} {vehicle.make} {vehicle.model}
+                          </h3>
+                          {vehicle.registrationNumber && (
+                            <p className="text-sm text-obsidian/60 font-mono">{vehicle.registrationNumber}</p>
+                          )}
+                        </div>
+                        <span className={`badge-luxury ${
+                          vehicle.status === 'ACTIVE' ? 'badge-emerald' : 'badge-obsidian'
+                        } text-xs`}>
+                          {vehicle.status}
+                        </span>
+                      </div>
 
-                  <div className="mt-4 pt-4 border-t border-obsidian/5 flex items-center justify-between">
-                    <span className="text-xs text-obsidian/70">
-                      {vehicle.reminders?.filter((r: any) => r.status === 'PENDING').length || 0} pending reminders
-                    </span>
-                    <span className="text-xs text-gold font-medium">View Details →</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
+                      {/* Vehicle Stats */}
+                      <div className="space-y-3 mb-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-obsidian/5 rounded-lg flex items-center justify-center">
+                              <TrendingUp className="w-4 h-4 text-gold" />
+                            </div>
+                            <span className="text-sm text-obsidian/70">Mileage</span>
+                          </div>
+                          <span className="text-sm font-semibold text-obsidian">{vehicle.currentMileage.toLocaleString()} km</span>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-obsidian/5 rounded-lg flex items-center justify-center">
+                              <Wrench className="w-4 h-4 text-emerald" />
+                            </div>
+                            <span className="text-sm text-obsidian/70">Services</span>
+                          </div>
+                          <span className="text-sm font-semibold text-obsidian">{vehicle.maintenanceRecords?.length || 0}</span>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-obsidian/5 rounded-lg flex items-center justify-center">
+                              <FileText className="w-4 h-4 text-obsidian" />
+                            </div>
+                            <span className="text-sm text-obsidian/70">Documents</span>
+                          </div>
+                          <span className="text-sm font-semibold text-obsidian">{vehicle.documents?.length || 0}</span>
+                        </div>
+                      </div>
+
+                      {/* Reminders */}
+                      <div className="pt-4 border-t border-obsidian/5 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Bell className="w-4 h-4 text-gold" />
+                          <span className="text-sm text-obsidian/70">
+                            {vehicle.reminders?.filter((r: any) => r.status === 'PENDING').length || 0} pending
+                          </span>
+                        </div>
+                        <span className="text-xs text-gold font-semibold group-hover:translate-x-1 transition-transform">
+                          View Details →
+                        </span>
+                      </div>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+            </>
           )}
         </motion.div>
       </div>
