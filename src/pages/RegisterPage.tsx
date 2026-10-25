@@ -51,46 +51,84 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="min-h-screen bg-ivory pt-20 flex items-center justify-center px-4">
+    <main className="min-h-screen bg-gradient-to-br from-obsidian via-obsidian-light to-obsidian relative overflow-hidden flex items-center justify-center px-4 py-20">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 bg-mesh-luxury opacity-20"></div>
+      
+      {/* Decorative Elements */}
+      <motion.div
+        animate={{ 
+          scale: [1, 1.2, 1],
+          opacity: [0.15, 0.25, 0.15]
+        }}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-20 left-20 w-96 h-96 bg-emerald/10 rounded-full blur-3xl"
+      />
+      
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full"
+        transition={{ duration: 0.6 }}
+        className="max-w-md w-full relative z-10"
       >
+        {/* Premium Header */}
         <div className="text-center mb-8">
-          <h1 className="font-display text-4xl font-bold text-obsidian mb-2">Create Account</h1>
-          <p className="text-obsidian/70">Join Nepal's trusted vehicle marketplace</p>
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-gold to-gold-dark rounded-2xl shadow-gold mb-6"
+          >
+            <User className="w-8 h-8 text-obsidian" />
+          </motion.div>
+          <h1 className="font-display text-5xl font-bold text-ivory mb-3 tracking-tight">
+            Create Account
+          </h1>
+          <p className="text-ivory/70 text-lg">
+            Join Nepal's trusted vehicle marketplace
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-medium p-8">
+        {/* Premium Form Card */}
+        <motion.form
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          onSubmit={handleSubmit}
+          className="card-luxury p-8"
+        >
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2">
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3"
+            >
               <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-800">{error}</p>
-            </div>
+              <p className="text-sm text-red-800 font-medium">{error}</p>
+            </motion.div>
           )}
 
           <div className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-obsidian mb-2">
+                <label htmlFor="firstName" className="block text-sm font-semibold text-obsidian mb-2">
                   First Name
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-obsidian/40" />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gold" />
                   <input
                     id="firstName"
                     type="text"
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                     required
-                    className="w-full pl-10 pr-4 py-3 bg-ivory border border-obsidian/10 rounded-xl focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all"
+                    className="input-luxury w-full pl-12 pr-4 py-4 rounded-xl text-base"
                     placeholder="Ram"
                   />
                 </div>
               </div>
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-obsidian mb-2">
+                <label htmlFor="lastName" className="block text-sm font-semibold text-obsidian mb-2">
                   Last Name
                 </label>
                 <input
@@ -99,53 +137,53 @@ export default function RegisterPage() {
                   value={formData.lastName}
                   onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                   required
-                  className="w-full px-4 py-3 bg-ivory border border-obsidian/10 rounded-xl focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all"
+                  className="input-luxury w-full px-4 py-4 rounded-xl text-base"
                   placeholder="Bahadur"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-obsidian mb-2">
+              <label htmlFor="email" className="block text-sm font-semibold text-obsidian mb-2">
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-obsidian/40" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gold" />
                 <input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
-                  className="w-full pl-10 pr-4 py-3 bg-ivory border border-obsidian/10 rounded-xl focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all"
+                  className="input-luxury w-full pl-12 pr-4 py-4 rounded-xl text-base"
                   placeholder="you@example.com"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-obsidian mb-2">
+              <label htmlFor="phone" className="block text-sm font-semibold text-obsidian mb-2">
                 Phone (Optional)
               </label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-obsidian/40" />
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gold" />
                 <input
                   id="phone"
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 bg-ivory border border-obsidian/10 rounded-xl focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all"
+                  className="input-luxury w-full pl-12 pr-4 py-4 rounded-xl text-base"
                   placeholder="+977-98XXXXXXXX"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-obsidian mb-2">
+              <label htmlFor="password" className="block text-sm font-semibold text-obsidian mb-2">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-obsidian/40" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gold" />
                 <input
                   id="password"
                   type="password"
@@ -153,25 +191,26 @@ export default function RegisterPage() {
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   required
                   minLength={8}
-                  className="w-full pl-10 pr-4 py-3 bg-ivory border border-obsidian/10 rounded-xl focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all"
+                  className="input-luxury w-full pl-12 pr-4 py-4 rounded-xl text-base"
                   placeholder="••••••••"
                 />
               </div>
+              <p className="text-xs text-obsidian/60 mt-1">Minimum 8 characters</p>
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-obsidian mb-2">
+              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-obsidian mb-2">
                 Confirm Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-obsidian/40" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gold" />
                 <input
                   id="confirmPassword"
                   type="password"
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   required
-                  className="w-full pl-10 pr-4 py-3 bg-ivory border border-obsidian/10 rounded-xl focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all"
+                  className="input-luxury w-full pl-12 pr-4 py-4 rounded-xl text-base"
                   placeholder="••••••••"
                 />
               </div>
@@ -180,13 +219,20 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-gold to-gold-dark text-obsidian font-semibold rounded-xl shadow-gold hover:shadow-lg transition-all disabled:opacity-50"
+              className="btn-luxury btn-gold w-full py-4 rounded-xl font-semibold text-base disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Creating account...' : 'Create Account'}
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <div className="w-5 h-5 border-2 border-obsidian border-t-transparent rounded-full animate-spin"></div>
+                  Creating account...
+                </span>
+              ) : (
+                'Create Account'
+              )}
             </button>
           </div>
 
-          <div className="mt-6 text-center">
+          <div className="mt-6 pt-6 border-t border-obsidian/10 text-center">
             <p className="text-sm text-obsidian/70">
               Already have an account?{' '}
               <Link to="/login" className="text-gold-dark font-semibold hover:text-gold transition-colors">
@@ -194,7 +240,7 @@ export default function RegisterPage() {
               </Link>
             </p>
           </div>
-        </form>
+        </motion.form>
       </motion.div>
     </main>
   );
