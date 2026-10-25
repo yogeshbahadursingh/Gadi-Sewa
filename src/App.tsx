@@ -14,7 +14,10 @@ import ProfilePage from './pages/ProfilePage';
 import FavouritesPage from './pages/FavouritesPage';
 import EnquiriesPage from './pages/EnquiriesPage';
 import MyGaragePage from './pages/MyGaragePage';
+import AddVehicleToGaragePage from './pages/AddVehicleToGaragePage';
+import OwnedVehicleDetailPage from './pages/OwnedVehicleDetailPage';
 import WorkshopsPage from './pages/WorkshopsPage';
+import WorkshopDetailPage from './pages/WorkshopDetailPage';
 import FinancePage from './pages/FinancePage';
 import PassportPage from './pages/PassportPage';
 
@@ -44,7 +47,10 @@ function AppLayout() {
           <Route path="/favourites" element={<FavouritesPage />} />
           <Route path="/enquiries" element={<EnquiriesPage />} />
           <Route path="/garage" element={<MyGaragePage />} />
+          <Route path="/garage/add" element={<AddVehicleToGaragePage />} />
+          <Route path="/garage/vehicle/:id" element={<OwnedVehicleDetailPage />} />
           <Route path="/workshops" element={<WorkshopsPage />} />
+          <Route path="/workshops/:id" element={<WorkshopDetailPage />} />
           <Route path="/finance" element={<FinancePage />} />
           <Route path="/passport" element={<PassportPage />} />
         </Routes>

@@ -517,6 +517,22 @@ export const api = {
     return newVehicle;
   },
 
+  async deleteOwnedVehicle(id: string) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const ownedVehicles = getStorage<OwnedVehicle[]>(STORAGE_KEYS.OWNED_VEHICLES, []);
+    const vehicle = ownedVehicles.find(v => v.id === id);
+    
+    if (!vehicle) throw new Error('Vehicle not found');
+    if (vehicle.userId !== currentUser.id) throw new Error('Not authorized');
+    
+    const filtered = ownedVehicles.filter(v => v.id !== id);
+    setStorage(STORAGE_KEYS.OWNED_VEHICLES, filtered);
+    
+    return { message: 'Vehicle deleted successfully' };
+  },
+
   // ===== WORKSHOPS =====
   
   async getWorkshops() {
