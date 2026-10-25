@@ -48,169 +48,252 @@ export default function WorkshopDetailPage() {
   }
 
   return (
-    <main className="min-h-screen bg-ivory pt-8 pb-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <button
-            onClick={() => navigate('/workshops')}
-            className="flex items-center gap-2 text-obsidian/60 hover:text-obsidian mb-6 transition-colors"
+    <main className="min-h-screen bg-ivory">
+      {/* Cinematic Hero Section */}
+      <section className="relative h-[50vh] min-h-[400px] overflow-hidden">
+        {workshop.logo ? (
+          <img
+            src={workshop.logo}
+            alt={workshop.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-obsidian to-obsidian-light flex items-center justify-center">
+            <Wrench className="w-32 h-32 text-ivory/10" />
+          </div>
+        )}
+        
+        {/* Overlay Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-obsidian via-obsidian/60 to-transparent"></div>
+        
+        {/* Hero Content */}
+        <div className="absolute bottom-0 left-0 right-0 container-luxury pb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
           >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="text-sm font-medium">Back to Workshops</span>
-          </button>
-
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Main Content */}
-            <div className="lg:col-span-2">
-              {/* Header */}
-              <div className="bg-white rounded-2xl shadow-soft overflow-hidden mb-6">
-                {workshop.logo && (
-                  <div className="aspect-[21/9] bg-ivory-dark">
-                    <img src={workshop.logo} alt={workshop.name} className="w-full h-full object-cover" />
-                  </div>
-                )}
-                <div className="p-8">
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <div className="flex items-center gap-3 mb-2">
-                        <h1 className="font-display text-3xl font-bold text-obsidian">{workshop.name}</h1>
-                        {workshop.verified && (
-                          <span className="px-3 py-1 bg-emerald/10 text-emerald text-xs font-semibold rounded-full flex items-center gap-1">
-                            <Award className="w-3 h-3" />
-                            Verified
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2 text-obsidian/70">
-                        <MapPin className="w-4 h-4" />
-                        <span>{workshop.address}, {workshop.city}, {workshop.district}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <p className="text-obsidian/70 mb-6">{workshop.description}</p>
-
-                  {/* Rating */}
-                  {workshop.averageRating && (
-                    <div className="flex items-center gap-4 mb-6 p-4 bg-ivory-warm rounded-xl">
-                      <div className="flex items-center gap-2">
-                        <div className="flex">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Star
-                              key={star}
-                              className={`w-5 h-5 ${
-                                star <= Math.floor(workshop.averageRating)
-                                  ? 'fill-gold text-gold'
-                                  : 'text-obsidian/20'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                        <span className="text-2xl font-bold text-obsidian">{workshop.averageRating.toFixed(1)}</span>
-                      </div>
-                      <span className="text-obsidian/70">
-                        ({workshop.totalReviews} review{workshop.totalReviews !== 1 ? 's' : ''})
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Services */}
-                  <div className="mb-6">
-                    <h3 className="font-semibold text-obsidian mb-3 flex items-center gap-2">
-                      <Wrench className="w-5 h-5 text-gold" />
-                      Services Offered
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {workshop.services.map((service: string) => (
-                        <span
-                          key={service}
-                          className="px-3 py-1.5 bg-ivory-dark text-obsidian/70 text-sm rounded-full"
-                        >
-                          {service}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Specializations */}
-                  {workshop.specializations && workshop.specializations.length > 0 && (
-                    <div>
-                      <h3 className="font-semibold text-obsidian mb-3">Specializations</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {workshop.specializations.map((spec: string) => (
-                          <span
-                            key={spec}
-                            className="px-3 py-1.5 bg-gold/10 text-gold-dark text-sm font-medium rounded-full"
-                          >
-                            {spec}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
+            {/* Badges */}
+            <div className="flex flex-wrap gap-3 mb-4">
+              {workshop.verified && (
+                <span className="badge-luxury badge-emerald">
+                  <Award className="w-4 h-4" />
+                  Verified Workshop
+                </span>
+              )}
             </div>
 
-            {/* Sidebar */}
-            <div className="lg:col-span-1">
-              <div className="bg-white rounded-2xl shadow-soft p-6 sticky top-24">
-                <h3 className="font-display text-lg font-bold text-obsidian mb-4">Contact Information</h3>
+            {/* Title */}
+            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-ivory mb-2 tracking-tight">
+              {workshop.name}
+            </h1>
+
+            {/* Location & Rating */}
+            <div className="flex flex-wrap items-center gap-6 text-ivory">
+              <div className="flex items-center gap-2 text-ivory/80">
+                <MapPin className="w-5 h-5" />
+                <span className="text-lg">{workshop.address}, {workshop.city}</span>
+              </div>
+              {workshop.averageRating && (
+                <div className="flex items-center gap-2">
+                  <div className="flex">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={star}
+                        className={`w-5 h-5 ${
+                          star <= Math.floor(workshop.averageRating)
+                            ? 'fill-gold text-gold'
+                            : 'text-ivory/30'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-lg font-bold text-ivory">{workshop.averageRating.toFixed(1)}</span>
+                  <span className="text-ivory/70">({workshop.totalReviews} reviews)</span>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Back Button */}
+        <motion.button
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+          onClick={() => navigate('/workshops')}
+          className="absolute top-6 left-6 flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full shadow-medium hover:bg-white transition-all"
+        >
+          <ArrowLeft className="w-5 h-5 text-obsidian" />
+          <span className="text-sm font-medium text-obsidian">Back</span>
+        </motion.button>
+      </section>
+
+      {/* Content Section */}
+      <div className="container-luxury py-12">
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* About Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="card-luxury p-8"
+            >
+              <h2 className="font-display text-2xl font-bold text-obsidian mb-6 flex items-center gap-3">
+                <div className="w-1 h-8 bg-gradient-to-b from-gold to-gold-dark rounded-full"></div>
+                About This Workshop
+              </h2>
+              <p className="text-obsidian/70 leading-relaxed text-lg">{workshop.description}</p>
+            </motion.div>
+
+            {/* Services Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="card-luxury p-8"
+            >
+              <h2 className="font-display text-2xl font-bold text-obsidian mb-6 flex items-center gap-3">
+                <div className="w-1 h-8 bg-gradient-to-b from-gold to-gold-dark rounded-full"></div>
+                Services Offered
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {workshop.services.map((service: string) => (
+                  <div
+                    key={service}
+                    className="flex items-center gap-2 p-3 bg-ivory rounded-xl"
+                  >
+                    <Wrench className="w-4 h-4 text-gold flex-shrink-0" />
+                    <span className="text-sm font-medium text-obsidian">{service}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Specializations Section */}
+            {workshop.specializations && workshop.specializations.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="card-luxury p-8"
+              >
+                <h2 className="font-display text-2xl font-bold text-obsidian mb-6 flex items-center gap-3">
+                  <div className="w-1 h-8 bg-gradient-to-b from-gold to-gold-dark rounded-full"></div>
+                  Specializations
+                </h2>
+                <div className="flex flex-wrap gap-3">
+                  {workshop.specializations.map((spec: string) => (
+                    <span
+                      key={spec}
+                      className="px-4 py-2 bg-gold/10 text-gold-dark text-sm font-semibold rounded-xl"
+                    >
+                      {spec}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </div>
+
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="space-y-6 sticky top-24">
+              {/* Contact Information */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+                className="card-luxury p-6"
+              >
+                <h3 className="font-display text-lg font-bold text-obsidian mb-4 flex items-center gap-2">
+                  <Phone className="w-5 h-5 text-gold" />
+                  Contact Information
+                </h3>
                 
                 <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <Phone className="w-5 h-5 text-gold" />
-                    <a href={`tel:${workshop.phone}`} className="text-sm text-obsidian hover:text-gold transition-colors">
-                      {workshop.phone}
-                    </a>
-                  </div>
+                  <a href={`tel:${workshop.phone}`} className="flex items-center gap-3 p-3 bg-ivory rounded-xl hover:bg-ivory-dark transition-colors group">
+                    <div className="w-10 h-10 bg-gradient-to-br from-gold to-gold-dark rounded-lg flex items-center justify-center">
+                      <Phone className="w-5 h-5 text-obsidian" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs text-obsidian/60">Phone</p>
+                      <p className="text-sm font-semibold text-obsidian group-hover:text-gold transition-colors">{workshop.phone}</p>
+                    </div>
+                  </a>
                   
                   {workshop.email && (
-                    <div className="flex items-center gap-3">
-                      <Mail className="w-5 h-5 text-gold" />
-                      <a href={`mailto:${workshop.email}`} className="text-sm text-obsidian hover:text-gold transition-colors">
-                        {workshop.email}
-                      </a>
-                    </div>
+                    <a href={`mailto:${workshop.email}`} className="flex items-center gap-3 p-3 bg-ivory rounded-xl hover:bg-ivory-dark transition-colors group">
+                      <div className="w-10 h-10 bg-gradient-to-br from-emerald to-emerald-light rounded-lg flex items-center justify-center">
+                        <Mail className="w-5 h-5 text-ivory" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs text-obsidian/60">Email</p>
+                        <p className="text-sm font-semibold text-obsidian group-hover:text-emerald transition-colors">{workshop.email}</p>
+                      </div>
+                    </a>
                   )}
                   
                   {workshop.website && (
-                    <div className="flex items-center gap-3">
-                      <Globe className="w-5 h-5 text-gold" />
-                      <a href={workshop.website} target="_blank" rel="noopener noreferrer" className="text-sm text-obsidian hover:text-gold transition-colors">
-                        Visit Website
-                      </a>
-                    </div>
+                    <a href={workshop.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 bg-ivory rounded-xl hover:bg-ivory-dark transition-colors group">
+                      <div className="w-10 h-10 bg-gradient-to-br from-obsidian to-obsidian-light rounded-lg flex items-center justify-center">
+                        <Globe className="w-5 h-5 text-ivory" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs text-obsidian/60">Website</p>
+                        <p className="text-sm font-semibold text-obsidian group-hover:text-gold transition-colors">Visit Website</p>
+                      </div>
+                    </a>
                   )}
                 </div>
+              </motion.div>
 
-                {/* Opening Hours */}
-                {workshop.openingHours && (
-                  <div className="mt-6 pt-6 border-t border-obsidian/5">
-                    <h4 className="font-semibold text-obsidian mb-3 flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-gold" />
-                      Opening Hours
-                    </h4>
-                    <div className="space-y-1 text-sm">
-                      {Object.entries(workshop.openingHours).map(([day, hours]) => (
-                        <div key={day} className="flex justify-between">
-                          <span className="text-obsidian/70 capitalize">{day}</span>
-                          <span className="text-obsidian">{String(hours)}</span>
-                        </div>
-                      ))}
-                    </div>
+              {/* Opening Hours */}
+              {workshop.openingHours && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="card-luxury p-6"
+                >
+                  <h3 className="font-display text-lg font-bold text-obsidian mb-4 flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-gold" />
+                    Opening Hours
+                  </h3>
+                  <div className="space-y-2">
+                    {Object.entries(workshop.openingHours).map(([day, hours]) => (
+                      <div key={day} className="flex justify-between items-center py-2 border-b border-obsidian/5 last:border-0">
+                        <span className="text-sm text-obsidian/70 capitalize">{day}</span>
+                        <span className="text-sm font-semibold text-obsidian">{String(hours)}</span>
+                      </div>
+                    ))}
                   </div>
-                )}
+                </motion.div>
+              )}
 
-                {/* Book Service Button */}
-                <button className="mt-6 w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-gold to-gold-dark text-obsidian font-semibold rounded-xl shadow-gold hover:shadow-lg transition-all">
+              {/* Book Service CTA */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 }}
+                className="card-luxury p-6"
+              >
+                <h3 className="font-display text-lg font-bold text-obsidian mb-4">
+                  Ready to Book?
+                </h3>
+                <p className="text-sm text-obsidian/70 mb-4">
+                  Schedule your vehicle service with our certified mechanics
+                </p>
+                <button className="btn-luxury btn-gold w-full py-4 rounded-xl font-semibold flex items-center justify-center gap-2">
                   <Clock className="w-5 h-5" />
                   Book a Service
                 </button>
-              </div>
+              </motion.div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </main>
   );
