@@ -376,6 +376,7 @@ model Inspection {
   vehicleId       String
   requestId       String?
   inspectorId     String?
+  requestedBy     String?
   status          InspectionStatus   @default(REQUESTED)
   
   // Inspection Details
@@ -411,6 +412,7 @@ model Inspection {
 
   @@index([vehicleId, status])
   @@index([inspectorId, status])
+  @@index([requestedBy])
   @@map("inspections")
 }
 

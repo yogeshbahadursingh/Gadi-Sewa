@@ -92,7 +92,7 @@ Gadi-Sewa is Nepal's premier automotive marketplace platform. This document trac
 ---
 
 ### 3. VEHICLE PASSPORT & INSPECTIONS
-**Status:** ✅ SCHEMA COMPLETE / ⚠️ ROUTES STUB
+**Status:** ✅ IMPLEMENTED / UNVERIFIED
 
 **Backend:**
 - ✅ Complete Prisma schema for inspections and passports
@@ -101,7 +101,9 @@ Gadi-Sewa is Nepal's premier automotive marketplace platform. This document trac
 - ✅ Audit trails (approvedAt, approvedBy, revokedAt, revokedBy)
 - ✅ Inspector assignment workflow
 - ✅ Condition grading system
-- ⚠️ Route files created but not implemented
+- ✅ Complete inspection service with all business logic
+- ✅ Complete passport service with verification and revocation
+- ✅ Full route implementations with validation
 
 **Frontend:**
 - ✅ Passport information page
@@ -110,25 +112,32 @@ Gadi-Sewa is Nepal's premier automotive marketplace platform. This document trac
 - ⚠️ Inspector dashboard not yet built
 
 **API Endpoints:**
-- ⚠️ `POST /api/inspections/request` (stub)
-- ⚠️ `GET /api/inspections/vehicle/:vehicleId` (stub)
-- ⚠️ `POST /api/inspections/:id/assign` (stub)
-- ⚠️ `POST /api/inspections/:id/submit` (stub)
-- ⚠️ `GET /api/passports/vehicle/:vehicleId` (stub)
-- ⚠️ `GET /api/passports/verify/:passportNumber` (stub)
-- ⚠️ `POST /api/passports/:id/approve` (stub)
-- ⚠️ `POST /api/passports/:id/revoke` (stub)
+- ✅ `POST /api/inspections/request` - Request inspection
+- ✅ `GET /api/inspections/vehicle/:vehicleId` - Get inspections by vehicle
+- ✅ `GET /api/inspections/:id` - Get inspection details
+- ✅ `POST /api/inspections/:id/assign` - Assign inspector (admin/reviewer)
+- ✅ `POST /api/inspections/:id/submit` - Submit findings (inspector)
+- ✅ `PUT /api/inspections/:id/status` - Update status
+- ✅ `GET /api/inspections/inspector/assignments` - Get inspector's assignments
+- ✅ `GET /api/inspections/pending` - Get pending requests (admin/reviewer)
+- ✅ `POST /api/passports/create` - Create passport from inspection (admin/reviewer)
+- ✅ `GET /api/passports/vehicle/:vehicleId` - Get passport by vehicle
+- ✅ `GET /api/passports/verify/:passportNumber` - Verify passport (QR)
+- ✅ `GET /api/passports/check/:passportNumber` - Check validity
+- ✅ `GET /api/passports/history/:vehicleId` - Get passport history
+- ✅ `POST /api/passports/:id/revoke` - Revoke passport (admin)
 
 **Database Models:**
 - ✅ VehiclePassport (with versioning)
 - ✅ Inspection (with audit trails)
+- ✅ Added `requestedBy` field to Inspection model
 
-**Testing:** ❌ NOT IMPLEMENTED
+**Testing:** ⚠️ NOT TESTED (requires PostgreSQL)
 
 ---
 
 ### 4. MY GARAGE & OWNERSHIP
-**Status:** ✅ SCHEMA COMPLETE / ⚠️ ROUTES STUB
+**Status:** ✅ IMPLEMENTED / UNVERIFIED
 
 **Backend:**
 - ✅ Complete Prisma schema for owned vehicles
@@ -136,7 +145,9 @@ Gadi-Sewa is Nepal's premier automotive marketplace platform. This document trac
 - ✅ Document management
 - ✅ Expense tracking
 - ✅ Reminder system
-- ⚠️ Route files created but not implemented
+- ✅ Complete garage service with all business logic
+- ✅ Full route implementations with validation
+- ✅ Ownership verification on all operations
 
 **Frontend:**
 - ✅ My Garage page
@@ -145,11 +156,21 @@ Gadi-Sewa is Nepal's premier automotive marketplace platform. This document trac
 - ⚠️ Currently using localStorage demo mode
 
 **API Endpoints:**
-- ⚠️ `GET /api/garage/vehicles` (stub)
-- ⚠️ `POST /api/garage/vehicles` (stub)
-- ⚠️ `PUT /api/garage/vehicles/:id` (stub)
-- ⚠️ `DELETE /api/garage/vehicles/:id` (stub)
-- ⚠️ Maintenance, documents, expenses, reminders endpoints (stubs)
+- ✅ `POST /api/garage/vehicles` - Add vehicle to garage
+- ✅ `GET /api/garage/vehicles` - Get all garage vehicles
+- ✅ `GET /api/garage/stats` - Get garage statistics
+- ✅ `GET /api/garage/vehicles/:id` - Get vehicle details
+- ✅ `PUT /api/garage/vehicles/:id` - Update vehicle
+- ✅ `DELETE /api/garage/vehicles/:id` - Remove from garage
+- ✅ `POST /api/garage/vehicles/:id/maintenance` - Add maintenance record
+- ✅ `GET /api/garage/vehicles/:id/maintenance` - Get maintenance records
+- ✅ `POST /api/garage/vehicles/:id/documents` - Add document
+- ✅ `GET /api/garage/vehicles/:id/documents` - Get documents
+- ✅ `POST /api/garage/vehicles/:id/expenses` - Add expense
+- ✅ `GET /api/garage/vehicles/:id/expenses` - Get expenses
+- ✅ `POST /api/garage/vehicles/:id/reminders` - Add reminder
+- ✅ `GET /api/garage/vehicles/:id/reminders` - Get reminders
+- ✅ `POST /api/garage/reminders/:id/complete` - Complete reminder
 
 **Database Models:**
 - ✅ OwnedVehicle
@@ -158,7 +179,7 @@ Gadi-Sewa is Nepal's premier automotive marketplace platform. This document trac
 - ✅ VehicleExpense
 - ✅ VehicleReminder
 
-**Testing:** ❌ NOT IMPLEMENTED
+**Testing:** ⚠️ NOT TESTED (requires PostgreSQL)
 
 ---
 
