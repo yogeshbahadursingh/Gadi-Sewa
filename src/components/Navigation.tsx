@@ -117,8 +117,9 @@ export default function Navigation() {
           {/* Mobile Menu Button - Luxury Style */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2.5 text-obsidian hover:bg-obsidian/5 rounded-full transition-all duration-300"
+            className="lg:hidden p-2.5 text-obsidian hover:bg-obsidian/5 rounded-full transition-all duration-300 min-h-[44px] min-w-[44px] flex items-center justify-center"
             aria-label="Toggle menu"
+            aria-expanded={isOpen}
           >
             <motion.div
               animate={{ rotate: isOpen ? 180 : 0 }}

@@ -87,32 +87,32 @@ export default function DashboardPage() {
       {/* Premium Header */}
       <section className="bg-gradient-to-br from-obsidian via-obsidian-light to-obsidian relative overflow-hidden">
         <div className="absolute inset-0 bg-mesh-luxury opacity-20"></div>
-        <div className="container-luxury relative z-10 py-16">
+        <div className="container-luxury relative z-10 py-8 md:py-16">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="flex items-center justify-between"
+            className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
           >
             <div>
               <span className="badge-luxury badge-gold mb-4 inline-flex">
                 Seller Dashboard
               </span>
-              <h1 className="font-display text-5xl md:text-6xl font-bold text-ivory mb-2 tracking-tight">
+              <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-ivory mb-2 tracking-tight">
                 Welcome back,
                 <span className="block text-gradient-gold mt-2">{user?.firstName}</span>
               </h1>
-              <p className="text-xl text-ivory/70">
+              <p className="text-lg md:text-xl text-ivory/70">
                 Manage your vehicles, track performance, and grow your business
               </p>
             </div>
             <Link
               to="/sell"
-              className="btn-luxury btn-gold px-8 py-4 text-base font-semibold rounded-full flex items-center gap-3 group"
+              className="btn-luxury btn-gold px-6 md:px-8 py-3 md:py-4 text-sm md:text-base font-semibold rounded-full flex items-center gap-2 md:gap-3 group w-full md:w-auto justify-center"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="w-4 h-4 md:w-5 md:h-5" />
               <span>List New Vehicle</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </motion.div>
         </div>
@@ -125,7 +125,7 @@ export default function DashboardPage() {
           transition={{ delay: 0.2 }}
         >
           {/* Premium Stats Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-8 md:mb-12">
             {[
               { label: 'Total Listings', value: stats.total, icon: Car, color: 'from-gold/10 to-gold/5', iconColor: 'text-gold' },
               { label: 'Published', value: stats.published, icon: CheckCircle, color: 'from-emerald/10 to-emerald/5', iconColor: 'text-emerald' },
@@ -137,16 +137,16 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * index }}
-                className="card-luxury p-6"
+                className="card-luxury p-4 md:p-6"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`w-14 h-14 bg-gradient-to-br ${stat.color} rounded-2xl flex items-center justify-center`}>
-                    <stat.icon className={`w-7 h-7 ${stat.iconColor}`} />
+                <div className="flex items-start justify-between mb-3 md:mb-4">
+                  <div className={`w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br ${stat.color} rounded-2xl flex items-center justify-center`}>
+                    <stat.icon className={`w-6 h-6 md:w-7 md:h-7 ${stat.iconColor}`} />
                   </div>
-                  <ArrowRight className="w-5 h-5 text-obsidian/20" />
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-obsidian/20" />
                 </div>
-                <p className="text-3xl font-bold text-obsidian mb-1">{stat.value}</p>
-                <p className="text-sm text-obsidian/60">{stat.label}</p>
+                <p className="text-2xl md:text-3xl font-bold text-obsidian mb-1">{stat.value}</p>
+                <p className="text-xs md:text-sm text-obsidian/60">{stat.label}</p>
               </motion.div>
             ))}
           </div>

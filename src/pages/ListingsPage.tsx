@@ -71,27 +71,28 @@ export default function ListingsPage() {
           transition={{ delay: 0.2 }}
         >
           {/* Premium Filter Section */}
-          <div className="card-luxury p-8 mb-12">
+          <div className="card-luxury p-6 md:p-8 mb-8 md:mb-12">
             <div className="flex items-center gap-3 mb-6">
               <Filter className="w-5 h-5 text-gold" />
               <h2 className="font-display text-xl font-bold text-obsidian">Filter Vehicles</h2>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-4">
+            {/* Mobile: Stacked, Desktop: Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-obsidian/40" />
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search by make, model, or keyword..."
-                  className="input-luxury w-full pl-12 pr-4 py-4 rounded-xl text-base"
+                  placeholder="Search vehicles..."
+                  className="input-luxury w-full pl-12 pr-4 py-3 md:py-4 rounded-xl text-sm md:text-base min-h-[44px]"
                 />
               </div>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="input-luxury px-4 py-4 rounded-xl text-base"
+                className="input-luxury px-4 py-3 md:py-4 rounded-xl text-sm md:text-base min-h-[44px]"
               >
                 <option value="">All Categories</option>
                 <option value="car">Cars</option>
@@ -100,9 +101,10 @@ export default function ListingsPage() {
                 <option value="scooter">Scooters</option>
                 <option value="electric">Electric</option>
               </select>
-              <button className="btn-luxury btn-obsidian px-6 py-4 rounded-xl font-medium flex items-center justify-center gap-2">
+              <button className="btn-luxury btn-obsidian px-6 py-3 md:py-4 rounded-xl font-medium flex items-center justify-center gap-2 min-h-[44px]">
                 <Filter className="w-5 h-5" />
-                Advanced Filters
+                <span className="hidden md:inline">Advanced Filters</span>
+                <span className="md:hidden">Filters</span>
               </button>
             </div>
           </div>

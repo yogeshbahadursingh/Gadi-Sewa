@@ -575,6 +575,51 @@ body {
     radial-gradient(at 90% 90%, rgba(184, 194, 205, 0.04) 0px, transparent 50%);
 }
 
+/* Mobile Optimizations */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Touch-friendly minimum sizes */
+@media (max-width: 768px) {
+  .btn-luxury {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .input-luxury {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  /* Improve tap targets */
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Optimize card padding for mobile */
+  .card-luxury {
+    padding: 1.5rem;
+  }
+  
+  /* Reduce hero height on mobile */
+  .section-luxury {
+    padding: 4rem 0;
+  }
+}
+
+/* Tablet Optimizations */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .card-luxury {
+    padding: 2rem;
+  }
+}
+
 /* Luxury Hover Effects */
 .hover-lift {
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);

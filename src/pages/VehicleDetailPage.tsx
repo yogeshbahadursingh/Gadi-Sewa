@@ -103,7 +103,7 @@ export default function VehicleDetailPage() {
   return (
     <main className="min-h-screen bg-ivory">
       {/* Cinematic Hero Section with Gallery */}
-      <section className="relative h-[70vh] min-h-[600px] overflow-hidden bg-obsidian">
+      <section className="relative h-[50vh] md:h-[70vh] min-h-[400px] md:min-h-[600px] overflow-hidden bg-obsidian">
         {vehicle.images && vehicle.images.length > 0 ? (
           <>
             {/* Main Image */}
@@ -118,40 +118,43 @@ export default function VehicleDetailPage() {
               onClick={() => setShowGallery(true)}
             />
             
-            {/* Gallery Navigation */}
+            {/* Gallery Navigation - Mobile Optimized */}
             {vehicle.images.length > 1 && (
               <>
                 <button
                   onClick={prevImage}
-                  className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-ultra hover:scale-110 transition-all duration-300 z-10"
+                  className="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-ultra hover:scale-110 transition-all duration-300 z-10 min-h-[44px] min-w-[44px]"
+                  aria-label="Previous image"
                 >
-                  <ChevronLeft className="w-6 h-6 text-obsidian" />
+                  <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-obsidian" />
                 </button>
                 <button
                   onClick={nextImage}
-                  className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-ultra hover:scale-110 transition-all duration-300 z-10"
+                  className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-ultra hover:scale-110 transition-all duration-300 z-10 min-h-[44px] min-w-[44px]"
+                  aria-label="Next image"
                 >
-                  <ChevronRight className="w-6 h-6 text-obsidian" />
+                  <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-obsidian" />
                 </button>
                 
                 {/* Image Counter */}
-                <div className="absolute bottom-24 right-6 px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full shadow-medium z-10">
-                  <span className="text-sm font-semibold text-obsidian">
+                <div className="absolute bottom-20 md:bottom-24 right-3 md:right-6 px-3 md:px-4 py-1.5 md:py-2 bg-white/90 backdrop-blur-sm rounded-full shadow-medium z-10">
+                  <span className="text-xs md:text-sm font-semibold text-obsidian">
                     {selectedImageIndex + 1} / {vehicle.images.length}
                   </span>
                 </div>
                 
-                {/* Thumbnail Strip */}
-                <div className="absolute bottom-6 left-6 right-6 flex gap-2 overflow-x-auto pb-2 z-10">
+                {/* Thumbnail Strip - Mobile Optimized */}
+                <div className="absolute bottom-3 md:bottom-6 left-3 md:left-6 right-3 md:right-6 flex gap-2 overflow-x-auto pb-2 z-10 scrollbar-hide">
                   {vehicle.images.map((img, index) => (
                     <button
                       key={index}
                       onClick={() => setSelectedImageIndex(index)}
-                      className={`flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-2 transition-all duration-300 ${
+                      className={`flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden border-2 transition-all duration-300 min-h-[64px] min-w-[64px] ${
                         selectedImageIndex === index
                           ? 'border-gold shadow-gold scale-105'
                           : 'border-white/30 hover:border-white/60'
                       }`}
+                      aria-label={`View image ${index + 1}`}
                     >
                       <img
                         src={img.url}
@@ -166,7 +169,7 @@ export default function VehicleDetailPage() {
           </>
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-obsidian to-obsidian-light flex items-center justify-center">
-            <Gauge className="w-32 h-32 text-ivory/10" />
+            <Gauge className="w-24 h-24 md:w-32 md:h-32 text-ivory/10" />
           </div>
         )}
         
