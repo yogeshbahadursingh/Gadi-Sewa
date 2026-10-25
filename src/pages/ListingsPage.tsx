@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Filter, MapPin, Heart, Eye, Car, Shield, Star, TrendingUp } from 'lucide-react';
+import { Search, Filter, MapPin, Heart, Eye, Car, Shield, Star, TrendingUp, Fuel } from 'lucide-react';
 import { api, Vehicle } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -151,90 +151,146 @@ export default function ListingsPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-children">
               {vehicles.map((vehicle) => (
-                <Link
+                <motion.div
                   key={vehicle.id}
-                  to={`/vehicle/${vehicle.id}`}
-                  className="block card-luxury overflow-hidden group"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
                 >
-                  {/* Image Section */}
-                  <div className="aspect-[4/3] bg-obsidian/5 relative overflow-hidden">
-                    {vehicle.images && vehicle.images.length > 0 ? (
-                      <img
-                        src={vehicle.images[0].url}
-                        alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-obsidian/20">
-                        <Car className="w-20 h-20" />
+                  <Link
+                    to={`/vehicle/${vehicle.id}`}
+                    className="block group relative"
+                  >
+                    {/* Premium Card Container */}
+                    <div className="relative bg-white rounded-2xl overflow-hidden shadow-soft hover:shadow-ultra transition-all duration-500 border border-obsidian/5 group-hover:border-gold/20">
+                      
+                      {/* Image Section - Editorial Style */}
+                      <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-obsidian/5 to-obsidian/10">
+                        {vehicle.images && vehicle.images.length > 0 ? (
+                          <img
+                            src={vehicle.images[0].url}
+                            alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+                            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-obsidian/10 to-obsidian/20">
+                            <Car className="w-20 h-20 text-obsidian/20" />
+                          </div>
+                        )}
+                        
+                        {/* Sophisticated Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-obsidian via-obsidian/60 to-transparent opacity-90"></div>
+                        
+                        {/* Premium Badges - Top Left */}
+                        <div className="absolute top-4 left-4 flex flex-col gap-2">
+                          {vehicle.hasPassport && (
+                            <motion.div
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 0.2 }}
+                              className="flex items-center gap-2 px-3 py-1.5 bg-emerald/95 backdrop-blur-md rounded-full border border-emerald-light/30 shadow-lg"
+                            >
+                              <Shield className="w-3.5 h-3.5 text-ivory" />
+                              <span className="text-xs font-bold text-ivory tracking-wide">VERIFIED</span>
+                            </motion.div>
+                          )}
+                          {vehicle.featured && (
+                            <motion.div
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 0.3 }}
+                              className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-gold to-gold-dark rounded-full shadow-lg"
+                            >
+                              <Star className="w-3.5 h-3.5 text-obsidian" />
+                              <span className="text-xs font-bold text-obsidian tracking-wide">FEATURED</span>
+                            </motion.div>
+                          )}
+                        </div>
+
+                        {/* Favourite Button - Top Right */}
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            // TODO: Implement favourite toggle
+                          }}
+                          className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-medium hover:scale-110 transition-all duration-300 group/fav"
+                        >
+                          <Heart className="w-5 h-5 text-obsidian/40 group-hover/fav:text-red-500 transition-colors" />
+                        </button>
+
+                        {/* Price Section - Bottom */}
+                        <div className="absolute bottom-0 left-0 right-0 p-5">
+                          <div className="flex items-end justify-between">
+                            <div>
+                              <p className="text-xs text-ivory/60 uppercase tracking-wider mb-1">Price</p>
+                              <p className="text-3xl font-bold text-ivory leading-none">
+                                {formatPrice(vehicle.price)}
+                              </p>
+                              {vehicle.negotiable && (
+                                <p className="text-xs text-ivory/70 mt-1.5 font-medium">✓ Negotiable</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    )}
-                    
-                    {/* Overlay Gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-obsidian/80 via-obsidian/20 to-transparent"></div>
-                    
-                    {/* Badges */}
-                    <div className="absolute top-4 left-4 flex flex-col gap-2">
-                      {vehicle.hasPassport && (
-                        <span className="badge-luxury badge-emerald text-xs">
-                          <Shield className="w-3 h-3" />
-                          Passport Verified
-                        </span>
-                      )}
-                      {vehicle.featured && (
-                        <span className="badge-luxury badge-gold text-xs">
-                          <Star className="w-3 h-3" />
-                          Featured
-                        </span>
-                      )}
-                    </div>
 
-                    {/* Price Overlay */}
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <p className="text-3xl font-bold text-ivory text-luxury">
-                        {formatPrice(vehicle.price)}
-                      </p>
-                      {vehicle.negotiable && (
-                        <p className="text-xs text-ivory/80 mt-1">Negotiable</p>
-                      )}
-                    </div>
-                  </div>
+                      {/* Content Section - Refined Typography */}
+                      <div className="p-6">
+                        {/* Vehicle Title */}
+                        <div className="mb-4">
+                          <h3 className="font-display text-2xl font-bold text-obsidian mb-1 leading-tight group-hover:text-gradient-gold transition-all duration-300">
+                            {vehicle.year} {vehicle.make} {vehicle.model}
+                          </h3>
+                          {vehicle.variant && (
+                            <p className="text-sm text-obsidian/60 font-medium">{vehicle.variant}</p>
+                          )}
+                        </div>
+                        
+                        {/* Specifications Grid */}
+                        <div className="grid grid-cols-2 gap-3 mb-5">
+                          {vehicle.mileage && (
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 bg-obsidian/5 rounded-lg flex items-center justify-center">
+                                <TrendingUp className="w-4 h-4 text-gold" />
+                              </div>
+                              <div>
+                                <p className="text-xs text-obsidian/50 uppercase tracking-wider">Mileage</p>
+                                <p className="text-sm font-semibold text-obsidian">{vehicle.mileage.toLocaleString()} km</p>
+                              </div>
+                            </div>
+                          )}
+                          {vehicle.fuelType && (
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 bg-obsidian/5 rounded-lg flex items-center justify-center">
+                                <Fuel className="w-4 h-4 text-gold" />
+                              </div>
+                              <div>
+                                <p className="text-xs text-obsidian/50 uppercase tracking-wider">Fuel</p>
+                                <p className="text-sm font-semibold text-obsidian">{vehicle.fuelType}</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
 
-                  {/* Content Section */}
-                  <div className="p-6">
-                    <h3 className="font-display text-xl font-bold text-obsidian mb-2 group-hover:text-gradient-gold transition-all duration-300">
-                      {vehicle.year} {vehicle.make} {vehicle.model}
-                    </h3>
-                    {vehicle.variant && (
-                      <p className="text-sm text-obsidian/60 mb-3">{vehicle.variant}</p>
-                    )}
-                    
-                    {/* Specs */}
-                    <div className="flex items-center gap-4 text-sm text-obsidian/70 mb-4">
-                      {vehicle.mileage && (
-                        <span className="flex items-center gap-1">
-                          <TrendingUp className="w-4 h-4" />
-                          {vehicle.mileage.toLocaleString()} km
-                        </span>
-                      )}
-                      {vehicle.fuelType && (
-                        <span>{vehicle.fuelType}</span>
-                      )}
-                    </div>
+                        {/* Location & Meta */}
+                        <div className="flex items-center justify-between pt-4 border-t border-obsidian/5">
+                          <div className="flex items-center gap-2 text-obsidian/60">
+                            <MapPin className="w-4 h-4" />
+                            <span className="text-sm font-medium">{vehicle.city}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-obsidian/50">
+                            <Eye className="w-4 h-4" />
+                            <span className="text-sm">{vehicle.views} views</span>
+                          </div>
+                        </div>
+                      </div>
 
-                    {/* Location & Views */}
-                    <div className="flex items-center justify-between pt-4 border-t border-obsidian/5">
-                      <span className="flex items-center gap-1.5 text-sm text-obsidian/60">
-                        <MapPin className="w-4 h-4" />
-                        {vehicle.city}, {vehicle.province}
-                      </span>
-                      <span className="flex items-center gap-1.5 text-sm text-obsidian/60">
-                        <Eye className="w-4 h-4" />
-                        {vehicle.views}
-                      </span>
+                      {/* Hover Effect Border */}
+                      <div className="absolute inset-0 rounded-2xl border-2 border-gold/0 group-hover:border-gold/20 transition-all duration-500 pointer-events-none"></div>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                </motion.div>
               ))}
             </div>
           )}
