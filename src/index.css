@@ -1,45 +1,64 @@
 @import "tailwindcss";
 
 @theme {
-  /* Ultra-Premium Royal Luxury Color Palette */
-  --color-obsidian: #0B1119;
-  --color-obsidian-light: #1A2332;
-  --color-obsidian-deep: #050810;
-  --color-ivory: #F6F2E9;
-  --color-ivory-warm: #FAF7F0;
-  --color-ivory-dark: #EDE8DC;
-  --color-gold: #C6A56B;
-  --color-gold-light: #E8D4A8;
-  --color-gold-dark: #9E7E4A;
-  --color-gold-shimmer: #D4B87E;
-  --color-emerald: #24483E;
-  --color-emerald-light: #2D5A4E;
-  --color-emerald-deep: #1A3530;
-  --color-platinum: #B8C2CD;
-  --color-platinum-light: #D4DCE5;
+  /* Premium Automotive Color Palette */
+  --color-graphite: #101B24;
+  --color-graphite-light: #1A2832;
+  --color-deep-black: #080D12;
+  --color-ivory: #F3F0E8;
+  --color-ivory-warm: #F8F6F0;
+  --color-ivory-dark: #E8E4D8;
+  --color-champagne: #BA9663;
+  --color-champagne-light: #D4B88A;
+  --color-champagne-dark: #9A7A4F;
+  --color-forest: #315C55;
+  --color-forest-light: #3D7269;
+  --color-forest-dark: #264A44;
+  --color-white: #FFFFFF;
+  --color-muted: #8B9299;
+  --color-muted-light: #A8AEB5;
   --color-crimson: #8B1538;
   --color-crimson-light: #A82048;
   
+  /* Backwards compatibility aliases */
+  --color-obsidian: var(--color-graphite);
+  --color-obsidian-light: var(--color-graphite-light);
+  --color-obsidian-deep: var(--color-deep-black);
+  --color-gold: var(--color-champagne);
+  --color-gold-light: var(--color-champagne-light);
+  --color-gold-dark: var(--color-champagne-dark);
+  --color-emerald: var(--color-forest);
+  --color-emerald-light: var(--color-forest-light);
+  --color-emerald-deep: var(--color-forest-dark);
+  
   /* Premium Typography */
-  --font-display: 'Playfair Display', serif;
-  --font-body: 'Inter', sans-serif;
+  --font-display: 'DM Serif Display', serif;
+  --font-body: 'Manrope', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
   
-  /* Multi-Layer Luxury Shadows */
-  --shadow-soft: 0 2px 8px rgba(11, 17, 25, 0.06), 0 1px 3px rgba(11, 17, 25, 0.04);
-  --shadow-medium: 0 4px 16px rgba(11, 17, 25, 0.08), 0 2px 6px rgba(11, 17, 25, 0.04);
-  --shadow-strong: 0 12px 40px rgba(11, 17, 25, 0.12), 0 4px 12px rgba(11, 17, 25, 0.06);
-  --shadow-ultra: 0 20px 60px rgba(11, 17, 25, 0.16), 0 8px 20px rgba(11, 17, 25, 0.08);
-  --shadow-gold: 0 8px 32px rgba(198, 165, 107, 0.25), 0 2px 8px rgba(198, 165, 107, 0.15);
-  --shadow-gold-intense: 0 12px 48px rgba(198, 165, 107, 0.35), 0 4px 12px rgba(198, 165, 107, 0.2);
-  --shadow-emerald: 0 8px 32px rgba(36, 72, 62, 0.2), 0 2px 8px rgba(36, 72, 62, 0.1);
+  /* Refined Shadow System */
+  --shadow-soft: 0 1px 3px rgba(16, 27, 36, 0.04), 0 1px 2px rgba(16, 27, 36, 0.06);
+  --shadow-medium: 0 4px 6px rgba(16, 27, 36, 0.05), 0 2px 4px rgba(16, 27, 36, 0.03);
+  --shadow-strong: 0 10px 25px rgba(16, 27, 36, 0.08), 0 4px 10px rgba(16, 27, 36, 0.04);
+  --shadow-ultra: 0 20px 50px rgba(16, 27, 36, 0.12), 0 8px 20px rgba(16, 27, 36, 0.06);
+  --shadow-champagne: 0 4px 16px rgba(186, 150, 99, 0.15);
+  --shadow-forest: 0 4px 16px rgba(49, 92, 85, 0.15);
   
-  /* Premium Gradients */
-  --gradient-gold: linear-gradient(135deg, #C6A56B 0%, #E8D4A8 50%, #C6A56B 100%);
-  --gradient-obsidian: linear-gradient(180deg, #0B1119 0%, #1A2332 100%);
-  --gradient-ivory: linear-gradient(180deg, #F6F2E9 0%, #FAF7F0 100%);
-  --gradient-emerald: linear-gradient(135deg, #24483E 0%, #2D5A4E 100%);
-  --gradient-shimmer: linear-gradient(90deg, transparent 0%, rgba(198, 165, 107, 0.1) 50%, transparent 100%);
+  /* Backwards compatibility */
+  --shadow-gold: var(--shadow-champagne);
+  --shadow-gold-intense: var(--shadow-champagne);
+  --shadow-emerald: var(--shadow-forest);
+  
+  /* Subtle Gradients */
+  --gradient-champagne: linear-gradient(135deg, #BA9663 0%, #D4B88A 100%);
+  --gradient-graphite: linear-gradient(180deg, #101B24 0%, #1A2832 100%);
+  --gradient-ivory: linear-gradient(180deg, #F3F0E8 0%, #F8F6F0 100%);
+  --gradient-forest: linear-gradient(135deg, #315C55 0%, #3D7269 100%);
+  
+  /* Backwards compatibility */
+  --gradient-gold: var(--gradient-champagne);
+  --gradient-obsidian: var(--gradient-graphite);
+  --gradient-emerald: var(--gradient-forest);
 }
 
 /* Base Styles */
@@ -54,6 +73,104 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+/* Container System */
+.container-luxury {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .container-luxury {
+    padding: 0 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-luxury {
+    padding: 0 3rem;
+  }
+}
+
+/* Section Spacing */
+.section-standard {
+  padding: 5rem 0;
+}
+
+@media (min-width: 768px) {
+  .section-standard {
+    padding: 6rem 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-standard {
+    padding: 8rem 0;
+  }
+}
+
+/* Button System */
+.btn-primary {
+  background-color: var(--color-graphite);
+  color: var(--color-ivory);
+  padding: 0.875rem 2rem;
+  border-radius: 0.125rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: 1px solid var(--color-graphite);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-graphite-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-medium);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--color-graphite);
+  padding: 0.875rem 2rem;
+  border-radius: 0.125rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: 1px solid var(--color-graphite);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-graphite);
+  color: var(--color-ivory);
+}
+
+/* Input Fields */
+.input-field {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-muted);
+  border-radius: 0.375rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  color: var(--color-graphite);
+  font-family: var(--font-body);
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--color-champagne);
+  box-shadow: 0 0 0 3px rgba(186, 150, 99, 0.1);
+}
+
+.input-field::placeholder {
+  color: var(--color-muted);
 }
 
 /* Premium Typography System */
