@@ -620,6 +620,157 @@ body {
   }
 }
 
+/* Accessibility Improvements */
+
+/* Enhanced Focus Indicators */
+*:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Skip Link Styling */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only.focus\:not-sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .animate-pulse-gold,
+  .animate-float,
+  .animate-shimmer {
+    animation: none !important;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .card-luxury {
+    border-width: 2px;
+    border-color: var(--color-obsidian);
+  }
+  
+  .btn-luxury {
+    border-width: 2px;
+  }
+  
+  .text-gradient-gold {
+    background: none;
+    -webkit-text-fill-color: var(--color-gold-dark);
+    color: var(--color-gold-dark);
+  }
+}
+
+/* Screen Reader Only Content */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Improved Link Underlines for Accessibility */
+a:not(.btn-luxury):not(.card-luxury):not([role="button"]) {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+a:not(.btn-luxury):not(.card-luxury):not([role="button"]):hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Focus Trap for Modals */
+.modal-open {
+  overflow: hidden;
+}
+
+/* Improved Color Contrast */
+.text-obsidian\/60 {
+  color: rgba(11, 17, 25, 0.75); /* Increased from 0.6 for better contrast */
+}
+
+.text-obsidian\/70 {
+  color: rgba(11, 17, 25, 0.85); /* Increased from 0.7 for better contrast */
+}
+
+/* Keyboard Navigation Indicators */
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+/* Improved Button Focus States */
+button:focus-visible,
+.btn-luxury:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(198, 165, 107, 0.2);
+}
+
+/* Form Input Accessibility */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+  border-color: var(--color-gold);
+}
+
+/* Error State Accessibility */
+[aria-invalid="true"] {
+  border-color: #dc2626 !important;
+  outline: 2px solid #dc2626;
+  outline-offset: 2px;
+}
+
+/* Loading State for Screen Readers */
+[aria-busy="true"] {
+  position: relative;
+}
+
+[aria-busy="true"]::after {
+  content: "Loading...";
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 /* Luxury Hover Effects */
 .hover-lift {
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);

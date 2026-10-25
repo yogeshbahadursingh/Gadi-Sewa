@@ -38,7 +38,7 @@ function AppLayout() {
     <div className="min-h-screen flex flex-col bg-ivory">
       <ScrollToTop />
       <Navigation />
-      <div className="flex-1">
+      <main id="main-content" className="flex-1" role="main" aria-label="Main content">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -62,7 +62,7 @@ function AppLayout() {
           <Route path="/inspect/book" element={<InspectionBookingPage />} />
           <Route path="/inspect/history" element={<InspectionHistoryPage />} />
         </Routes>
-      </div>
+      </main>
       <Footer />
     </div>
   );
