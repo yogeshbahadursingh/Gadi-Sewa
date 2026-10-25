@@ -21,6 +21,8 @@ import WorkshopDetailPage from './pages/WorkshopDetailPage';
 import FinancePage from './pages/FinancePage';
 import PassportPage from './pages/PassportPage';
 import InspectorDashboardPage from './pages/InspectorDashboardPage';
+import InspectionBookingPage from './pages/InspectionBookingPage';
+import InspectionHistoryPage from './pages/InspectionHistoryPage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -55,6 +57,8 @@ function AppLayout() {
           <Route path="/finance" element={<FinancePage />} />
           <Route path="/passport" element={<PassportPage />} />
           <Route path="/inspect/dashboard" element={<InspectorDashboardPage />} />
+          <Route path="/inspect/book" element={<InspectionBookingPage />} />
+          <Route path="/inspect/history" element={<InspectionHistoryPage />} />
         </Routes>
       </div>
       <Footer />
