@@ -13,7 +13,7 @@ import {
 } from '../types';
 
 // Re-export types for convenience
-export type { User, Vehicle, Workshop, FinanceProvider, FinanceProduct } from '../types';
+export type { User, Vehicle, Workshop, FinanceProvider, FinanceProduct, Inspection } from '../types';
 
 // Storage Keys
 const STORAGE_KEYS = {
@@ -547,6 +547,66 @@ export const api = {
 
   async getFinanceProducts() {
     return getStorage<FinanceProduct[]>(STORAGE_KEYS.FINANCE_PRODUCTS, []);
+  },
+
+  // ===== INSPECTIONS =====
+  
+  async getMyInspectionRequests() {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const inspections = getStorage<Inspection[]>(STORAGE_KEYS.INSPECTIONS, []);
+    const vehicles = getStorage<Vehicle[]>(STORAGE_KEYS.VEHICLES, []);
+    
+    // Get inspections assigned to this inspector or requested by this user
+    return inspections
+      .filter(i => i.inspectorId === currentUser.id || i.buyerId === currentUser.id)
+      .map(i => ({
+        ...i,
+        vehicle: vehicles.find(v => v.id === i.vehicleId)
+      }))
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  },
+
+  async requestInspection(vehicleId: string, preferredDate?: string, notes?: string) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const inspections = getStorage<Inspection[]>(STORAGE_KEYS.INSPECTIONS, []);
+    
+    const newInspection: Inspection = {
+      id: `insp_${Date.now()}`,
+      vehicleId,
+      buyerId: currentUser.id,
+      status: 'REQUESTED',
+      preferredDate,
+      notes,
+      createdAt: new Date().toISOString()
+    };
+    
+    inspections.push(newInspection);
+    setStorage(STORAGE_KEYS.INSPECTIONS, inspections);
+    
+    return newInspection;
+  },
+
+  async updateInspectionStatus(inspectionId: string, status: Inspection['status']) {
+    const currentUser = getStorage<any>(STORAGE_KEYS.CURRENT_USER, null);
+    if (!currentUser) throw new Error('Not authenticated');
+    
+    const inspections = getStorage<Inspection[]>(STORAGE_KEYS.INSPECTIONS, []);
+    const index = inspections.findIndex(i => i.id === inspectionId);
+    
+    if (index === -1) throw new Error('Inspection not found');
+    
+    inspections[index].status = status;
+    if (status === 'COMPLETED') {
+      inspections[index].completedAt = new Date().toISOString();
+    }
+    
+    setStorage(STORAGE_KEYS.INSPECTIONS, inspections);
+    
+    return inspections[index];
   }
 };
 

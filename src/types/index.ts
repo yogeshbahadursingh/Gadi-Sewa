@@ -85,6 +85,7 @@ export interface Inspection {
   issues?: string[];
   createdAt: string;
   assignedAt?: string;
+  vehicle?: Vehicle;
   completedAt?: string;
   approvedAt?: string;
   approvedBy?: string;
